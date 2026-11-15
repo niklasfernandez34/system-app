@@ -79,6 +79,18 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Neuer UI-Baustein:** `Chips` (Auswahl aus mehreren Optionen).
 - **Backup Version 3** enthält auch die neuen Tabellen.
 
+### Entscheidungen aus Phase 3b
+
+- **wger-Daten:** `node scripts/fetch-wger.mjs` holt alle Übungen (deutscher Name, sonst englisch) nach `src/data/wger.json` (~970 Übungen, ~490 KB). Die Datei wird erst bei der Suche geladen (eigener Baustein) und ist trotzdem offline vorgespeichert. Zum Aktualisieren das Skript erneut ausführen.
+- **Übungsbilder** lädt die App beim ersten Ansehen von wger.de und speichert sie im Service Worker zwischen (Cache „wger-bilder“). Die Urheber werden nach CC-BY-SA in den Übungsdetails genannt.
+- Wählst du eine wger-Übung, wird sie mit `wgerId` in `exercises` übernommen. Gesucht wird ab 2 Buchstaben.
+- **Dexie Version 4:** Index `wgerId` an `exercises`, neue Tabelle `body` (ein Eintrag pro logischem Tag: `weight`, `waist`, `chest`, `arm`, `thigh`, `hip`, alle freiwillig).
+- **Fortschrittsfotos** kommen in `photos` mit `kind: 'progress'`, `day` und `pose` (Vorne, Seite, Hinten) und sind damit automatisch im Foto-Backup. Die Seite hat eine PIN-Sperre. Zwei ausgewählte Fotos werden nebeneinander verglichen.
+- **Ereignisse:** `body_logged` (einmal pro Tag) und `progress_photo`.
+- **Recharts** ist installiert (Gewichts- und Maßverlauf).
+- **Backup Version 4** enthält auch `body`.
+- Der Kalenderplan für Trainings kommt mit dem Kalenderexport in Phase 7.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -143,7 +155,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 2. ~~**Tagebuch, Notizen, Habits:** Check-in, Streaks, PIN-Sperre~~ – erledigt.
 3. **Sport**
    - ~~**3a Training:** Pläne, Training durchführen, Pausentimer, automatische Steigerung, PRs~~ – erledigt.
-   - **3b Daten:** Übungsdatenbank (wger-Skript), Körperdaten, Fortschrittsfotos
+   - ~~**3b Daten:** Übungsdatenbank (wger-Skript), Körperdaten, Fortschrittsfotos~~ – erledigt.
 4. **Levelsystem:** XP, Attribute, Ränge, Quests, Penalty, Bosse, Titel. Liest das Ereignis-Log, die fertigen Bereiche bleiben unverändert.
 5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos

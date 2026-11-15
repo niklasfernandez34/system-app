@@ -11,6 +11,7 @@ import { SportPage } from './pages/SportPage'
 import { PlanEditPage } from './pages/PlanEditPage'
 import { WorkoutPage } from './pages/WorkoutPage'
 import { BodyPage } from './pages/BodyPage'
+import { PhotosPage } from './pages/PhotosPage'
 
 const tabs = [
   { to: '/', label: 'Heute' },
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/sport/plan/:id" element={<PlanEditPage />} />
             <Route path="/sport/training" element={<WorkoutPage />} />
             <Route path="/sport/koerper" element={<BodyPage />} />
+            <Route path="/sport/fotos" element={<PhotosPage />} />
             <Route path="/ernaehrung" element={<PlaceholderPage title="Ernährung" />} />
             <Route path="/uni" element={<PlaceholderPage title="Uni" />} />
             <Route path="/mehr" element={<MorePage />} />
