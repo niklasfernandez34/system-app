@@ -2,7 +2,7 @@
 
 All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt alle 5 Bereiche ab: Uni, Sport, Ernährung, Hautbild und Antrieb.
 
-> Stand: Phase 0 (Prüfen und optimieren) ist abgeschlossen (15.11.2026). Die Ergebnisse sind in diesen Plan eingearbeitet.
+> Stand: Phase 0 und Phase 1 (Fundament) sind abgeschlossen (15.11.2026).
 
 ---
 
@@ -44,6 +44,15 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Fotos** werden beim Speichern verkleinert (ca. 1080 px, JPEG).
 - **PIN-Sperre** ist ein Sichtschutz, keine Verschlüsselung.
 - **Datenbank-Schema** wächst mit Dexie-Versionen pro Phase mit. Es wird nicht alles im Voraus geplant.
+
+### Entscheidungen aus Phase 1
+
+- **HashRouter** (Adressen wie `#/sport`), damit Neuladen auf GitHub Pages keinen 404-Fehler gibt. `base: './'` in Vite, damit der Repository-Name egal ist.
+- **Dexie Version 1:** Tabellen `events` (Ereignis-Log: `type`, `at`, `day`, `data`), `settings` (Schlüssel/Wert) und `photos` (`kind`, `createdAt`, `blob`).
+- **Tageswechsel:** Jedes Ereignis speichert seinen logischen Tag (`day`). Bereiche melden sich mit `onNewDay()` aus `src/lib/startup.ts` für die Auswertung verpasster Tage an. Die Auswertung läuft beim Start und wenn die App wieder sichtbar wird.
+- **Backup** speichert über das Teilen-Menü (iPhone: „In Dateien sichern“). Die Erinnerung an das Backup kommt in Phase 7.
+- Recharts und @zxing werden erst in den Phasen installiert, die sie brauchen.
+- **Deployment:** GitHub Actions (`.github/workflows/deploy.yml`) testet, baut und veröffentlicht bei jedem Push auf `main`.
 
 ## 3. Funktionen
 
@@ -105,7 +114,7 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über GitHub Pages).
 
 0. ~~**Prüfen und optimieren**~~ – erledigt.
-1. **Fundament:** Projekt-Setup, PWA und Offline, Datenbank (Dexie), **Ereignis-Log**, **XP-Konfigurationsdatei**, Design, **wiederverwendbare Bausteine** (System-Fenster/Karte, Button, Fortschrittsbalken, Zahleneingabe, Dialog, Fotoaufnahme mit Verkleinerung), Navigation, „Heute“-Seite (leer), Backup Export/Import, Tageswechsel-Logik, `storage.persist()`, **Git + GitHub + automatisches Deployment auf GitHub Pages**
+1. ~~**Fundament:** Projekt-Setup, PWA und Offline, Datenbank (Dexie), **Ereignis-Log**, **XP-Konfigurationsdatei**, Design, **wiederverwendbare Bausteine** (System-Fenster/Karte, Button, Fortschrittsbalken, Zahleneingabe, Dialog, Fotoaufnahme mit Verkleinerung), Navigation, „Heute“-Seite (leer), Backup Export/Import, Tageswechsel-Logik, `storage.persist()`, **Git + GitHub + automatisches Deployment auf GitHub Pages**~~ – erledigt.
 2. **Tagebuch, Notizen, Habits:** Check-in, Streaks, PIN-Sperre
 3. **Sport**
    - **3a Training:** Pläne, Training durchführen, Pausentimer, automatische Steigerung, PRs
