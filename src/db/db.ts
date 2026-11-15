@@ -77,6 +77,7 @@ export type WorkoutSet = {
 export type WorkoutEntry = {
   exerciseId: number
   targetReps: number
+  lastWeight?: number
   sets: WorkoutSet[]
 }
 

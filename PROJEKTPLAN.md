@@ -66,6 +66,19 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Tagebuch, Habits und Notizen sind über „Mehr“ erreichbar. Die „Heute“-Seite zeigt Check-in-Status und Habits zum Abhaken.
 - **Backup Version 2** enthält auch die neuen Tabellen. Ältere Backups lassen sich weiter laden.
 
+### Entscheidungen aus Phase 3a
+
+- **Dexie Version 3:** neue Tabellen `exercises` (`name`, `muscle`), `plans` (`name`, `order`, `items` mit Übung, Sätzen, Wiederholungen, Startgewicht, `archived`) und `workouts` (`planId`, `day`, `startedAt`, `finishedAt`, `restEndsAt`, `entries` mit Sätzen: Gewicht, Wiederholungen, erledigt).
+- **Laufendes Training** = `finishedAt: 0`. Es bleibt gespeichert und lässt sich nach dem Schließen der App fortsetzen. Es gibt höchstens eins gleichzeitig.
+- **Steigerung** (`src/lib/progression.ts`): Waren beim letzten Mal alle Sätze abgehakt und die Ziel-Wiederholungen erreicht, schlägt die App das Arbeitsgewicht plus Steigerung vor (Standard 2,5 kg). Sonst bleibt das Gewicht gleich.
+- **PRs** (`src/lib/pr.ts`): höchstes Gewicht oder besseres geschätztes 1RM (Epley) gegenüber allen früheren Trainings. Beim ersten Training einer Übung gibt es noch keinen PR.
+- **Ereignisse:** `workout_done` (`workoutId`, `planId`, `sets`, `volume`) und `pr_set` (`exerciseId`, `kind`, `value`, `previous`).
+- **Pausentimer:** Das Ende wird als Zeitpunkt (`restEndsAt`) gespeichert und läuft deshalb auch nach einem Wechsel in den Hintergrund richtig. Am Ende gibt es einen Ton (Web Audio, wird beim Abhaken freigeschaltet), auf Android zusätzlich Vibration. iOS kann nicht vibrieren.
+- **Einstellungen** `restSeconds` (90 s) und `weightIncrement` (2,5 kg) stehen auf der Sport-Seite.
+- **Übungen** legst du vorerst selbst an (mit Muskelgruppe). In 3b kommt die wger-Datenbank dazu.
+- **Neuer UI-Baustein:** `Chips` (Auswahl aus mehreren Optionen).
+- **Backup Version 3** enthält auch die neuen Tabellen.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -129,7 +142,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 1. ~~**Fundament:** Projekt-Setup, PWA und Offline, Datenbank (Dexie), **Ereignis-Log**, **XP-Konfigurationsdatei**, Design, **wiederverwendbare Bausteine** (System-Fenster/Karte, Button, Fortschrittsbalken, Zahleneingabe, Dialog, Fotoaufnahme mit Verkleinerung), Navigation, „Heute“-Seite (leer), Backup Export/Import, Tageswechsel-Logik, `storage.persist()`, **Git + GitHub + automatisches Deployment auf GitHub Pages**~~ – erledigt.
 2. ~~**Tagebuch, Notizen, Habits:** Check-in, Streaks, PIN-Sperre~~ – erledigt.
 3. **Sport**
-   - **3a Training:** Pläne, Training durchführen, Pausentimer, automatische Steigerung, PRs
+   - ~~**3a Training:** Pläne, Training durchführen, Pausentimer, automatische Steigerung, PRs~~ – erledigt.
    - **3b Daten:** Übungsdatenbank (wger-Skript), Körperdaten, Fortschrittsfotos
 4. **Levelsystem:** XP, Attribute, Ränge, Quests, Penalty, Bosse, Titel. Liest das Ereignis-Log, die fertigen Bereiche bleiben unverändert.
 5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten

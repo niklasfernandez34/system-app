@@ -7,6 +7,9 @@ import { MorePage } from './pages/MorePage'
 import { JournalPage } from './pages/JournalPage'
 import { HabitsPage } from './pages/HabitsPage'
 import { NotesPage } from './pages/NotesPage'
+import { SportPage } from './pages/SportPage'
+import { PlanEditPage } from './pages/PlanEditPage'
+import { WorkoutPage } from './pages/WorkoutPage'
 
 const tabs = [
   { to: '/', label: 'Heute' },
@@ -30,7 +33,9 @@ export default function App() {
         <div className="mx-auto max-w-xl p-4">
           <Routes>
             <Route path="/" element={<TodayPage />} />
-            <Route path="/sport" element={<PlaceholderPage title="Sport" />} />
+            <Route path="/sport" element={<SportPage />} />
+            <Route path="/sport/plan/:id" element={<PlanEditPage />} />
+            <Route path="/sport/training" element={<WorkoutPage />} />
             <Route path="/ernaehrung" element={<PlaceholderPage title="Ernährung" />} />
             <Route path="/uni" element={<PlaceholderPage title="Uni" />} />
             <Route path="/mehr" element={<MorePage />} />
@@ -47,7 +52,7 @@ export default function App() {
             <li key={t.to} className="flex-1">
               <NavLink
                 to={t.to}
-                end
+                end={t.to === '/'}
                 className={({ isActive }) =>
                   `block py-3 text-center text-xs font-semibold uppercase tracking-widest ${
                     isActive ? 'text-sys-glow [text-shadow:0_0_8px_var(--color-sys-glow)]' : 'text-sys-muted'

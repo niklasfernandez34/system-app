@@ -3,7 +3,7 @@ import { db, type PlanRecord, type WorkoutEntry, type WorkoutRecord } from '../d
 import { getSetting } from '../db/settings'
 import { currentDay, logEvent } from './events'
 import { bestOf, detectPRs } from './pr'
-import { suggestWeight } from './progression'
+import { suggestWeight, workingWeight } from './progression'
 
 export function addExercise(name: string, muscle: string) {
   return db.exercises.add({ name, muscle, createdAt: Date.now() })
@@ -59,10 +59,12 @@ export async function startWorkout(planId: number) {
   const increment = await getSetting('weightIncrement')
   const entries: WorkoutEntry[] = []
   for (const item of plan.items) {
-    const weight = suggestWeight(item, await lastEntry(item.exerciseId), increment)
+    const last = await lastEntry(item.exerciseId)
+    const weight = suggestWeight(item, last, increment)
     entries.push({
       exerciseId: item.exerciseId,
       targetReps: item.reps,
+      lastWeight: last ? workingWeight(last) || undefined : undefined,
       sets: Array.from({ length: item.sets }, () => ({ weight, reps: item.reps, done: false })),
     })
   }
@@ -115,5 +117,19 @@ export function useTrainedToday() {
   return useLiveQuery(async () => {
     const day = await currentDay()
     return (await db.events.where('[type+day]').equals(['workout_done', day]).count()) > 0
+  })
+}
+
+export const fmt = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits: 2 })
+
+export function usePlanNames() {
+  return useLiveQuery(async () => new Map((await db.plans.toArray()).map((p) => [p.id, p.name])))
+}
+
+export function modifyEntries(id: number, fn: (entries: WorkoutEntry[]) => WorkoutEntry[], restEndsAt?: number) {
+  return db.transaction('rw', db.workouts, async () => {
+    const w = await db.workouts.get(id)
+    if (!w) return
+    await db.workouts.update(id, { entries: fn(w.entries), ...(restEndsAt ? { restEndsAt } : {}) })
   })
 }
