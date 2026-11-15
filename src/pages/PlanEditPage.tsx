@@ -4,6 +4,8 @@ import { Button, Chips, Dialog, NumberInput, SystemWindow, TextField } from '../
 import { MUSCLES } from '../config/sport'
 import type { PlanItem, PlanRecord } from '../db/db'
 import { addExercise, archivePlan, fmt, savePlan, useExercises, usePlan } from '../lib/sport'
+import { adoptWger, searchWger, useWger, type WgerExercise } from '../lib/wger'
+import { ExerciseInfo } from '../components/ExerciseInfo'
 
 export function PlanEditPage() {
   const { id } = useParams()
@@ -26,9 +28,15 @@ function PlanForm({ plan }: { plan?: PlanRecord }) {
   const [newName, setNewName] = useState('')
   const [muscle, setMuscle] = useState<Muscle>('Brust')
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [infoId, setInfoId] = useState<number | null>(null)
+  const wger = useWger()
 
   const byId = new Map(exercises?.map((e) => [e.id, e]))
   const filtered = exercises?.filter((e) => e.name.toLowerCase().includes(search.trim().toLowerCase())) ?? []
+  const ownWger = new Set(exercises?.map((e) => e.wgerId))
+  const wgerHits = wger ? searchWger(wger, search).filter((w) => !ownWger.has(w.id)) : []
+
+  const pickWger = async (w: WgerExercise) => addItem(await adoptWger(w))
 
   const addItem = (exerciseId: number) => {
     setItems([...items, { exerciseId, sets: 3, reps: 8, weight: 20 }])
@@ -76,6 +84,9 @@ function PlanForm({ plan }: { plan?: PlanRecord }) {
                   {it.sets} × {it.reps} · {fmt(it.weight)} kg
                 </div>
               </button>
+              <Button variant="ghost" className="px-3" onClick={() => setInfoId(it.exerciseId)}>
+                ⓘ
+              </Button>
               <Button variant="ghost" className="px-3" disabled={i === 0} onClick={() => move(i, -1)}>
                 ↑
               </Button>
@@ -106,8 +117,8 @@ function PlanForm({ plan }: { plan?: PlanRecord }) {
 
       <Dialog open={picking} onClose={() => setPicking(false)} title="Übung wählen">
         <div className="space-y-3">
-          <TextField value={search} onChange={setSearch} placeholder="Suchen" />
-          <ul className="max-h-48 divide-y divide-sys-line overflow-y-auto">
+          <TextField value={search} onChange={setSearch} placeholder="Suchen, z. B. Bankdrücken" />
+          <ul className="max-h-60 divide-y divide-sys-line overflow-y-auto">
             {filtered.map((e) => (
               <li key={e.id}>
                 <button type="button" className="flex w-full justify-between py-2 text-left" onClick={() => addItem(e.id)}>
@@ -116,7 +127,18 @@ function PlanForm({ plan }: { plan?: PlanRecord }) {
                 </button>
               </li>
             ))}
+            {wgerHits.map((w) => (
+              <li key={`w${w.id}`}>
+                <button type="button" className="flex w-full justify-between gap-2 py-2 text-left" onClick={() => pickWger(w)}>
+                  <span>{w.name}</span>
+                  <span className="shrink-0 text-xs text-sys-muted">{w.group} · wger</span>
+                </button>
+              </li>
+            ))}
           </ul>
+          {search.trim().length < 2 && (
+            <p className="text-center text-xs text-sys-muted">Tippe mind. 2 Buchstaben, um ~970 Übungen von wger zu durchsuchen.</p>
+          )}
           <div className="space-y-3 border-t border-sys-line pt-3">
             <TextField label="Neue Übung" value={newName} onChange={setNewName} placeholder="z. B. Bankdrücken" />
             <Chips label="Muskelgruppe" options={MUSCLES} value={muscle} onChange={setMuscle} />
@@ -161,6 +183,8 @@ function PlanForm({ plan }: { plan?: PlanRecord }) {
           </div>
         )}
       </Dialog>
+
+      <ExerciseInfo exerciseId={infoId} onClose={() => setInfoId(null)} />
 
       <Dialog open={confirmDelete} onClose={() => setConfirmDelete(false)} title="Plan löschen?">
         <p className="mb-3 text-sys-muted">Abgeschlossene Trainings bleiben erhalten.</p>

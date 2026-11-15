@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { RestTimer } from '../components/RestTimer'
+import { ExerciseInfo } from '../components/ExerciseInfo'
 import { Button, Dialog, NumberInput, SystemWindow } from '../components/ui'
 import type { WorkoutRecord, WorkoutSet } from '../db/db'
 import { useSetting } from '../db/settings'
@@ -89,6 +90,7 @@ function RunningWorkout({ workout, title, names, onFinish, onCancel }: Props) {
   const increment = useSetting('weightIncrement')
   const [editing, setEditing] = useState<Editing>(null)
   const [confirmCancel, setConfirmCancel] = useState(false)
+  const [infoId, setInfoId] = useState<number | null>(null)
   const { entries } = workout
   const doneCount = entries.reduce((n, e) => n + e.sets.filter((s) => s.done).length, 0)
   const total = entries.reduce((n, e) => n + e.sets.length, 0)
@@ -131,6 +133,11 @@ function RunningWorkout({ workout, title, names, onFinish, onCancel }: Props) {
 
       {entries.map((entry, e) => (
         <SystemWindow key={e} title={names?.get(entry.exerciseId) ?? '?'}>
+          <div className="-mt-2 mb-1 text-right">
+            <button type="button" className="text-sm text-sys-muted" onClick={() => setInfoId(entry.exerciseId)}>
+              ⓘ Infos
+            </button>
+          </div>
           {entry.lastWeight !== undefined && (
             <p className="mb-2 text-center text-xs text-sys-muted">
               Letztes Mal {fmt(entry.lastWeight)} kg
@@ -215,6 +222,8 @@ function RunningWorkout({ workout, title, names, onFinish, onCancel }: Props) {
           </div>
         )}
       </Dialog>
+
+      <ExerciseInfo exerciseId={infoId} onClose={() => setInfoId(null)} />
 
       <Dialog open={confirmCancel} onClose={() => setConfirmCancel(false)} title="Training verwerfen?">
         <p className="mb-3 text-sys-muted">Alle Sätze dieses Trainings werden gelöscht.</p>

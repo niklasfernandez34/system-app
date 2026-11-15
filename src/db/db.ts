@@ -18,6 +18,8 @@ export type PhotoRecord = {
   kind: string
   createdAt: number
   blob: Blob
+  day?: string
+  pose?: string
 }
 
 export type HabitRecord = {
@@ -51,6 +53,18 @@ export type ExerciseRecord = {
   name: string
   muscle: string
   createdAt: number
+  wgerId?: number
+}
+
+export type BodyRecord = {
+  day: string
+  weight?: number
+  waist?: number
+  chest?: number
+  arm?: number
+  thigh?: number
+  hip?: number
+  updatedAt: number
 }
 
 export type PlanItem = {
@@ -101,6 +115,7 @@ export const db = new Dexie('system-app') as Dexie & {
   exercises: EntityTable<ExerciseRecord, 'id'>
   plans: EntityTable<PlanRecord, 'id'>
   workouts: EntityTable<WorkoutRecord, 'id'>
+  body: EntityTable<BodyRecord, 'day'>
 }
 
 db.version(1).stores({
@@ -119,4 +134,9 @@ db.version(3).stores({
   exercises: '++id, name',
   plans: '++id, order',
   workouts: '++id, planId, day, startedAt, finishedAt',
+})
+
+db.version(4).stores({
+  exercises: '++id, name, wgerId',
+  body: 'day',
 })

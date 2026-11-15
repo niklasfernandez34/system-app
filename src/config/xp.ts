@@ -7,6 +7,8 @@ export const XP = {
   note_added: 0,
   workout_done: 30,
   pr_set: 15,
+  body_logged: 5,
+  progress_photo: 5,
 } as const
 
 export type EventType = keyof typeof XP

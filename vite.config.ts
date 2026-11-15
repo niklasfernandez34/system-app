@@ -31,6 +31,18 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/wger\.de\/media\//,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'wger-bilder',
+              expiration: { maxEntries: 500 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
     }),
   ],

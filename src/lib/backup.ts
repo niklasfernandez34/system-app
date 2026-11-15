@@ -3,8 +3,8 @@ import JSZip from 'jszip'
 import { db, type PhotoRecord } from '../db/db'
 import { setSetting } from '../db/settings'
 
-const BACKUP_VERSION = 3
-const DATA_TABLES = ['events', 'settings', 'habits', 'journal', 'notes', 'exercises', 'plans', 'workouts'] as const
+const BACKUP_VERSION = 4
+const DATA_TABLES = ['events', 'settings', 'habits', 'journal', 'notes', 'exercises', 'plans', 'workouts', 'body'] as const
 
 async function saveFile(blob: Blob, name: string) {
   const file = new File([blob], name, { type: blob.type })
