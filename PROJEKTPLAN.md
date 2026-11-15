@@ -139,8 +139,8 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 (Die frühere Phase 8 „Veröffentlichen“ ist in Phase 1 aufgegangen.)
 
 ### Modell pro Phase
-- **Opus/Fable:** Phase 1 und 4 sowie knifflige Fehler
-- **Sonnet:** alle anderen Phasen und kleine Änderungen
+- **Opus** für alle Phasen und Änderungen.
+- **Sonnet** nur, wenn es für eine bestimmte Aufgabe nachweislich besser ist als Opus.
 
 ## 5. Einrichtung auf dem MacBook (einmalig)
 
