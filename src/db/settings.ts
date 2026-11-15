@@ -6,6 +6,8 @@ export const DEFAULT_SETTINGS = {
   lastOpenedDay: '' as string,
   lastBackupAt: 0,
   pinHash: '' as string,
+  restSeconds: 90,
+  weightIncrement: 2.5,
 }
 
 export type Settings = typeof DEFAULT_SETTINGS
