@@ -3,7 +3,8 @@ import JSZip from 'jszip'
 import { db, type PhotoRecord } from '../db/db'
 import { setSetting } from '../db/settings'
 
-const BACKUP_VERSION = 1
+const BACKUP_VERSION = 2
+const DATA_TABLES = ['events', 'settings', 'habits', 'journal', 'notes'] as const
 
 async function saveFile(blob: Blob, name: string) {
   const file = new File([blob], name, { type: blob.type })
@@ -31,8 +32,7 @@ export async function exportData() {
     version: BACKUP_VERSION,
     schema: db.verno,
     exportedAt: new Date().toISOString(),
-    events: await db.events.toArray(),
-    settings: await db.settings.toArray(),
+    ...Object.fromEntries(await Promise.all(DATA_TABLES.map(async (t) => [t, await db.table(t).toArray()]))),
   }
   const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' })
   await saveFile(blob, `system-daten_${stamp()}.json`)
@@ -44,11 +44,12 @@ export async function importData(file: File) {
   if (payload?.app !== 'system-app' || !Array.isArray(payload.events) || !Array.isArray(payload.settings)) {
     throw new Error('Keine gültige Backup-Datei.')
   }
-  await db.transaction('rw', db.events, db.settings, async () => {
-    await db.events.clear()
-    await db.settings.clear()
-    await db.events.bulkAdd(payload.events)
-    await db.settings.bulkAdd(payload.settings)
+  const tables = DATA_TABLES.map((t) => db.table(t))
+  await db.transaction('rw', tables, async () => {
+    for (const t of tables) {
+      await t.clear()
+      await t.bulkAdd(Array.isArray(payload[t.name]) ? payload[t.name] : [])
+    }
   })
 }
 

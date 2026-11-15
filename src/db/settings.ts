@@ -5,6 +5,7 @@ export const DEFAULT_SETTINGS = {
   dayStartHour: 4,
   lastOpenedDay: '' as string,
   lastBackupAt: 0,
+  pinHash: '' as string,
 }
 
 export type Settings = typeof DEFAULT_SETTINGS
