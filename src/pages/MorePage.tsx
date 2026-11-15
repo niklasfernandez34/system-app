@@ -1,13 +1,16 @@
 import { useRef, useState } from 'react'
+import { useNavigate } from 'react-router'
 import { formatDistanceToNow } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { Button, Dialog, NumberInput, SystemWindow } from '../components/ui'
 import { setSetting, useSetting } from '../db/settings'
+import { PinSettings } from '../components/PinSettings'
 import { exportData, exportPhotos, importData, importPhotos } from '../lib/backup'
 
 type Pending = { kind: 'data' | 'photos'; file: File } | null
 
 export function MorePage() {
+  const navigate = useNavigate()
   const dayStartHour = useSetting('dayStartHour')
   const lastBackupAt = useSetting('lastBackupAt')
   const [pending, setPending] = useState<Pending>(null)
@@ -42,6 +45,14 @@ export function MorePage() {
 
   return (
     <div className="space-y-4">
+      <SystemWindow title="Bereiche">
+        <div className="grid grid-cols-3 gap-2">
+          <Button onClick={() => navigate('/tagebuch')}>Tagebuch</Button>
+          <Button onClick={() => navigate('/habits')}>Habits</Button>
+          <Button onClick={() => navigate('/notizen')}>Notizen</Button>
+        </div>
+      </SystemWindow>
+
       <SystemWindow title="Einstellungen">
         <NumberInput
           label="Tageswechsel (Uhrzeit)"
@@ -55,6 +66,8 @@ export function MorePage() {
           Alles vor dieser Uhrzeit zählt noch zum Vortag.
         </p>
       </SystemWindow>
+
+      <PinSettings />
 
       <SystemWindow title="Backup">
         <p className="mb-3 text-sm text-sys-muted">

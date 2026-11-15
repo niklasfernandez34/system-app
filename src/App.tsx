@@ -4,6 +4,9 @@ import { runStartup } from './lib/startup'
 import { TodayPage } from './pages/TodayPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { MorePage } from './pages/MorePage'
+import { JournalPage } from './pages/JournalPage'
+import { HabitsPage } from './pages/HabitsPage'
+import { NotesPage } from './pages/NotesPage'
 
 const tabs = [
   { to: '/', label: 'Heute' },
@@ -31,6 +34,9 @@ export default function App() {
             <Route path="/ernaehrung" element={<PlaceholderPage title="Ernährung" />} />
             <Route path="/uni" element={<PlaceholderPage title="Uni" />} />
             <Route path="/mehr" element={<MorePage />} />
+            <Route path="/tagebuch" element={<JournalPage />} />
+            <Route path="/habits" element={<HabitsPage />} />
+            <Route path="/notizen" element={<NotesPage />} />
             <Route path="*" element={<PlaceholderPage title="Nicht gefunden" />} />
           </Routes>
         </div>

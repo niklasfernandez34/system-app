@@ -54,6 +54,18 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Recharts und @zxing werden erst in den Phasen installiert, die sie brauchen.
 - **Deployment:** GitHub Actions (`.github/workflows/deploy.yml`) testet, baut und veröffentlicht bei jedem Push auf `main`.
 
+### Entscheidungen aus Phase 2
+
+- **Dexie Version 2:** neue Tabellen `habits` (`name`, `order`, `archived`), `journal` (ein Eintrag pro logischem Tag: `sleepHours`, `sleep`, `energy`, `mood` 1–5, `text`) und `notes` (`text`, `createdAt`, optional `ref` wie `day:2026-11-16` für spätere Anmerkungen an Übungen oder Mahlzeiten).
+- **Ereignisse:** `checkin_done` (einmal pro Tag, mit den Werten), `journal_written` (einmal pro Tag, wenn Text vorhanden), `habit_done` (`habitId`; Abhaken rückgängig löscht das Ereignis des Tages) und `note_added`.
+- **Streaks** werden mit `calcStreak` (`src/lib/streak.ts`) aus den Tagen im Log berechnet. Ein offener heutiger Tag bricht die Serie nicht.
+- **Habits** werden archiviert statt gelöscht, damit ihre Ereignisse gültig bleiben.
+- **Schlafstunden** werden zusätzlich zur Schlafqualität erfasst (für die Auswertung „7+ h Schlaf“ in Phase 7).
+- **PIN:** SHA-256-Hash in `settings.pinHash`. Die Freigabe gilt bis zum Wechsel in den Hintergrund. `<PinGate>` schützt Seiten (später auch Fotos).
+- **Neue UI-Bausteine:** `Rating` (1–5), `TextField` (ein- oder mehrzeilig), `PinPad`.
+- Tagebuch, Habits und Notizen sind über „Mehr“ erreichbar. Die „Heute“-Seite zeigt Check-in-Status und Habits zum Abhaken.
+- **Backup Version 2** enthält auch die neuen Tabellen. Ältere Backups lassen sich weiter laden.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -115,7 +127,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 
 0. ~~**Prüfen und optimieren**~~ – erledigt.
 1. ~~**Fundament:** Projekt-Setup, PWA und Offline, Datenbank (Dexie), **Ereignis-Log**, **XP-Konfigurationsdatei**, Design, **wiederverwendbare Bausteine** (System-Fenster/Karte, Button, Fortschrittsbalken, Zahleneingabe, Dialog, Fotoaufnahme mit Verkleinerung), Navigation, „Heute“-Seite (leer), Backup Export/Import, Tageswechsel-Logik, `storage.persist()`, **Git + GitHub + automatisches Deployment auf GitHub Pages**~~ – erledigt.
-2. **Tagebuch, Notizen, Habits:** Check-in, Streaks, PIN-Sperre
+2. ~~**Tagebuch, Notizen, Habits:** Check-in, Streaks, PIN-Sperre~~ – erledigt.
 3. **Sport**
    - **3a Training:** Pläne, Training durchführen, Pausentimer, automatische Steigerung, PRs
    - **3b Daten:** Übungsdatenbank (wger-Skript), Körperdaten, Fortschrittsfotos
