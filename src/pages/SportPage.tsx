@@ -42,6 +42,15 @@ export function SportPage() {
         </SystemWindow>
       )}
 
+      <div className="grid grid-cols-2 gap-2">
+        <Button variant="ghost" onClick={() => navigate('/sport/koerper')}>
+          Körperdaten
+        </Button>
+        <Button variant="ghost" onClick={() => navigate('/sport/fotos')}>
+          Fortschrittsfotos
+        </Button>
+      </div>
+
       <SystemWindow title="Trainingspläne">
         {plans && !plans.length && <p className="mb-3 text-center text-sys-muted">Noch keine Pläne angelegt.</p>}
         <ul className="mb-3 divide-y divide-sys-line">

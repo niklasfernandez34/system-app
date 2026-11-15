@@ -10,6 +10,7 @@ import { NotesPage } from './pages/NotesPage'
 import { SportPage } from './pages/SportPage'
 import { PlanEditPage } from './pages/PlanEditPage'
 import { WorkoutPage } from './pages/WorkoutPage'
+import { BodyPage } from './pages/BodyPage'
 
 const tabs = [
   { to: '/', label: 'Heute' },
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/sport" element={<SportPage />} />
             <Route path="/sport/plan/:id" element={<PlanEditPage />} />
             <Route path="/sport/training" element={<WorkoutPage />} />
+            <Route path="/sport/koerper" element={<BodyPage />} />
             <Route path="/ernaehrung" element={<PlaceholderPage title="Ernährung" />} />
             <Route path="/uni" element={<PlaceholderPage title="Uni" />} />
             <Route path="/mehr" element={<MorePage />} />
