@@ -9,6 +9,8 @@ export const DEFAULT_SETTINGS = {
   restSeconds: 90,
   weightIncrement: 2.5,
   seenStage: 0,
+  seenTitles: null as string[] | null,
+  activeTitle: '' as string,
 }
 
 export type Settings = typeof DEFAULT_SETTINGS

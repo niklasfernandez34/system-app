@@ -122,6 +122,14 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Bis dahin: Farben nur über die Variablen in `src/index.css` (`sys-*`), keine festen Farben in Seiten. Aussehen nur in den Bausteinen in `src/components/ui/`.
 - Umsetzung: Pro Optik eigene Werte für die Variablen, Bausteine passen sich an. Die Wahl wird lokal gespeichert.
 
+### Entscheidungen aus Phase 4c
+
+- **Bosse** (Tabelle `bosses`, **Dexie Version 7**, **Backup Version 7**): Übung, Zielgewicht, Wiederholungen (Standard 1), Termin. Gezählt wird das höchste Gewicht mit mindestens den Ziel-Wiederholungen aus Trainings **nach** dem Anlegen. Sieg bis einschließlich Termin: `boss_defeated` (+100 XP, Stärke). Danach beim Tageswechsel: `boss_failed` (kein Abzug), „Erneut“ startet ihn mit neuem Termin. „Aufgeben“ löscht einen aktiven Boss. Aktive Bosse stehen auf der Heute-Seite, alles andere auf der Status-Seite.
+- **Neuer UI-Baustein:** `DateInput`.
+- **Titel:** 106 Erfolge in `src/config/titles.ts`, in Gruppen mit Stufen (Kennzahl + Schwellen + Name). Berechnet nur aus dem Log (`src/lib/titles.ts`). Neue Titel einfach als weitere Stufe oder Gruppe eintragen.
+- **Erfolge-Seite** (`/erfolge`, über die Status-Seite): alle Titel nach Kategorie, gesperrte grau mit Hinweis. Ein freigeschalteter Titel kann getragen werden (`activeTitle`) und steht unter dem Rang.
+- **Meldungen** laufen über eine Warteschlange im `SystemWatcher`: Stufe, Rang, Boss besiegt, Titel erhalten. Beim ersten Start mit Titeln (`seenTitles` leer) werden bereits verdiente Titel still übernommen.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -190,7 +198,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 4. **Levelsystem**
    - ~~**4a:** XP, Level, Ränge, Attribute, Quests, Penalty, Level-Up-Animation~~ – erledigt.
    - ~~**4b:** Ränge mit Stufen, Aufstiegsprüfung, Quest-Serie, Status-Seite~~ – erledigt.
-   - **4c:** Bosse (Trainingsziele mit Countdown), Titel und Erfolge
+   - ~~**4c:** Bosse (Trainingsziele mit Countdown), 106 Titel und Erfolge~~ – erledigt.
 5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken

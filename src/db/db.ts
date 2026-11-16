@@ -119,6 +119,17 @@ export type RankRecord = {
   exercises: { exerciseId: number; baseline: number | null }[]
 }
 
+export type BossRecord = {
+  id: number
+  kind: 'lift'
+  exerciseId: number
+  target: number
+  reps: number
+  deadline: string
+  createdAt: number
+  status: 'active' | 'won' | 'lost'
+}
+
 export const db = new Dexie('system-app') as Dexie & {
   events: EntityTable<EventRecord, 'id'>
   settings: EntityTable<SettingRecord, 'key'>
@@ -132,6 +143,7 @@ export const db = new Dexie('system-app') as Dexie & {
   body: EntityTable<BodyRecord, 'day'>
   quests: EntityTable<QuestRecord, 'day'>
   ranks: EntityTable<RankRecord, 'rank'>
+  bosses: EntityTable<BossRecord, 'id'>
 }
 
 db.version(1).stores({
@@ -163,4 +175,8 @@ db.version(5).stores({
 
 db.version(6).stores({
   ranks: 'rank',
+})
+
+db.version(7).stores({
+  bosses: '++id, status',
 })

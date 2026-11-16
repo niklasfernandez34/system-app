@@ -1,13 +1,17 @@
 import { useNavigate } from 'react-router'
 import { ProgressBar } from './ui'
+import { TITLES } from '../config/titles'
 import { ATTRIBUTES, type Attribute } from '../config/xp'
+import { useSetting } from '../db/settings'
 import { roman } from '../lib/level'
 import { useRankState } from '../lib/ranks'
 
 export function LevelPanel() {
   const s = useRankState()
   const navigate = useNavigate()
+  const titleId = useSetting('activeTitle')
   if (!s) return null
+  const title = TITLES.find((t) => t.id === titleId)
 
   return (
     <button type="button" onClick={() => navigate('/status')} className="block w-full space-y-3 text-left">
@@ -21,6 +25,7 @@ export function LevelPanel() {
           <p className="text-4xl font-bold">{roman(s.stage)}</p>
         </div>
       </div>
+      {title && <p className="text-center text-sm italic text-sys-glow">„{title.name}“</p>}
       <ProgressBar value={s.into} max={s.stageSize} label="XP" />
       {s.ready && !s.passed && (
         <p className="text-center text-sm text-sys-glow">Aufstiegsprüfung offen · Details ansehen</p>

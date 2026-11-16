@@ -14,6 +14,7 @@ import { WorkoutPage } from './pages/WorkoutPage'
 import { BodyPage } from './pages/BodyPage'
 import { PhotosPage } from './pages/PhotosPage'
 import { StatusPage } from './pages/StatusPage'
+import { AchievementsPage } from './pages/AchievementsPage'
 
 const tabs = [
   { to: '/', label: 'Heute' },
@@ -46,6 +47,7 @@ export default function App() {
             <Route path="/uni" element={<PlaceholderPage title="Uni" />} />
             <Route path="/mehr" element={<MorePage />} />
             <Route path="/status" element={<StatusPage />} />
+            <Route path="/erfolge" element={<AchievementsPage />} />
             <Route path="/tagebuch" element={<JournalPage />} />
             <Route path="/habits" element={<HabitsPage />} />
             <Route path="/notizen" element={<NotesPage />} />

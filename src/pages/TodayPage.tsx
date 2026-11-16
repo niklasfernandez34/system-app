@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router'
 import { Button, SystemWindow } from '../components/ui'
 import { HabitChecklist } from '../components/HabitChecklist'
 import { LevelPanel } from '../components/LevelPanel'
+import { BossList } from '../components/BossList'
 import { QuestList } from '../components/QuestList'
 import { currentDay } from '../lib/events'
 import { useTodayCheckin } from '../lib/journal'
@@ -28,6 +29,7 @@ export function TodayPage() {
       <SystemWindow title="Tägliche Quests">
         <QuestList />
       </SystemWindow>
+      <BossList compact />
       <SystemWindow title="Check-in">
         {checkin !== undefined && (
           <div className="flex items-center justify-between gap-3">

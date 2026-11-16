@@ -1,4 +1,7 @@
-import { ProgressBar, SystemWindow } from '../components/ui'
+import { useNavigate } from 'react-router'
+import { BossList } from '../components/BossList'
+import { Button, ProgressBar, SystemWindow } from '../components/ui'
+import { useTitles } from '../lib/titleHooks'
 import { ATTRIBUTES, RANKS, type Attribute } from '../config/xp'
 import { roman } from '../lib/level'
 import { useRankState } from '../lib/ranks'
@@ -6,6 +9,8 @@ import { fmt } from '../lib/sport'
 
 export function StatusPage() {
   const s = useRankState()
+  const titles = useTitles()
+  const navigate = useNavigate()
   if (!s) return null
   const next = RANKS[s.rankIndex + 1]?.rank
 
@@ -28,6 +33,19 @@ export function StatusPage() {
             </li>
           ))}
         </ul>
+      </SystemWindow>
+
+      <SystemWindow title="Bosse">
+        <BossList />
+      </SystemWindow>
+
+      <SystemWindow title="Titel und Erfolge">
+        {titles && (
+          <ProgressBar value={titles.filter((t) => t.unlocked).length} max={titles.length} label="Freigeschaltet" />
+        )}
+        <Button className="mt-3 w-full" onClick={() => navigate('/erfolge')}>
+          Alle Erfolge ansehen
+        </Button>
       </SystemWindow>
 
       {next && (

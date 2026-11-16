@@ -14,6 +14,8 @@ export const XP = {
   penalty_done: 0,
   quest_streak: 50,
   rank_up: 0,
+  boss_defeated: 100,
+  boss_failed: 0,
 } as const
 
 export type EventType = keyof typeof XP
@@ -48,6 +50,7 @@ export const ATTRIBUTE_OF: Partial<Record<EventType, Attribute>> = {
   pr_set: 'str',
   body_logged: 'str',
   progress_photo: 'str',
+  boss_defeated: 'str',
   checkin_done: 'wil',
   journal_written: 'wil',
   habit_done: 'wil',
