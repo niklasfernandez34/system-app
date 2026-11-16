@@ -163,6 +163,7 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Barcode-Scan:** neuer UI-Baustein `BarcodeScanner` (`@zxing/browser`, Rückkamera). Suche nach dem Scan: eigene Lebensmittel → eingebaute Datenbank → Produkt-Abruf `world.openfoodfacts.org/api/v2/product/{code}` (eigenes, großzügigeres Limit). Unbekannt oder offline: Formular „Eigenes Lebensmittel“ mit gespeichertem Barcode.
 - **Ernährungs-Bosse** (`kind: 'nutrition'` in `bosses`, neue Felder `metric`, `direction`, `days`, `startDay`; keine neue Dexie-Version nötig, da nicht indiziert): „an X Tagen mindestens/höchstens Y kcal“, „… Eiweiß“, „… Wasser“ bis zum Termin. „Mindestens“ zählt sofort, „höchstens“ erst nach Tagesende und nur mit Einträgen. Sieg: `boss_defeated` mit `attr: 'vit'` (Level-Berechnung nimmt `data.attr` vor `ATTRIBUTE_OF`). Niederlage beim Tageswechsel, sobald es nicht mehr zu schaffen ist. Logik in `src/lib/boss.ts`.
 - Boss-Prüfung läuft auch bei Änderungen an Essen/Wasser von heute (`useNutritionStamp`).
+- Scanner liest im gründlichen Modus (`TRY_HARDER`, auch 90° gedreht), nur EAN/UPC. `Dialog` reagiert nur auf sein eigenes Schließen (sonst schloss der Scanner das Auswahl-Fenster mit). Kamera-Erlaubnis fragt iOS bei Home-Bildschirm-Apps pro Sitzung neu, das lässt sich in der App nicht ändern.
 
 ## 3. Funktionen
 

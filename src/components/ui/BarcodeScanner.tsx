@@ -1,7 +1,13 @@
 import { BrowserMultiFormatReader, type IScannerControls } from '@zxing/browser'
+import { BarcodeFormat, DecodeHintType } from '@zxing/library'
 import { useEffect, useRef, useState } from 'react'
 import { Button } from './Button'
 import { Dialog } from './Dialog'
+
+const HINTS = new Map<DecodeHintType, unknown>([
+  [DecodeHintType.TRY_HARDER, true],
+  [DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.EAN_13, BarcodeFormat.EAN_8, BarcodeFormat.UPC_A, BarcodeFormat.UPC_E]],
+])
 
 type Props = {
   open: boolean
@@ -29,7 +35,7 @@ function ScannerView({ onClose, onDetected }: Omit<Props, 'open'>) {
   useEffect(() => {
     let controls: IScannerControls | undefined
     let stopped = false
-    const reader = new BrowserMultiFormatReader()
+    const reader = new BrowserMultiFormatReader(HINTS, { delayBetweenScanAttempts: 150 })
     reader
       .decodeFromConstraints({ video: { facingMode: 'environment' } }, video.current!, (result, _err, c) => {
         if (!result || stopped) return
@@ -62,10 +68,10 @@ function ScannerView({ onClose, onDetected }: Omit<Props, 'open'>) {
       ) : (
         <div className="relative overflow-hidden rounded-md border border-sys-line bg-black">
           <video ref={video} className="aspect-[4/3] w-full object-cover" playsInline muted />
-          <div className="pointer-events-none absolute inset-x-6 top-1/2 h-0.5 -translate-y-1/2 bg-sys-danger/80 shadow-[0_0_8px_var(--color-sys-danger)]" />
+          <div className="pointer-events-none absolute inset-[15%] rounded-md border-2 border-sys-glow shadow-glow" />
         </div>
       )}
-      <p className="text-center text-xs text-sys-muted">Barcode in die Mitte halten.</p>
+      <p className="text-center text-xs text-sys-muted">Barcode in den Rahmen halten – egal wie herum.</p>
       <Button variant="ghost" className="w-full" onClick={onClose}>
         Abbrechen
       </Button>

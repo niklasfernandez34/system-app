@@ -21,7 +21,7 @@ export function Dialog({ open, onClose, title, children }: Props) {
   return (
     <dialog
       ref={ref}
-      onClose={onClose}
+      onClose={(e) => e.target === e.currentTarget && onClose()}
       onClick={(e) => e.target === ref.current && onClose()}
       className="m-auto w-[min(92vw,28rem)] bg-transparent p-0 text-sys-text backdrop:bg-black/70 backdrop:backdrop-blur-sm"
     >
