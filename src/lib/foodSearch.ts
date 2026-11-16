@@ -104,7 +104,7 @@ export function rowToFood(r: Row): NewFood {
   }
 }
 
-type Base = { rows: Row[]; search: ReturnType<typeof createIndex> }
+type Base = { rows: Row[]; search: ReturnType<typeof createIndex>; byCode: Map<string, Row> }
 let base: Promise<Base> | undefined
 
 export function loadBase() {
@@ -114,9 +114,16 @@ export function loadBase() {
       rows.map((r, id) => ({ id, name: r[1], brand: r[2], aliases: r[3] })),
       (id) => (rows[id][0].startsWith('ch:') ? 1.5 : 1),
     )
-    return { rows, search }
+    const byCode = new Map(rows.filter((r) => !r[0].startsWith('ch:')).map((r) => [r[0], r]))
+    return { rows, search, byCode }
   })
   return base
+}
+
+export async function findBaseBarcode(code: string) {
+  const { byCode } = await loadBase()
+  const row = byCode.get(code) ?? byCode.get(code.replace(/^0+/, '')) ?? byCode.get(code.padStart(13, '0'))
+  return row ? rowToFood(row) : null
 }
 
 export function useBaseSearch(query: string, enabled: boolean) {

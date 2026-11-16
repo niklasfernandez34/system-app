@@ -57,3 +57,14 @@ describe('attributes', () => {
     expect(attributes(events)).toEqual({ str: 11, int: 10, vit: 10, cha: 10, wil: 10 })
   })
 })
+
+describe('Attribut aus dem Ereignis', () => {
+  it('nimmt das Attribut aus data.attr, wenn vorhanden', () => {
+    const a = attributes([
+      { type: 'boss_defeated', data: { attr: 'vit' } },
+      { type: 'boss_defeated' },
+    ])
+    expect(a.vit).toBe(12)
+    expect(a.str).toBe(12)
+  })
+})

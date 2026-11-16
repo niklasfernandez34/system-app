@@ -25,6 +25,16 @@ export async function searchOff(query: string, signal?: AbortSignal): Promise<Ne
 
 const cache = new Map<string, NewFood[]>()
 
+export async function fetchProduct(code: string): Promise<NewFood | null> {
+  const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=${FIELDS}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  const data = (await res.json()) as { status?: number; product?: Record<string, unknown> }
+  if (data.status !== 1 || !data.product) return null
+  const food = parseOffProduct({ ...data.product, code })
+  return food && { ...food, barcode: code }
+}
+
 export function dedupeFoods(foods: NewFood[]) {
   const seen = new Set<string>()
   return foods.filter((f) => {

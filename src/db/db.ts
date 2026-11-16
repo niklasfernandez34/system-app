@@ -119,10 +119,16 @@ export type RankRecord = {
   exercises: { exerciseId: number; baseline: number | null }[]
 }
 
+export type BossMetric = 'kcal' | 'protein' | 'water'
+
 export type BossRecord = {
   id: number
-  kind: 'lift'
+  kind: 'lift' | 'nutrition'
   exerciseId: number
+  metric?: BossMetric
+  direction?: 'min' | 'max'
+  days?: number
+  startDay?: string
   target: number
   reps: number
   deadline: string

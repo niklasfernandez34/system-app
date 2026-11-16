@@ -42,7 +42,7 @@ export const roman = (n: number) => ROMAN[n - 1] ?? String(n)
 export function attributes(events: LogEvent[]) {
   const xp = Object.fromEntries(Object.keys(ATTRIBUTES).map((a) => [a, 0])) as Record<Attribute, number>
   for (const e of events) {
-    const attr = ATTRIBUTE_OF[e.type as EventType]
+    const attr = (e.data?.attr as Attribute | undefined) ?? ATTRIBUTE_OF[e.type as EventType]
     if (attr) xp[attr] += xpOf(e)
   }
   return Object.fromEntries(

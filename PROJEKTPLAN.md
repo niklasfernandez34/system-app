@@ -158,6 +158,12 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **2-Wochen-Prüfung** nach dem Speichern eines Gewichts (`runPlanCheck`): frühestens 14 Tage nach Berechnung/Anpassung/„Nein“. Trendlinie über alle Wiegungen seit der Berechnung (mind. 4, über mind. 11 Tage). Gefragt wird nur, wenn der Trend mehr als 0,25 kg/Woche **und** mehr als die doppelte Messunsicherheit vom Plan abweicht, an mind. 10 Tagen gegessen wurde und der Schnitt höchstens 10 % neben dem Ziel liegt. Neuer Umsatz = Schnitt gegessen − Trend × 7.700 / 7.
 - Auf der Essen-Seite: Statuszeile „Ziel · Trend“, Knöpfe „Ziele“ und „Rechner“.
 
+### Entscheidungen aus Phase 5b
+
+- **Barcode-Scan:** neuer UI-Baustein `BarcodeScanner` (`@zxing/browser`, Rückkamera). Suche nach dem Scan: eigene Lebensmittel → eingebaute Datenbank → Produkt-Abruf `world.openfoodfacts.org/api/v2/product/{code}` (eigenes, großzügigeres Limit). Unbekannt oder offline: Formular „Eigenes Lebensmittel“ mit gespeichertem Barcode.
+- **Ernährungs-Bosse** (`kind: 'nutrition'` in `bosses`, neue Felder `metric`, `direction`, `days`, `startDay`; keine neue Dexie-Version nötig, da nicht indiziert): „an X Tagen mindestens/höchstens Y kcal“, „… Eiweiß“, „… Wasser“ bis zum Termin. „Mindestens“ zählt sofort, „höchstens“ erst nach Tagesende und nur mit Einträgen. Sieg: `boss_defeated` mit `attr: 'vit'` (Level-Berechnung nimmt `data.attr` vor `ATTRIBUTE_OF`). Niederlage beim Tageswechsel, sobald es nicht mehr zu schaffen ist. Logik in `src/lib/boss.ts`.
+- Boss-Prüfung läuft auch bei Änderungen an Essen/Wasser von heute (`useNutritionStamp`).
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -235,7 +241,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 5. **Ernährung**
    - ~~**5a:** Tracker, Suche (Open Food Facts), Wasser, Ziele, Favoriten, Rezepte~~ – erledigt.
    - ~~**5a+:** Kalorienrechner, Ziel-Art (Abnehmen/Halten/Zunehmen), 2-Wochen-Prüfung mit Gewichtstrend~~ – erledigt.
-   - **5b:** Barcode-Scan, **Ernährungs-Bosse**
+   - ~~**5b:** Barcode-Scan, **Ernährungs-Bosse**~~ – erledigt.
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos, **Klausur-Bosse** und **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)

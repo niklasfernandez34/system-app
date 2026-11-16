@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
-import { Button, Chips, Dialog, NumberInput, TextField } from './ui'
+import { BarcodeScanner, Button, Chips, Dialog, NumberInput, TextField } from './ui'
 import type { FoodRecord, FoodUnit, Macros } from '../db/db'
-import { useOnlineSearch } from '../lib/foodApi'
-import { createIndex, useBaseSearch } from '../lib/foodSearch'
+import { fetchProduct, useOnlineSearch } from '../lib/foodApi'
+import { createIndex, findBaseBarcode, useBaseSearch } from '../lib/foodSearch'
 import { adoptFood, fmtAmount, fmtNum, portion, saveOwnFood, toggleFavorite, useFoods, type NewFood } from '../lib/nutrition'
 
 type Props = {
@@ -32,7 +32,9 @@ export function FoodPicker({ open, onClose, onPick, title = 'Lebensmittel', acti
   const [chosen, setChosen] = useState<FoodRecord | null>(null)
   const [grams, setGrams] = useState(100)
   const [creating, setCreating] = useState(false)
-  const [own, setOwn] = useState<Macros & { name: string; unit: FoodUnit }>({ name: '', unit: 'g', ...EMPTY })
+  const [own, setOwn] = useState<Macros & { name: string; unit: FoodUnit; barcode?: string }>({ name: '', unit: 'g', ...EMPTY })
+  const [scanning, setScanning] = useState(false)
+  const [scanMsg, setScanMsg] = useState('')
   const searching = open && !chosen && !creating
   const online = useOnlineSearch(search, searching)
   const base = useBaseSearch(search, open)
@@ -55,7 +57,28 @@ export function FoodPicker({ open, onClose, onPick, title = 'Lebensmittel', acti
     setChosen(null)
     setCreating(false)
     setSearch('')
+    setScanMsg('')
     onClose()
+  }
+
+  const detected = async (code: string) => {
+    setScanning(false)
+    setScanMsg('Suche Barcode …')
+    const mine = foods?.find((f) => f.barcode === code)
+    if (mine) return setScanMsg(''), choose(mine)
+    const known = await findBaseBarcode(code)
+    if (known) return setScanMsg(''), adopt(known)
+    if (navigator.onLine) {
+      try {
+        const found = await fetchProduct(code)
+        if (found) return setScanMsg(''), adopt(found)
+      } catch {
+        /* weiter zu eigenem Lebensmittel */
+      }
+    }
+    setScanMsg(navigator.onLine ? `Barcode ${code} ist unbekannt. Bitte selbst anlegen.` : `Offline: Barcode ${code} bitte selbst anlegen.`)
+    setOwn({ name: '', unit: 'g', ...EMPTY, barcode: code })
+    setCreating(true)
   }
   const choose = (f: FoodRecord) => {
     setChosen(f)
@@ -67,6 +90,7 @@ export function FoodPicker({ open, onClose, onPick, title = 'Lebensmittel', acti
     const id = await saveOwnFood(food)
     setCreating(false)
     setOwn({ name: '', unit: 'g', ...EMPTY })
+    setScanMsg('')
     choose({ ...food, id, source: 'own' })
   }
   const confirm = () => {
@@ -121,6 +145,8 @@ export function FoodPicker({ open, onClose, onPick, title = 'Lebensmittel', acti
         </div>
       ) : creating ? (
         <div className="space-y-3">
+          {scanMsg && <p className="text-center text-sm text-sys-glow">{scanMsg}</p>}
+          {own.barcode && <p className="text-center text-xs text-sys-muted">Barcode {own.barcode} wird gespeichert.</p>}
           <TextField label="Name" value={own.name} onChange={(name) => setOwn({ ...own, name })} placeholder="z. B. Omas Brot" />
           <Chips label="Einheit" options={UNITS} value={own.unit} onChange={(unit) => setOwn({ ...own, unit })} />
           <p className="text-xs text-sys-muted">Werte pro 100 {own.unit}</p>
@@ -141,7 +167,15 @@ export function FoodPicker({ open, onClose, onPick, title = 'Lebensmittel', acti
         </div>
       ) : (
         <div className="max-h-[80vh] space-y-3 overflow-y-auto outline-none">
-          <TextField value={search} onChange={setSearch} placeholder="Suchen, z. B. Milch 1,5 oder Whey" />
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <TextField value={search} onChange={setSearch} placeholder="Suchen, z. B. Milch 1,5 oder Whey" />
+            </div>
+            <Button variant="ghost" className="px-3" aria-label="Barcode scannen" onClick={() => setScanning(true)}>
+              📷
+            </Button>
+          </div>
+          {scanMsg && <p className="text-center text-sm text-sys-glow">{scanMsg}</p>}
           <ul className="divide-y divide-sys-line">
             {shown.map((f) => row(`o${f.id}`, f, () => choose(f), undefined, f))}
             {baseHits.map((r) => row(`b${keyOf(r)}`, r, () => adopt(r), r.source === 'base' ? 'Grundnahrungsmittel' : undefined))}
@@ -167,6 +201,7 @@ export function FoodPicker({ open, onClose, onPick, title = 'Lebensmittel', acti
           </Button>
         </div>
       )}
+      <BarcodeScanner open={scanning} onClose={() => setScanning(false)} onDetected={detected} />
     </Dialog>
   )
 }

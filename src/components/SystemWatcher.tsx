@@ -4,7 +4,7 @@ import { Button, Dialog } from './ui'
 import { XP } from '../config/xp'
 import { db } from '../db/db'
 import { getSetting, setSetting } from '../db/settings'
-import { checkBosses } from '../lib/bosses'
+import { checkBosses, useNutritionStamp } from '../lib/bosses'
 import { roman } from '../lib/level'
 import { ensureTodayQuests, syncQuestBonus, useQuests } from '../lib/quests'
 import { ensureRankRecord, tryRankUp, useRankState } from '../lib/ranks'
@@ -14,7 +14,7 @@ type Notice =
   | { kind: 'stage'; rank: string; stage: number }
   | { kind: 'rank'; rank: string }
   | { kind: 'title'; names: string[] }
-  | { kind: 'boss' }
+  | { kind: 'boss'; attr: string }
 
 const HEADINGS = { stage: 'STUFE AUF!', rank: 'RANGAUFSTIEG!', title: 'TITEL ERHALTEN!', boss: 'BOSS BESIEGT!' }
 
@@ -39,6 +39,7 @@ export function SystemWatcher() {
   const quests = useQuests()
   const seen = useLiveQuery(() => getSetting('seenStage'))
   const eventCount = useLiveQuery(() => db.events.count())
+  const nutritionStamp = useNutritionStamp()
   const [queue, setQueue] = useState<Notice[]>([])
   const push = (n: Notice) => setQueue((q) => [...q, n])
   const notice = queue[0]
@@ -59,9 +60,9 @@ export function SystemWatcher() {
 
   useEffect(() => {
     if (eventCount === undefined) return
-    checkBosses().then((won) => won.length && push({ kind: 'boss' }))
+    checkBosses().then((won) => won.forEach((b) => push({ kind: 'boss', attr: b.attr })))
     newTitles().then((names) => names.length && push({ kind: 'title', names }))
-  }, [eventCount])
+  }, [eventCount, nutritionStamp])
 
   useEffect(() => {
     if (!s || seen === undefined) return
@@ -101,7 +102,7 @@ export function SystemWatcher() {
               ))}
             </ul>
           )}
-          {notice.kind === 'boss' && <p className="text-lg">+{XP.boss_defeated} XP auf Stärke.</p>}
+          {notice.kind === 'boss' && <p className="text-lg">+{XP.boss_defeated} XP auf {notice.attr}.</p>}
           <Button className="w-full" onClick={close}>
             Weiter
           </Button>
