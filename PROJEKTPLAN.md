@@ -93,6 +93,17 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Zahleneingabe** (`NumberInput`): Textfeld mit Zahlentastatur, Komma oder Punkt, darf beim Tippen leer sein. Beim Verlassen springt sie auf den letzten gültigen Wert zurück.
 - **Übungsauswahl** (`ExercisePicker`): Reiter „Muskel“ und „Gerät“ filtern eigene und wger-Übungen, auch ohne Suchwort. Muskelfilter: Hauptgruppe oder ein Hauptmuskel passt (`MUSCLE_GROUP` in `src/config/sport.ts`). Geräte stehen in `EQUIPMENT`. „Maschine“ setzt das wger-Skript, wenn der Name „Maschine“ oder „Machine“ enthält. Eigene Übungen haben ein freiwilliges Feld `equipment` (ohne Index, keine neue Dexie-Version).
 
+### Entscheidungen aus Phase 4a
+
+- **XP** werden nur aus dem Ereignis-Log berechnet (`src/lib/level.ts`). Gesamt-XP fallen nie unter 0.
+- **Level:** Von Level n zu n+1 braucht es 100 + 20 × (n−1) XP. **Ränge:** E ab 1, D ab 10, C ab 20, B ab 35, A ab 50, S ab 75. Alles in `src/config/xp.ts`.
+- **Attribute** = 10 + 1 Punkt pro 50 XP aus passenden Ereignissen (`ATTRIBUTE_OF`). Bisher: Stärke (Sport) und Willenskraft (Check-in, Tagebuch, Habits).
+- **Tägliche Quests** stehen in `src/config/quests.ts`: Check-in, alle Habits (nur wenn es Habits gibt), Training oder Körperdaten, Tagebuch. Erledigt wird aus dem Log gelesen. Sind alle erledigt, gibt es `quests_completed` (+20 XP). Wird danach etwas rückgängig gemacht, wird der Bonus wieder entfernt.
+- **Dexie Version 5:** Tabelle `quests` (ein Eintrag pro Tag: `evaluated`, `penalty`). **Backup Version 5** enthält sie.
+- **Penalty:** Beim Tageswechsel werden offene Tage ausgewertet, höchstens die letzten 3. Jede verpasste Quest gibt `quest_failed` (−10 XP). Dazu kommt eine Penalty Quest für heute (wechselt täglich). Wird sie abgehakt (`penalty_done`), gibt es den Abzug zurück. Der erste Tag mit dem Levelsystem wird nicht bestraft.
+- **Start-Sperre:** `runStartup` läuft nie doppelt gleichzeitig, damit kein Abzug doppelt kommt.
+- **Level-Up:** `SystemWatcher` (in `App.tsx`) merkt sich das höchste gesehene Level (`seenLevel`) und zeigt beim Aufstieg ein Fenster mit Animation. Nach einem Abzug gibt es beim Wiedererreichen keine zweite Meldung.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -158,7 +169,9 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 3. **Sport**
    - ~~**3a Training:** Pläne, Training durchführen, Pausentimer, automatische Steigerung, PRs~~ – erledigt.
    - ~~**3b Daten:** Übungsdatenbank (wger-Skript), Körperdaten, Fortschrittsfotos~~ – erledigt.
-4. **Levelsystem:** XP, Attribute, Ränge, Quests, Penalty, Bosse, Titel. Liest das Ereignis-Log, die fertigen Bereiche bleiben unverändert.
+4. **Levelsystem**
+   - ~~**4a:** XP, Level, Ränge, Attribute, Quests, Penalty, Level-Up-Animation~~ – erledigt.
+   - **4b:** Bosse (Trainingsziele mit Countdown), Titel und Erfolge
 5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken

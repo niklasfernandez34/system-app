@@ -4,8 +4,20 @@
     {
       "name": "preview",
       "runtimeExecutable": "/bin/zsh",
-      "runtimeArgs": ["-c", "export PATH=$HOME/.local/node/bin:$PATH && npx vite preview --port 4173 --strictPort"],
+      "runtimeArgs": [
+        "-c",
+        "export PATH=$HOME/.local/node/bin:$PATH && npx vite preview --port 4173 --strictPort"
+      ],
       "port": 4173
+    },
+    {
+      "name": "dev",
+      "runtimeExecutable": "/bin/zsh",
+      "runtimeArgs": [
+        "-c",
+        "export PATH=$HOME/.local/node/bin:$PATH && npx vite --port 5199 --strictPort"
+      ],
+      "port": 5199
     }
   ]
 }

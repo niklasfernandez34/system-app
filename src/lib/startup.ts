@@ -10,7 +10,14 @@ export function onNewDay(handler: DayHandler) {
   dayHandlers.push(handler)
 }
 
-export async function runStartup() {
+let running: Promise<void> | null = null
+
+export function runStartup() {
+  running ??= startup().finally(() => (running = null))
+  return running
+}
+
+async function startup() {
   try {
     if (navigator.storage?.persist && !(await navigator.storage.persisted())) {
       await navigator.storage.persist()

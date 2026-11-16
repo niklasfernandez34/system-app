@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink, Route, Routes } from 'react-router'
 import { runStartup } from './lib/startup'
+import { SystemWatcher } from './components/SystemWatcher'
 import { TodayPage } from './pages/TodayPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { MorePage } from './pages/MorePage'
@@ -69,6 +70,7 @@ export default function App() {
           ))}
         </ul>
       </nav>
+      <SystemWatcher />
     </div>
   )
 }

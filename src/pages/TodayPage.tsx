@@ -4,6 +4,8 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useNavigate } from 'react-router'
 import { Button, SystemWindow } from '../components/ui'
 import { HabitChecklist } from '../components/HabitChecklist'
+import { LevelPanel } from '../components/LevelPanel'
+import { QuestList } from '../components/QuestList'
 import { currentDay } from '../lib/events'
 import { useTodayCheckin } from '../lib/journal'
 import { useRunningWorkout, useTrainedToday } from '../lib/sport'
@@ -18,12 +20,13 @@ export function TodayPage() {
   return (
     <div className="space-y-4">
       <SystemWindow title="System">
-        <p className="text-center text-lg">
+        <p className="mb-3 text-center text-sys-muted">
           {day ? format(parseISO(day), 'EEEE, d. MMMM', { locale: de }) : '…'}
         </p>
+        <LevelPanel />
       </SystemWindow>
       <SystemWindow title="Tägliche Quests">
-        <p className="text-center text-sys-muted">Noch keine Quests vorhanden.</p>
+        <QuestList />
       </SystemWindow>
       <SystemWindow title="Check-in">
         {checkin !== undefined && (
