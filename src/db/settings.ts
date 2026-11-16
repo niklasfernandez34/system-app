@@ -23,6 +23,7 @@ export const DEFAULT_SETTINGS = {
   focusMinutes: 25,
   breakMinutes: 5,
   studyTimer: null as StudyTimer | null,
+  cardOrder: 'fixed' as 'fixed' | 'random',
 }
 
 export type StudyTimer = { subjectId: number; phase: 'focus' | 'break'; endsAt: number; total: number }

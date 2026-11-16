@@ -186,6 +186,7 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Lernrunde** nur mit fälligen Karten (nach Thema filterbar). **Freies Üben** mit allen Karten ändert keine Fächer und gibt keine XP.
 - XP `cards_round` 10 (Intelligenz), wenn mindestens 10 verschiedene Karten in der Runde dran waren, höchstens 3 Runden pro Tag (`CARD_ROUND_MIN`, `CARD_ROUND_XP_MAX_PER_DAY`). Zählt auch für die Lern-Quest („Lernen (Timer oder Karteikarten)“).
 - Fach-Kachel zeigt fällige Karten.
+- Reihenfolge einstellbar (Einstellung `cardOrder`, gilt für alle Fächer): fest = in der Reihenfolge des Anlegens, zufällig = neu gemischt pro Runde.
 
 ## 3. Funktionen
 

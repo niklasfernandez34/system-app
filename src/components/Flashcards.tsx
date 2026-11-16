@@ -6,12 +6,22 @@ import type { CardRecord } from '../db/db'
 import { BOX_DAYS, dueCards } from '../lib/cardBox'
 import { addCard, deleteCard, finishRound, rateCard, updateCard, useCards } from '../lib/cards'
 import { currentDay } from '../lib/events'
+import { setSetting, useSetting } from '../db/settings'
 
 type Draft = { id?: number; front: string; back: string; topic: string }
 type Session = { free: boolean; queue: number[]; index: number; flipped: boolean; known: number; wrong: number; seen: number[] }
 type Done = { known: number; wrong: number; xp: boolean; free: boolean }
 
 const ALL = 'Alle'
+const ORDERS = ['Feste Reihenfolge', 'Zufällig'] as const
+const shuffle = <T,>(list: T[]) => {
+  const a = [...list]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
 const boxLabel = (b: number) => (BOX_DAYS[b] === 0 ? 'neu' : `${BOX_DAYS[b]} T.`)
 
 export function Flashcards({ subjectId }: { subjectId: number }) {
@@ -22,6 +32,7 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
   const [session, setSession] = useState<Session | null>(null)
   const [done, setDone] = useState<Done | null>(null)
   const [showList, setShowList] = useState(false)
+  const order = useSetting('cardOrder')
 
   if (!cards || !today) return null
   const topics = [...new Set(cards.map((c) => c.topic).filter((t): t is string => !!t))].sort()
@@ -30,7 +41,8 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
   const byId = new Map(cards.map((c) => [c.id, c]))
 
   const start = (free: boolean) => {
-    const list = free ? [...filtered].sort(() => Math.random() - 0.5) : due
+    const base = [...(free ? filtered : due)].sort((a, b) => a.createdAt - b.createdAt)
+    const list = order === 'random' ? shuffle(base) : base
     setDone(null)
     setSession({ free, queue: list.map((c) => c.id), index: 0, flipped: false, known: 0, wrong: 0, seen: [] })
   }
@@ -134,6 +146,14 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
               <span className="block text-[10px] text-sys-muted">{boxLabel(b)}</span>
             </div>
           ))}
+        </div>
+        <div className="mb-3">
+          <Chips
+            label="Reihenfolge"
+            options={ORDERS}
+            value={order === 'random' ? 'Zufällig' : 'Feste Reihenfolge'}
+            onChange={(o) => setSetting('cardOrder', o === 'Zufällig' ? 'random' : 'fixed')}
+          />
         </div>
         <Button className="w-full" disabled={!due.length} onClick={() => start(false)}>
           {due.length ? `Lernen (${due.length} fällig)` : 'Heute nichts fällig'}
