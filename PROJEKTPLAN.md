@@ -116,6 +116,12 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Status-Seite** (`/status`, Tipp auf das Rang-Fenster oder über „Mehr“): Rang, Stufe, Gesamt-XP, Attribute, Prüfung mit Fortschritt.
 - **Meldungen:** „Stufe auf!“ und „Rangaufstieg!“ (Einstellung `seenStage`).
 
+### Entscheidung: Optik-Varianten (geplant für Phase 8)
+
+- Später gibt es 3 Optiken, umschaltbar in den Einstellungen: **1 Solo Leveling** (jetzt), **2 Apple** (clean), **3 Anime** (bunt).
+- Bis dahin: Farben nur über die Variablen in `src/index.css` (`sys-*`), keine festen Farben in Seiten. Aussehen nur in den Bausteinen in `src/components/ui/`.
+- Umsetzung: Pro Optik eigene Werte für die Variablen, Bausteine passen sich an. Die Wahl wird lokal gespeichert.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -188,6 +194,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
+8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)
 
 (Die frühere Phase 8 „Veröffentlichen“ ist in Phase 1 aufgegangen.)
 
