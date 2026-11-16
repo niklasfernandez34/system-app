@@ -90,6 +90,8 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Recharts** ist installiert (Gewichts- und Maßverlauf).
 - **Backup Version 4** enthält auch `body`.
 - Der Kalenderplan für Trainings kommt mit dem Kalenderexport in Phase 7.
+- **Zahleneingabe** (`NumberInput`): Textfeld mit Zahlentastatur, Komma oder Punkt, darf beim Tippen leer sein. Beim Verlassen springt sie auf den letzten gültigen Wert zurück.
+- **Übungsauswahl** (`ExercisePicker`): Reiter „Muskel“ und „Gerät“ filtern eigene und wger-Übungen, auch ohne Suchwort. Muskelfilter: Hauptgruppe oder ein Hauptmuskel passt (`MUSCLE_GROUP` in `src/config/sport.ts`). Geräte stehen in `EQUIPMENT`. „Maschine“ setzt das wger-Skript, wenn der Name „Maschine“ oder „Machine“ enthält. Eigene Übungen haben ein freiwilliges Feld `equipment` (ohne Index, keine neue Dexie-Version).
 
 ## 3. Funktionen
 

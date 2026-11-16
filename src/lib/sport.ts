@@ -5,8 +5,8 @@ import { currentDay, logEvent } from './events'
 import { bestOf, detectPRs } from './pr'
 import { suggestWeight, workingWeight } from './progression'
 
-export function addExercise(name: string, muscle: string) {
-  return db.exercises.add({ name, muscle, createdAt: Date.now() })
+export function addExercise(name: string, muscle: string, equipment?: string) {
+  return db.exercises.add({ name, muscle, equipment, createdAt: Date.now() })
 }
 
 export function useExercises() {

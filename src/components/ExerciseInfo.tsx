@@ -39,6 +39,12 @@ export function ExerciseInfo({ exerciseId, onClose }: Props) {
               {info.equipment.join(', ')}
             </p>
           )}
+          {!info && exercise.equipment && (
+            <p>
+              <span className="text-sys-muted">Gerät: </span>
+              {exercise.equipment}
+            </p>
+          )}
           {info?.description && <p className="leading-relaxed">{info.description}</p>}
           <p className="border-t border-sys-line pt-2 text-xs text-sys-muted">
             {info ? `Quelle: wger.de · ${info.author} · CC-BY-SA` : 'Eigene Übung'}

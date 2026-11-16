@@ -54,6 +54,7 @@ export type ExerciseRecord = {
   muscle: string
   createdAt: number
   wgerId?: number
+  equipment?: string
 }
 
 export type BodyRecord = {

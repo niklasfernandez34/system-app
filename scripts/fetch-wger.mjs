@@ -31,7 +31,7 @@ const MUSCLES = {
 const EQUIPMENT = {
   'none (bodyweight exercise)': 'Körpergewicht',
   Dumbbell: 'Kurzhantel',
-  'Cable machine': 'Kabelzug',
+  'Cable machine': 'Kabelzug / Latzug',
   Barbell: 'Langhantel',
   Bench: 'Bank',
   'Pull-up bar': 'Klimmzugstange',
@@ -70,6 +70,13 @@ while (url) {
   console.log(`${results.length} / ${page.count}`)
 }
 
+function equipment(ex, name) {
+  const list = ex.equipment.map((e) => EQUIPMENT[e.name] ?? e.name)
+  const allNames = [name, ...ex.translations.map((t) => t.name)].join(' ')
+  if (/maschine|machine/i.test(allNames) && !list.includes('Kabelzug / Latzug')) list.push('Maschine')
+  return list
+}
+
 const seen = new Set()
 const out = []
 for (const ex of results) {
@@ -86,7 +93,7 @@ for (const ex of results) {
     group: group(ex),
     muscles: ex.muscles.map((m) => MUSCLES[m.name] ?? m.name),
     secondary: ex.muscles_secondary.map((m) => MUSCLES[m.name] ?? m.name),
-    equipment: ex.equipment.map((e) => EQUIPMENT[e.name] ?? e.name),
+    equipment: equipment(ex, name),
     description: description.length > 500 ? description.slice(0, 497) + '…' : description,
     image: img ? img.thumbnails?.medium ?? img.image : undefined,
     author: [t.license_author, img?.license_author].filter(Boolean).join(', ') || 'wger.de',

@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { Button, Chips, Dialog, NumberInput, SystemWindow, TextField } from '../components/ui'
-import { MUSCLES } from '../config/sport'
+import { Button, Dialog, NumberInput, SystemWindow, TextField } from '../components/ui'
 import type { PlanItem, PlanRecord } from '../db/db'
-import { addExercise, archivePlan, fmt, savePlan, useExercises, usePlan } from '../lib/sport'
-import { adoptWger, searchWger, useWger, type WgerExercise } from '../lib/wger'
+import { archivePlan, fmt, savePlan, useExercises, usePlan } from '../lib/sport'
+import { ExercisePicker } from '../components/ExercisePicker'
 import { ExerciseInfo } from '../components/ExerciseInfo'
 
 export function PlanEditPage() {
@@ -15,8 +14,6 @@ export function PlanEditPage() {
   return <PlanForm key={planId ?? 'neu'} plan={plan} />
 }
 
-type Muscle = (typeof MUSCLES)[number]
-
 function PlanForm({ plan }: { plan?: PlanRecord }) {
   const navigate = useNavigate()
   const exercises = useExercises()
@@ -24,31 +21,15 @@ function PlanForm({ plan }: { plan?: PlanRecord }) {
   const [items, setItems] = useState<PlanItem[]>(plan?.items ?? [])
   const [picking, setPicking] = useState(false)
   const [editing, setEditing] = useState<number | null>(null)
-  const [search, setSearch] = useState('')
-  const [newName, setNewName] = useState('')
-  const [muscle, setMuscle] = useState<Muscle>('Brust')
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [infoId, setInfoId] = useState<number | null>(null)
-  const wger = useWger()
 
   const byId = new Map(exercises?.map((e) => [e.id, e]))
-  const filtered = exercises?.filter((e) => e.name.toLowerCase().includes(search.trim().toLowerCase())) ?? []
-  const ownWger = new Set(exercises?.map((e) => e.wgerId))
-  const wgerHits = wger ? searchWger(wger, search).filter((w) => !ownWger.has(w.id)) : []
-
-  const pickWger = async (w: WgerExercise) => addItem(await adoptWger(w))
 
   const addItem = (exerciseId: number) => {
     setItems([...items, { exerciseId, sets: 3, reps: 8, weight: 20 }])
     setPicking(false)
-    setSearch('')
     setEditing(items.length)
-  }
-
-  const createExercise = async () => {
-    const id = await addExercise(newName.trim(), muscle)
-    setNewName('')
-    addItem(id)
   }
 
   const move = (i: number, d: number) => {
@@ -115,39 +96,7 @@ function PlanForm({ plan }: { plan?: PlanRecord }) {
         </Button>
       )}
 
-      <Dialog open={picking} onClose={() => setPicking(false)} title="Übung wählen">
-        <div className="space-y-3">
-          <TextField value={search} onChange={setSearch} placeholder="Suchen, z. B. Bankdrücken" />
-          <ul className="max-h-60 divide-y divide-sys-line overflow-y-auto">
-            {filtered.map((e) => (
-              <li key={e.id}>
-                <button type="button" className="flex w-full justify-between py-2 text-left" onClick={() => addItem(e.id)}>
-                  <span>{e.name}</span>
-                  <span className="text-xs text-sys-muted">{e.muscle}</span>
-                </button>
-              </li>
-            ))}
-            {wgerHits.map((w) => (
-              <li key={`w${w.id}`}>
-                <button type="button" className="flex w-full justify-between gap-2 py-2 text-left" onClick={() => pickWger(w)}>
-                  <span>{w.name}</span>
-                  <span className="shrink-0 text-xs text-sys-muted">{w.group} · wger</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-          {search.trim().length < 2 && (
-            <p className="text-center text-xs text-sys-muted">Tippe mind. 2 Buchstaben, um ~970 Übungen von wger zu durchsuchen.</p>
-          )}
-          <div className="space-y-3 border-t border-sys-line pt-3">
-            <TextField label="Neue Übung" value={newName} onChange={setNewName} placeholder="z. B. Bankdrücken" />
-            <Chips label="Muskelgruppe" options={MUSCLES} value={muscle} onChange={setMuscle} />
-            <Button className="w-full" disabled={!newName.trim()} onClick={createExercise}>
-              Anlegen und hinzufügen
-            </Button>
-          </div>
-        </div>
-      </Dialog>
+<ExercisePicker open={picking} onClose={() => setPicking(false)} onPick={addItem} />
 
       <Dialog open={!!edit} onClose={() => setEditing(null)} title={edit ? byId.get(edit.exerciseId)?.name : ''}>
         {edit && editing !== null && (

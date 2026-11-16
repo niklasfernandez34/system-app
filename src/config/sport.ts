@@ -11,3 +11,36 @@ export const MUSCLES = [
   'Ganzkörper',
   'Ausdauer',
 ] as const
+
+export const EQUIPMENT = [
+  'Kurzhantel',
+  'Langhantel',
+  'Kabelzug / Latzug',
+  'Maschine',
+  'Bank',
+  'Schrägbank',
+  'Klimmzugstange',
+  'SZ-Stange',
+  'Kettlebell',
+  'Widerstandsband',
+  'Körpergewicht',
+  'Matte',
+  'Gymnastikball',
+] as const
+
+export const MUSCLE_GROUP: Record<string, string> = {
+  Brust: 'Brust',
+  'Vordere Schulter': 'Schultern',
+  Bizeps: 'Bizeps',
+  Oberarmmuskel: 'Bizeps',
+  Trizeps: 'Trizeps',
+  Latissimus: 'Rücken',
+  Trapez: 'Rücken',
+  Gesäß: 'Po',
+  'Oberschenkel vorne': 'Beine',
+  Beinbeuger: 'Beine',
+  Wade: 'Waden',
+  Schollenmuskel: 'Waden',
+  'Gerader Bauchmuskel': 'Bauch',
+  'Schräge Bauchmuskeln': 'Bauch',
+}
