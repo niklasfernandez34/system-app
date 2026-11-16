@@ -1,18 +1,18 @@
 import { addDays, format, parseISO } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
 import { Button, Dialog, NumberInput, ProgressBar, SystemWindow } from '../components/ui'
 import { FoodPicker, MacroLine } from '../components/FoodPicker'
 import { NutritionSummary } from '../components/NutritionSummary'
-import { MEAL_SLOTS, type MealRecord, type MealSlot, type RecipeRecord } from '../db/db'
+import { MEAL_SLOTS, type MealRecord, type MealSlot } from '../db/db'
 import { setSetting } from '../db/settings'
 import {
   addFood,
-  addRecipe,
   addWater,
   deleteGroup,
   deleteMeal,
+  fmtAmount,
   fmtNum,
   groupMeals,
   mealTotals,
@@ -20,7 +20,6 @@ import {
   syncNutrition,
   updateMealGrams,
   useDayNutrition,
-  useRecipes,
   type Goals,
 } from '../lib/nutrition'
 
@@ -29,24 +28,16 @@ const shift = (day: string, d: number) => format(addDays(parseISO(day), d), 'yyy
 
 export function NutritionPage() {
   const navigate = useNavigate()
-  const [day, setDay] = useState<string>()
+  const [params] = useSearchParams()
+  const [day, setDay] = useState<string | undefined>(params.get('tag') ?? undefined)
   const data = useDayNutrition(day)
-  const recipes = useRecipes()
   const [adding, setAdding] = useState<MealSlot | null>(null)
   const [editing, setEditing] = useState<MealRecord | null>(null)
-  const [askSlot, setAskSlot] = useState<RecipeRecord | null>(null)
   const [goalsOpen, setGoalsOpen] = useState(false)
-  const [message, setMessage] = useState('')
 
   if (!data) return null
   const slots = groupMeals(data.meals)
   const isToday = data.day === data.today
-
-  const applyRecipe = async (recipe: RecipeRecord, slot: MealSlot) => {
-    await addRecipe(data.day, slot, recipe)
-    setMessage(`${recipe.name} → ${slot}`)
-    setTimeout(() => setMessage(''), 2500)
-  }
 
   return (
     <div className="space-y-4">
@@ -83,32 +74,9 @@ export function NutritionPage() {
         </div>
       </SystemWindow>
 
-      <SystemWindow title="Rezepte">
-        {!recipes?.length && <p className="mb-3 text-center text-sm text-sys-muted">Noch keine Rezepte gespeichert.</p>}
-        <ul className="mb-3 divide-y divide-sys-line">
-          {recipes?.map((r) => (
-            <li key={r.id} className="flex items-center gap-2">
-              <button
-                type="button"
-                className="min-w-0 flex-1 py-2 text-left"
-                onClick={() => (r.slot ? applyRecipe(r, r.slot) : setAskSlot(r))}
-              >
-                <div className="truncate">+ {r.name}</div>
-                <div className="text-xs text-sys-muted">
-                  {r.slot ?? 'Mahlzeit wählen'} · {r.items.length} Zutaten
-                </div>
-              </button>
-              <Button variant="ghost" className="px-3" onClick={() => navigate(`/ernaehrung/rezept/${r.id}`)}>
-                ✎
-              </Button>
-            </li>
-          ))}
-        </ul>
-        {message && <p className="mb-3 text-center text-sm text-sys-glow">✓ {message}</p>}
-        <Button variant="ghost" className="w-full" onClick={() => navigate('/ernaehrung/rezept/neu')}>
-          + Neues Rezept
-        </Button>
-      </SystemWindow>
+      <Button className="w-full" onClick={() => navigate(isToday ? '/ernaehrung/rezepte' : `/ernaehrung/rezepte?tag=${data.day}`)}>
+        Rezepte
+      </Button>
 
       {MEAL_SLOTS.map((slot) => {
         const groups = slots.get(slot)!
@@ -165,23 +133,6 @@ export function NutritionPage() {
 
       <MealDialog meal={editing} onClose={() => setEditing(null)} />
 
-      <Dialog open={!!askSlot} onClose={() => setAskSlot(null)} title="Zu welcher Mahlzeit?">
-        <p className="mb-3 text-center text-sm text-sys-muted">Gilt nur für diesen Tag.</p>
-        <div className="grid grid-cols-2 gap-2">
-          {MEAL_SLOTS.map((s) => (
-            <Button
-              key={s}
-              onClick={() => {
-                if (askSlot) applyRecipe(askSlot, s)
-                setAskSlot(null)
-              }}
-            >
-              {s}
-            </Button>
-          ))}
-        </div>
-      </Dialog>
-
       <GoalsDialog
         open={goalsOpen}
         goals={data.goals}
@@ -200,7 +151,7 @@ function MealRow({ meal, onEdit }: { meal: MealRecord; onEdit: (m: MealRecord) =
       <button type="button" className="flex w-full items-center justify-between gap-2 py-2 text-left" onClick={() => onEdit(meal)}>
         <span className="min-w-0">
           <span className="block truncate">{meal.name}</span>
-          <span className="text-xs text-sys-muted">{fmtNum(meal.grams)} g</span>
+          <span className="text-xs text-sys-muted">{fmtAmount(meal.grams, meal.unit)}</span>
         </span>
         <span className="shrink-0 text-sm text-sys-muted">{fmtNum(portion(meal.per100, meal.grams).kcal)} kcal</span>
       </button>
@@ -223,7 +174,14 @@ function MealForm({ meal, onClose }: { meal: MealRecord; onClose: () => void }) 
       {meal.recipeName && (
         <p className="text-center text-xs text-sys-muted">Aus „{meal.recipeName}“ – ändert nur diesen Tag, nicht das Rezept.</p>
       )}
-      <NumberInput label="Menge" unit="g" step={10} min={1} value={grams} onChange={setGrams} />
+      <NumberInput
+        label="Menge"
+        unit={meal.unit ?? 'g'}
+        step={meal.unit === 'ml' ? 50 : 10}
+        min={1}
+        value={grams}
+        onChange={setGrams}
+      />
       <p className="text-center">
         <MacroLine m={portion(meal.per100, grams)} className="text-sm" />
       </p>

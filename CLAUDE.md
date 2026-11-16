@@ -15,7 +15,7 @@ Offline-PWA zur Selbstoptimierung (Solo-Leveling-Stil). Vollständiger Plan: `PR
 - Nach jedem fertigen Schritt committen.
 
 ## Stack
-Vite + React + TypeScript + Tailwind, React Router, Dexie.js + dexie-react-hooks, date-fns, Recharts, vite-plugin-pwa, @zxing/browser (Barcode), JSZip (Foto-Backup), Vitest (nur Rechenlogik). Hosting: GitHub Pages via GitHub Actions.
+Vite + React + TypeScript + Tailwind, React Router, Dexie.js + dexie-react-hooks, date-fns, Recharts, vite-plugin-pwa, @zxing/browser (Barcode), JSZip (Foto-Backup), MiniSearch (Lebensmittelsuche), Vitest (nur Rechenlogik). Hosting: GitHub Pages via GitHub Actions.
 
 ## Feste Entscheidungen
 - 100 % offline nutzbar; Daten nur lokal in IndexedDB. iPhone = Hauptgerät, kein Geräte-Sync.

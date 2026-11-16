@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react'
 import { parseOffProduct, type NewFood } from './nutrition'
 
-const FIELDS = 'code,product_name,product_name_de,brands,nutriments'
+const FIELDS = 'code,product_name,product_name_de,brands,nutriments,product_quantity_unit,quantity'
 
 export async function searchOff(query: string, signal?: AbortSignal): Promise<NewFood[]> {
-  const params = new URLSearchParams({
-    search_terms: query,
-    search_simple: '1',
-    action: 'process',
-    json: '1',
-    page_size: '25',
-    fields: FIELDS,
-  })
-  const res = await fetch(`https://de.openfoodfacts.org/cgi/search.pl?${params}`, { signal })
+  const params = new URLSearchParams({ q: query, langs: 'de', page_size: '25', fields: FIELDS })
+  const res = await fetch(`https://search.openfoodfacts.org/search?${params}`, { signal })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const data = (await res.json()) as { products?: Record<string, unknown>[] }
-  return (data.products ?? []).map(parseOffProduct).filter((p): p is NewFood => !!p)
+  const data = (await res.json()) as { hits?: Record<string, unknown>[] }
+  return (data.hits ?? []).map(parseOffProduct).filter((p): p is NewFood => !!p)
 }
 
 type OnlineState = { status: 'idle' | 'loading' | 'done' | 'offline' | 'error'; results: NewFood[] }
@@ -34,7 +27,7 @@ export function useOnlineSearch(query: string, enabled: boolean): OnlineState {
         .catch((e) => {
           if ((e as Error).name !== 'AbortError') setState({ query: q, status: 'error', results: [] })
         })
-    }, 600)
+    }, 300)
     return () => {
       clearTimeout(timer)
       ctrl.abort()

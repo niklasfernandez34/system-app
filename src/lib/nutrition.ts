@@ -5,6 +5,7 @@ import {
   MEAL_SLOTS,
   type EventRecord,
   type FoodRecord,
+  type FoodUnit,
   type Macros,
   type MealRecord,
   type MealSlot,
@@ -70,6 +71,9 @@ export function matchesFood(food: Pick<FoodRecord, 'name' | 'brand'>, query: str
   return words.every((w) => text.includes(w))
 }
 
+const LIQUID_NAME = /(^|[\s-])(h-)?milch\b|vollmilch|drink|saft|nektar|getränk|limo|cola|wasser|bier\b|smoothie|eistee|schorle|kefir|ayran|lassi/i
+const NOT_LIQUID = /pulver|schoko|riegel|reis|joghurt|quark|käse|creme|brot|keks|\beis\b|schnitte|bonbon|gummi|flocken/i
+
 const round1 = (n: number) => Math.round(n * 10) / 10
 
 export function parseOffProduct(p: Record<string, unknown>): NewFood | null {
@@ -82,12 +86,17 @@ export function parseOffProduct(p: Record<string, unknown>): NewFood | null {
   const kj = num('energy-kj_100g') ?? num('energy_100g')
   const kcal = num('energy-kcal_100g') ?? (kj !== undefined ? kj / 4.184 : undefined)
   if (!name || kcal === undefined) return null
-  const brand = String(p.brands ?? '').split(',')[0].trim()
+  const brand = String((Array.isArray(p.brands) ? p.brands[0] : String(p.brands ?? '').split(',')[0]) ?? '').trim()
+  const ml =
+    p.product_quantity_unit === 'ml' ||
+    /\d\s*(ml|cl|l)\b/i.test(String(p.quantity ?? '')) ||
+    (LIQUID_NAME.test(name) && !NOT_LIQUID.test(name))
   return {
     name,
     brand: brand || undefined,
     barcode: p.code ? String(p.code) : undefined,
     source: 'off',
+    unit: ml ? 'ml' : 'g',
     kcal: Math.round(kcal),
     protein: round1(num('proteins_100g') ?? 0),
     carbs: round1(num('carbohydrates_100g') ?? 0),
@@ -97,6 +106,11 @@ export function parseOffProduct(p: Record<string, unknown>): NewFood | null {
 
 export function fmtNum(n: number) {
   return Math.round(n).toLocaleString('de-DE')
+}
+
+export function fmtAmount(n: number, unit: FoodUnit = 'g') {
+  if (unit === 'ml' && n >= 1000) return `${(Math.round(n / 10) / 100).toLocaleString('de-DE')} l`
+  return `${fmtNum(n)} ${unit}`
 }
 
 async function readGoals(): Promise<Goals> {
@@ -135,6 +149,7 @@ export async function addFood(day: string, slot: MealSlot, food: FoodRecord, gra
     foodId: food.id,
     name: food.name,
     grams,
+    unit: food.unit,
     per100: per100Of(food),
     createdAt: Date.now(),
     group: newGroup(),
@@ -157,6 +172,7 @@ export async function addRecipe(day: string, slot: MealSlot, recipe: RecipeRecor
         foodId: food.id,
         name: food.name,
         grams: item.grams,
+        unit: food.unit,
         per100: per100Of(food),
         createdAt: now + i,
         group,
@@ -200,7 +216,11 @@ export async function saveOwnFood(food: Omit<NewFood, 'source'> & { id?: number 
 }
 
 export async function adoptFood(food: NewFood) {
-  const existing = food.barcode ? await db.foods.where('barcode').equals(food.barcode).first() : undefined
+  const existing = food.barcode
+    ? await db.foods.where('barcode').equals(food.barcode).first()
+    : food.ref
+      ? await db.foods.filter((f) => f.ref === food.ref).first()
+      : undefined
   if (existing) return existing
   const id = await db.foods.add(food as FoodRecord)
   return (await db.foods.get(id))!

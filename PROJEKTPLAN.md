@@ -141,6 +141,14 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Neue Tagesquest** „Ernährung eintragen“, gilt ab dem Tag des Updates (`nutritionSince`), damit alte Tage nicht bestraft werden.
 - **Titel:** 16 neue Ernährungs-Titel (jetzt 122).
 
+### Entscheidungen aus Phase 5a (Verbesserungen)
+
+- **Einheit g/ml** pro Lebensmittel (`unit`), Werte pro 100 g bzw. 100 ml. Ab 1.000 ml Anzeige in Litern.
+- **Eingebaute Datenbank** `src/data/foods.json` (Skript `scripts/fetch-foods.mjs`, bei Bedarf neu ausführen): Schweizer Nährwertdatenbank (~1.200 Grundlebensmittel, Getränke über die Dichte auf 100 ml umgerechnet) + die ~9.100 meistgescannten Produkte aus Deutschland (Open Food Facts). Wird erst beim Öffnen der Suche geladen und ist offline verfügbar.
+- **Suche** mit MiniSearch (`src/lib/foodSearch.ts`): Text wird vereinheitlicht (Umlaute, „1,5 %“ = „1.5“), Wortanfänge, Tippfehler, zusammengesetzte Wörter (z. B. „Vollmilch“ findet „Milch“). Synonyme in `src/config/foodSynonyms.ts`.
+- **Online-Suche** über die schnellere Schnittstelle `search.openfoodfacts.org` als Ergänzung.
+- **Rezepte-Seite** `/ernaehrung/rezepte`: Suche, Sortierung A–Z / nach Mahlzeit / zuletzt benutzt (Wahl wird lokal gemerkt). Rezepte werden dem Tag hinzugefügt, der auf der Essen-Seite offen war.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -217,6 +225,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**4c:** Bosse (Trainingsziele mit Countdown), 106 Titel und Erfolge~~ – erledigt.
 5. **Ernährung**
    - ~~**5a:** Tracker, Suche (Open Food Facts), Wasser, Ziele, Favoriten, Rezepte~~ – erledigt.
+   - **5a+:** Kalorienrechner, Ziel-Art (Abnehmen/Halten/Zunehmen), 2-Wochen-Prüfung mit Gewichtstrend
    - **5b:** Barcode-Scan, **Ernährungs-Bosse**
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos, **Klausur-Bosse** und **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken

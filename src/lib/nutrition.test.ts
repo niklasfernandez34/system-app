@@ -61,7 +61,7 @@ describe('Ernährung', () => {
         brands: 'Milbona, Lidl',
         nutriments: { 'energy-kcal_100g': 63.4, proteins_100g: 11.04, carbohydrates_100g: 4, fat_100g: 0.2 },
       }),
-    ).toEqual({ name: 'Skyr', brand: 'Milbona', barcode: '123', source: 'off', kcal: 63, protein: 11, carbs: 4, fat: 0.2 })
+    ).toEqual({ name: 'Skyr', brand: 'Milbona', barcode: '123', source: 'off', unit: 'g', kcal: 63, protein: 11, carbs: 4, fat: 0.2 })
     expect(parseOffProduct({ product_name: 'X', nutriments: { 'energy-kj_100g': 418.4 } })?.kcal).toBe(100)
     expect(parseOffProduct({ product_name: '', nutriments: { 'energy-kcal_100g': 1 } })).toBeNull()
     expect(parseOffProduct({ product_name: 'Ohne Werte' })).toBeNull()

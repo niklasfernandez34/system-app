@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router'
 import { Button, Chips, Dialog, NumberInput, SystemWindow, TextField } from '../components/ui'
 import { FoodPicker, MacroLine } from '../components/FoodPicker'
 import { MEAL_SLOTS, type RecipeRecord } from '../db/db'
-import { deleteRecipe, fmtNum, portion, saveRecipe, sumMacros, useFoods, useRecipe } from '../lib/nutrition'
+import { deleteRecipe, fmtAmount, fmtNum, portion, saveRecipe, sumMacros, useFoods, useRecipe } from '../lib/nutrition'
 
 const NONE = 'Keine'
 const SLOT_OPTIONS = [NONE, ...MEAL_SLOTS] as const
@@ -29,7 +29,7 @@ function RecipeForm({ recipe }: { recipe?: RecipeRecord }) {
   const byId = new Map(foods?.map((f) => [f.id, f]))
   const totals = sumMacros(items.flatMap((it) => (byId.has(it.foodId) ? [portion(byId.get(it.foodId)!, it.grams)] : [])))
   const edit = editing !== null ? items[editing] : undefined
-  const back = () => navigate('/ernaehrung')
+  const back = () => navigate(-1)
 
   const save = async () => {
     await saveRecipe({ id: recipe?.id, name: name.trim(), slot: slot === NONE ? undefined : slot, items })
@@ -58,7 +58,7 @@ function RecipeForm({ recipe }: { recipe?: RecipeRecord }) {
                 <button type="button" className="flex w-full items-center justify-between gap-2 py-2 text-left" onClick={() => setEditing(i)}>
                   <span className="min-w-0">
                     <span className="block truncate">{food?.name ?? '?'}</span>
-                    <span className="text-xs text-sys-muted">{fmtNum(it.grams)} g</span>
+                    <span className="text-xs text-sys-muted">{fmtAmount(it.grams, food?.unit)}</span>
                   </span>
                   <span className="shrink-0 text-sm text-sys-muted">
                     {food ? `${fmtNum(portion(food, it.grams).kcal)} kcal` : ''}
@@ -105,8 +105,8 @@ function RecipeForm({ recipe }: { recipe?: RecipeRecord }) {
           <div className="space-y-3">
             <NumberInput
               label="Menge"
-              unit="g"
-              step={10}
+              unit={byId.get(edit.foodId)?.unit ?? 'g'}
+              step={byId.get(edit.foodId)?.unit === 'ml' ? 50 : 10}
               min={1}
               value={edit.grams}
               onChange={(grams) => setItems(items.map((it, j) => (j === editing ? { ...it, grams } : it)))}

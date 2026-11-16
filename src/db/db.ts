@@ -134,13 +134,16 @@ export const MEAL_SLOTS = ['Frühstück', 'Mittag', 'Abend', 'Snack'] as const
 export type MealSlot = (typeof MEAL_SLOTS)[number]
 
 export type Macros = { kcal: number; protein: number; carbs: number; fat: number }
+export type FoodUnit = 'g' | 'ml'
 
 export type FoodRecord = Macros & {
   id: number
   name: string
   brand?: string
   barcode?: string
-  source: 'own' | 'off'
+  ref?: string
+  unit?: FoodUnit
+  source: 'own' | 'off' | 'base'
   favorite?: boolean
   lastGrams?: number
   lastUsedAt?: number
@@ -153,6 +156,7 @@ export type MealRecord = {
   foodId: number
   name: string
   grams: number
+  unit?: FoodUnit
   per100: Macros
   createdAt: number
   group: string
