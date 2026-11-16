@@ -146,6 +146,7 @@ export type SubjectRecord = {
   order: number
   createdAt: number
   archived?: boolean
+  folders?: string[]
 }
 
 export type TodoRecord = {
@@ -192,7 +193,7 @@ export type StudyPlanRecord = {
   createdAt: number
 }
 
-export type FileCategory = 'script' | 'exercise' | 'note'
+export type FileCategory = 'script' | 'exercise' | 'note' | 'video' | 'web'
 
 export type FileRecord = {
   id: number
@@ -203,6 +204,17 @@ export type FileRecord = {
   size: number
   createdAt: number
   blob: Blob
+  folder?: string
+}
+
+export type LinkRecord = {
+  id: number
+  subjectId: number
+  folder?: string
+  title: string
+  url: string
+  category: FileCategory
+  createdAt: number
 }
 
 export const MEAL_SLOTS = ['Frühstück', 'Mittag', 'Abend', 'Snack'] as const
@@ -274,6 +286,7 @@ export const db = new Dexie('system-app') as Dexie & {
   cards: EntityTable<CardRecord, 'id'>
   sheets: EntityTable<SheetRecord, 'id'>
   studyPlans: EntityTable<StudyPlanRecord, 'id'>
+  links: EntityTable<LinkRecord, 'id'>
 }
 
 db.version(1).stores({
@@ -334,4 +347,8 @@ db.version(11).stores({
 db.version(12).stores({
   sheets: '++id, subjectId, updatedAt',
   studyPlans: '++id, subjectId',
+})
+
+db.version(13).stores({
+  links: '++id, subjectId, createdAt',
 })

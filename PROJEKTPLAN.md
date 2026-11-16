@@ -194,6 +194,11 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Lernplan** (Tabelle `studyPlans`, einer pro Fach): Klausurtermin (Vorschlag vom Klausur-Boss), Themen (eins pro Zeile), Wiederholungstage. `buildPlan` in `src/lib/studyPlan.ts` verteilt die Themen gleichmäßig ab heute bis vor der Klausur, danach je ein Tag „Wiederholen: alle Themen“. „Neu planen“ behält Erledigtes und verteilt den Rest ab heute neu.
 - XP `plan_task_done` 5 (Intelligenz). „Heute“ zeigt die Aufgaben des Tages und verpasste Themen (rot „nachholen“), solange die Klausur nicht vorbei ist.
 
+### Entscheidungen aus Phase 6a+ (Material: Ordner und Links)
+
+- Bereich „Dateien“ heißt jetzt **Material** (`src/components/Material.tsx`). Eigene **Ordner** pro Fach (Namen in `subjects.folders`, Feld `folder` an Dateien und Links). Ordner löschen schiebt den Inhalt nach „Ohne Ordner“, Umbenennen zieht den Inhalt mit. Geöffneter Ordner steht in der Adresse (`?bereich=dateien&ordner=…`).
+- **Links** (Tabelle `links`, Dexie-Version 13, im Daten-JSON): Adresse, Titel (leer → „YouTube-Video“ bzw. Seitenname), Art. Arten für Dateien und Links: Skript, Übung, Notiz, Video, Webseite. YouTube-Erkennung und Vorschaubild (`img.youtube.com`, nur online) in `src/lib/links.ts`.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite

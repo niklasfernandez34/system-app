@@ -1,29 +1,23 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useNavigate, useParams, useSearchParams } from 'react-router'
-import { Button, Chips, DateInput, Dialog, SystemWindow, TextField } from '../components/ui'
+import { Button, DateInput, Dialog, SystemWindow, TextField } from '../components/ui'
 import { BossList } from '../components/BossList'
 import { StudyTimer } from '../components/StudyTimer'
 import { Flashcards } from '../components/Flashcards'
 import { StudySheets } from '../components/StudySheets'
 import { StudyPlan } from '../components/StudyPlan'
 import { XP } from '../config/xp'
-import { db, type FileCategory, type FileRecord, type TodoRecord } from '../db/db'
+import { db, type TodoRecord } from '../db/db'
+import { Material } from '../components/Material'
 import {
-  addFiles,
   addTodo,
-  deleteFile,
   deleteTodo,
-  moveFile,
-  openFile,
-  renameFile,
-  shareFile,
   toggleTodo,
   updateSubject,
   updateTodo,
-  useSubjectFiles,
 } from '../lib/uni'
 
 const SECTIONS = [
@@ -31,7 +25,7 @@ const SECTIONS = [
   { id: 'karten', label: 'Karteikarten', icon: '▤' },
   { id: 'zettel', label: 'Lernzettel', icon: '✎' },
   { id: 'plan', label: 'Lernplan', icon: '▦' },
-  { id: 'dateien', label: 'Dateien', icon: '⎙' },
+  { id: 'dateien', label: 'Material', icon: '⎙' },
 ] as const
 type Section = (typeof SECTIONS)[number]['id']
 
@@ -75,7 +69,7 @@ export function SubjectPage() {
       </div>
 
       {section === 'uebersicht' && <Overview subjectId={id} />}
-      {section === 'dateien' && <Files subjectId={id} />}
+      {section === 'dateien' && <Material subjectId={id} folders={subject.folders ?? []} />}
       {section === 'karten' && <Flashcards subjectId={id} />}
       {section === 'zettel' && <StudySheets subjectId={id} />}
       {section === 'plan' && <StudyPlan subjectId={id} />}
@@ -218,121 +212,5 @@ function TodoRow({ todo, onEdit }: { todo: TodoRecord; onEdit?: () => void }) {
         )}
       </button>
     </li>
-  )
-}
-
-const CATEGORIES: { id: FileCategory; label: string; one: string }[] = [
-  { id: 'script', label: 'Skripte', one: 'Skript' },
-  { id: 'exercise', label: 'Übungen', one: 'Übung' },
-  { id: 'note', label: 'Notizen', one: 'Notiz' },
-]
-const FILTERS = ['Alle', ...CATEGORIES.map((c) => c.label)] as const
-
-const sizeLabel = (b: number) => (b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1024 / 1024).toFixed(1).replace('.', ',')} MB`)
-const fileIcon = (t: string) => (t === 'application/pdf' ? 'PDF' : t.startsWith('image/') ? 'BILD' : 'DATEI')
-
-function Files({ subjectId }: { subjectId: number }) {
-  const files = useSubjectFiles(subjectId)
-  const input = useRef<HTMLInputElement>(null)
-  const category = useRef<FileCategory>('script')
-  const [filter, setFilter] = useState<(typeof FILTERS)[number]>('Alle')
-  const [busy, setBusy] = useState(false)
-  const [editing, setEditing] = useState<FileRecord | null>(null)
-  const shown = files?.filter((f) => filter === 'Alle' || CATEGORIES.find((c) => c.id === f.category)?.label === filter) ?? []
-  const total = files?.reduce((a, f) => a + f.size, 0) ?? 0
-
-  const pick = (c: FileCategory) => {
-    category.current = c
-    input.current?.click()
-  }
-
-  return (
-    <SystemWindow title="Dateien">
-      <input
-        ref={input}
-        type="file"
-        multiple
-        className="hidden"
-        onChange={async (e) => {
-          const list = e.target.files
-          if (!list?.length) return
-          setBusy(true)
-          try {
-            await addFiles(subjectId, category.current, list)
-          } finally {
-            setBusy(false)
-            e.target.value = ''
-          }
-        }}
-      />
-      <div className="mb-4 grid grid-cols-3 gap-2">
-        {CATEGORIES.map((c) => (
-          <Button key={c.id} disabled={busy} className="px-2 text-sm" onClick={() => pick(c.id)}>
-            + {c.one}
-          </Button>
-        ))}
-      </div>
-      <Chips options={FILTERS} value={filter} onChange={setFilter} />
-      {!shown.length && <p className="mt-4 text-center text-sm text-sys-muted">Noch keine Dateien.</p>}
-      <ul className="mt-3 divide-y divide-sys-line">
-        {shown.map((f) => (
-          <li key={f.id} className="flex items-center gap-3 py-2">
-            <button type="button" className="flex min-w-0 flex-1 items-center gap-3 text-left" onClick={() => openFile(f)}>
-              <span className="w-11 shrink-0 rounded border border-sys-glow/60 py-1 text-center text-[10px] font-semibold text-sys-glow">
-                {fileIcon(f.type)}
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate">{f.name}</span>
-                <span className="block text-xs text-sys-muted">
-                  {CATEGORIES.find((c) => c.id === f.category)?.one} · {sizeLabel(f.size)} · {format(f.createdAt, 'd.M.yy')}
-                </span>
-              </span>
-            </button>
-            <Button variant="ghost" className="px-3" onClick={() => setEditing(f)}>
-              ⋯
-            </Button>
-          </li>
-        ))}
-      </ul>
-      {total > 0 && <p className="mt-3 text-center text-xs text-sys-muted">Belegt: {sizeLabel(total)} · Im Backup unter „Fotos + Dateien“</p>}
-
-      <Dialog open={!!editing} onClose={() => setEditing(null)} title="Datei">
-        {editing && (
-          <div className="space-y-3">
-            <TextField label="Name" value={editing.name} onChange={(name) => setEditing({ ...editing, name })} />
-            <Chips
-              label="Art"
-              options={CATEGORIES.map((c) => c.one)}
-              value={CATEGORIES.find((c) => c.id === editing.category)!.one}
-              onChange={(one) => setEditing({ ...editing, category: CATEGORIES.find((c) => c.one === one)!.id })}
-            />
-            <Button variant="ghost" className="w-full" onClick={() => shareFile(editing)}>
-              Teilen / In anderer App öffnen
-            </Button>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="danger"
-                onClick={async () => {
-                  await deleteFile(editing.id)
-                  setEditing(null)
-                }}
-              >
-                Löschen
-              </Button>
-              <Button
-                disabled={!editing.name.trim()}
-                onClick={async () => {
-                  await renameFile(editing.id, editing.name.trim())
-                  await moveFile(editing.id, editing.category)
-                  setEditing(null)
-                }}
-              >
-                Speichern
-              </Button>
-            </div>
-          </div>
-        )}
-      </Dialog>
-    </SystemWindow>
   )
 }

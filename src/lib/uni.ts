@@ -110,7 +110,7 @@ export function useSubjectOverview() {
     const subjects = await db.subjects.orderBy('order').toArray()
     const todos = await db.todos.filter((t) => !t.done).toArray()
     const exams = await db.bosses.filter((b) => b.kind === 'exam' && b.status === 'active').toArray()
-    const files = await db.files.toArray()
+    const files = [...(await db.files.toArray()), ...(await db.links.toArray())]
     const cards = await db.cards.where('due').belowOrEqual(today).toArray()
     return subjects.map((s) => {
       const open = todos.filter((t) => t.subjectId === s.id)
@@ -128,11 +128,7 @@ export function useSubjectOverview() {
   })
 }
 
-export function useSubjectFiles(subjectId: number) {
-  return useLiveQuery(() => db.files.where('subjectId').equals(subjectId).reverse().sortBy('createdAt'), [subjectId])
-}
-
-export async function addFiles(subjectId: number, category: FileCategory, list: FileList) {
+export async function addFiles(subjectId: number, category: FileCategory, list: FileList, folder?: string) {
   for (const f of Array.from(list)) {
     await db.files.add({
       subjectId,
@@ -142,16 +138,9 @@ export async function addFiles(subjectId: number, category: FileCategory, list: 
       size: f.size,
       createdAt: Date.now(),
       blob: f,
+      folder,
     })
   }
-}
-
-export function renameFile(id: number, name: string) {
-  return db.files.update(id, { name })
-}
-
-export function moveFile(id: number, category: FileCategory) {
-  return db.files.update(id, { category })
 }
 
 export function deleteFile(id: number) {
