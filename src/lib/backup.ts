@@ -13,7 +13,7 @@ export type Snapshot = Record<string, unknown> & { app: 'system-app'; version: n
 export const photoKey = (p: Pick<PhotoRecord, 'id' | 'createdAt'>) => `photo-${p.id}-${p.createdAt}`
 export const fileKey = (f: Pick<FileRecord, 'id' | 'createdAt'>) => `file-${f.id}-${f.createdAt}`
 
-async function saveFile(blob: Blob, name: string) {
+export async function saveFile(blob: Blob, name: string) {
   const file = new File([blob], name, { type: blob.type })
   if (navigator.canShare?.({ files: [file] })) {
     try {

@@ -3,6 +3,7 @@ import { format, parseISO } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Chips, ProgressBar, SystemWindow } from '../components/ui'
+import { Insights } from '../components/Insights'
 import { setSetting, useSetting } from '../db/settings'
 import { useStatsData } from '../lib/statsData'
 import {
@@ -42,6 +43,7 @@ export function StatsPage() {
   return (
     <div className="space-y-4">
       <WeekReview today={data.today} daily={data.daily} />
+      <Insights />
       <SystemWindow title="Statistiken">
         <div className="space-y-3">
           <Chips options={RANGES} value={range} onChange={setRange} label="Zeitraum" />

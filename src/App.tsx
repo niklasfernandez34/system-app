@@ -5,6 +5,7 @@ import { SystemWatcher } from './components/SystemWatcher'
 import { TodayPage } from './pages/TodayPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
 import { StatsPage } from './pages/StatsPage'
+import { CalendarPage } from './pages/CalendarPage'
 import { NutritionPage } from './pages/NutritionPage'
 import { RecipeEditPage } from './pages/RecipeEditPage'
 import { RecipesPage } from './pages/RecipesPage'
@@ -81,6 +82,7 @@ export default function App() {
             <Route path="/mehr" element={<MorePage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/auswertung" element={<StatsPage />} />
+            <Route path="/kalender" element={<CalendarPage />} />
             <Route path="/erfolge" element={<AchievementsPage />} />
             <Route path="/tagebuch" element={<JournalPage />} />
             <Route path="/habits" element={<HabitsPage />} />

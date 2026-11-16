@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
 import type { GoalMode, NutritionPlan } from '../lib/calorieCalc'
+import { DEFAULT_CALENDAR } from '../config/calendar'
 
 export const DEFAULT_SETTINGS = {
   dayStartHour: 4,
@@ -25,6 +26,7 @@ export const DEFAULT_SETTINGS = {
   studyTimer: null as StudyTimer | null,
   cardOrder: 'fixed' as 'fixed' | 'random',
   reviewSeenWeek: '' as string,
+  calendar: DEFAULT_CALENDAR,
 }
 
 export type StudyTimer = { subjectId: number; phase: 'focus' | 'break'; endsAt: number; total: number }

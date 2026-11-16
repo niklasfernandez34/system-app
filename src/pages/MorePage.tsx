@@ -45,6 +45,7 @@ export function MorePage() {
         <div className="grid grid-cols-3 gap-2">
           <Button onClick={() => navigate('/status')}>Status</Button>
           <Button onClick={() => navigate('/auswertung')}>Auswertung</Button>
+          <Button onClick={() => navigate('/kalender')}>Kalender</Button>
           <Button onClick={() => navigate('/tagebuch')}>Tagebuch</Button>
           <Button onClick={() => navigate('/habits')}>Habits</Button>
           <Button onClick={() => navigate('/notizen')}>Notizen</Button>

@@ -237,6 +237,13 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Wochenrückblick** (Mo–So) oben auf der Seite: sonntags die laufende Woche, sonst die letzte. Vergleich mit der Vorwoche (▲ grün / ▼ rot, Kalorien neutral). Sonntags Hinweis auf „Heute“, bis der Rückblick geöffnet wurde (Einstellung `reviewSeenWeek`).
 - **Backup-Erinnerung** auf „Heute“ nur ohne Dropbox-Sync, wenn das letzte Backup älter als 7 Tage ist, mit Knopf „Jetzt sichern“.
 
+### Entscheidungen aus Phase 7b (Zusammenhänge und Kalender)
+
+- **Zusammenhänge** (`src/lib/insights.ts`, getestet) auf der Auswertung unter dem Wochenrückblick: letzte 90 Tage, Vergleich „Tage mit“ gegen „Tage ohne“. Regeln: 7+ h Schlaf → Volumen pro Training, Stimmung, Energie, Lernzeit; Trainingstag → Stimmung; nach Trainingstag → Schlaf; Lerntag → Stimmung; Pflege an 5+ von 7 Tagen → Hautzustand; Habits → Stimmung. Angezeigt nur mit mindestens 5 Tagen pro Seite und mindestens 10 % Unterschied, sortiert nach Stärke.
+- **Kalenderexport** (Seite `/kalender`, Mehr → Kalender) mit der Bibliothek `ics`. Auswahl: Training (Wochentage, Uhrzeit, Dauer, wöchentlich wiederholt, Erinnerung 30 Min. vorher), Pflegeroutine (täglich zur Uhrzeit, nur Routinen mit Schritten), Lernplan (offene Aufgaben ab heute, ganztägig), Klausuren (aktive Klausur-Bosse) und Fristen (offene To-dos) ganztägig mit Erinnerung am Vortag um 9 Uhr. Ortszeit ohne Zeitzone, feste UIDs.
+- Einstellungen in `calendar` (Standard in `src/config/calendar.ts`, damit `ics` nicht beim Start geladen wird). Datei über das Teilen-Menü (`saveFile` aus `backup.ts`), auf dem iPhone über die Dateien-App in den Kalender. Tipp in der App: eigener Kalender „System“, vor erneutem Export löschen.
+- Neue UI-Bausteine `MultiChips` (Mehrfachauswahl) und `TimeInput`.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -321,7 +328,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**6b Hautbild:** Pflegeroutine morgens/abends, Hautzustand, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**~~ – erledigt.
 7. **Erinnerungen und Auswertung**
    - ~~**7a:** Statistiken, Wochenrückblick, Backup-Erinnerung~~ – erledigt.
-   - **7b:** Zusammenhänge, Kalenderexport (Training, Lernplan, Klausuren/Fristen, Pflegeroutine)
+   - ~~**7b:** Zusammenhänge, Kalenderexport (Training, Lernplan, Klausuren/Fristen, Pflegeroutine)~~ – erledigt.
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)
 
 (Die frühere Phase 8 „Veröffentlichen“ ist in Phase 1 aufgegangen.)
