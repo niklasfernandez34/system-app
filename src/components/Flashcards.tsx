@@ -1,14 +1,27 @@
 import { useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Button, Chips, Dialog, ProgressBar, SystemWindow, TextField } from './ui'
+import { Button, Chips, Dialog, DrawingEditor, DrawingPreview, ProgressBar, SystemWindow, TextField } from './ui'
 import { CARD_ROUND_MIN, XP } from '../config/xp'
 import type { CardRecord } from '../db/db'
 import { BOX_DAYS, dueCards } from '../lib/cardBox'
 import { addCard, deleteCard, finishRound, rateCard, updateCard, useCards } from '../lib/cards'
 import { currentDay } from '../lib/events'
+import { createDrawing, deleteDrawings } from '../lib/drawings'
 import { setSetting, useSetting } from '../db/settings'
 
-type Draft = { id?: number; front: string; back: string; topic: string }
+type Side = 'front' | 'back'
+type Draft = {
+  id?: number
+  front: string
+  back: string
+  topic: string
+  frontDrawing?: number
+  backDrawing?: number
+  added: number[]
+  removed: number[]
+}
+const blank = (topic: string): Draft => ({ front: '', back: '', topic, added: [], removed: [] })
+const sideOk = (d: Draft, s: Side) => !!d[s].trim() || !!d[`${s}Drawing`]
 type Session = { free: boolean; queue: number[]; index: number; flipped: boolean; known: number; wrong: number; seen: number[] }
 type Done = { known: number; wrong: number; xp: boolean; free: boolean }
 
@@ -29,6 +42,7 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
   const today = useLiveQuery(() => currentDay())
   const [topic, setTopic] = useState(ALL)
   const [draft, setDraft] = useState<Draft | null>(null)
+  const [drawing, setDrawing] = useState<number | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [done, setDone] = useState<Done | null>(null)
   const [showList, setShowList] = useState(false)
@@ -75,11 +89,42 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
   }
 
   const save = async (again: boolean) => {
-    if (!draft || !draft.front.trim() || !draft.back.trim()) return
-    const data = { front: draft.front.trim(), back: draft.back.trim(), topic: draft.topic.trim() || undefined }
+    if (!draft || !sideOk(draft, 'front') || !sideOk(draft, 'back')) return
+    const data = {
+      front: draft.front.trim(),
+      back: draft.back.trim(),
+      topic: draft.topic.trim() || undefined,
+      frontDrawing: draft.frontDrawing,
+      backDrawing: draft.backDrawing,
+    }
     if (draft.id) await updateCard(draft.id, data)
     else await addCard(subjectId, data)
-    setDraft(again ? { front: '', back: '', topic: draft.topic } : null)
+    await deleteDrawings(draft.removed)
+    setDraft(again ? blank(draft.topic) : null)
+  }
+
+  const cancel = async () => {
+    if (draft) await deleteDrawings(draft.added)
+    setDraft(null)
+  }
+
+  const addSideDrawing = async (side: Side) => {
+    if (!draft) return
+    const id = await createDrawing({ paper: 'blank' })
+    setDraft({ ...draft, [`${side}Drawing`]: id, added: [...draft.added, id] })
+    setDrawing(id)
+  }
+
+  const removeSideDrawing = (side: Side) => {
+    if (!draft) return
+    const id = draft[`${side}Drawing`]
+    if (!id) return
+    setDraft({
+      ...draft,
+      [`${side}Drawing`]: undefined,
+      added: draft.added.filter((x) => x !== id),
+      removed: draft.added.includes(id) ? draft.removed : [...draft.removed, id],
+    })
   }
 
   if (session) {
@@ -94,7 +139,12 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
           className="mt-4 flex min-h-56 w-full flex-col items-center justify-center rounded-lg border border-sys-glow/60 bg-sys-glow/5 p-4 text-center shadow-glow"
         >
           {card.topic && <span className="mb-2 text-xs uppercase tracking-widest text-sys-muted">{card.topic}</span>}
-          <span className="whitespace-pre-wrap text-lg">{session.flipped ? card.back : card.front}</span>
+          {(session.flipped ? card.back : card.front) && (
+            <span className="whitespace-pre-wrap text-lg">{session.flipped ? card.back : card.front}</span>
+          )}
+          {(session.flipped ? card.backDrawing : card.frontDrawing) && (
+            <DrawingPreview id={(session.flipped ? card.backDrawing : card.frontDrawing)!} className="mt-2 w-full max-w-sm" />
+          )}
           <span className="mt-4 text-xs text-sys-muted">{session.flipped ? 'Rückseite' : 'Tippen zum Umdrehen'}</span>
         </button>
         {session.flipped ? (
@@ -162,7 +212,7 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
           <Button variant="ghost" disabled={!filtered.length} onClick={() => start(true)}>
             Alle üben
           </Button>
-          <Button variant="ghost" onClick={() => setDraft({ front: '', back: '', topic: topic === ALL ? '' : topic })}>
+          <Button variant="ghost" onClick={() => setDraft(blank(topic === ALL ? '' : topic))}>
             + Karte
           </Button>
         </div>
@@ -179,17 +229,40 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
             {[...filtered]
               .sort((a, b) => b.createdAt - a.createdAt)
               .map((c) => (
-                <CardRow key={c.id} card={c} onEdit={() => setDraft({ id: c.id, front: c.front, back: c.back, topic: c.topic ?? '' })} />
+                <CardRow key={c.id} card={c} onEdit={() =>
+                    setDraft({ id: c.id, front: c.front, back: c.back, topic: c.topic ?? '', frontDrawing: c.frontDrawing, backDrawing: c.backDrawing, added: [], removed: [] })
+                  } />
               ))}
           </ul>
         )}
       </SystemWindow>
 
-      <Dialog open={!!draft} onClose={() => setDraft(null)} title={draft?.id ? 'Karte bearbeiten' : 'Neue Karte'}>
+      <Dialog open={!!draft} onClose={cancel} title={draft?.id ? 'Karte bearbeiten' : 'Neue Karte'}>
         {draft && (
           <div className="space-y-3">
-            <TextField label="Vorderseite (Frage)" multiline rows={3} value={draft.front} onChange={(front) => setDraft({ ...draft, front })} />
-            <TextField label="Rückseite (Antwort)" multiline rows={3} value={draft.back} onChange={(back) => setDraft({ ...draft, back })} />
+            {(['front', 'back'] as const).map((side) => (
+              <div key={side} className="space-y-2">
+                <TextField
+                  label={side === 'front' ? 'Vorderseite (Frage)' : 'Rückseite (Antwort)'}
+                  multiline
+                  rows={3}
+                  value={draft[side]}
+                  onChange={(v) => setDraft({ ...draft, [side]: v })}
+                />
+                {draft[`${side}Drawing`] ? (
+                  <div className="flex items-start gap-2">
+                    <DrawingPreview id={draft[`${side}Drawing`]!} className="w-24" onClick={() => setDrawing(draft[`${side}Drawing`]!)} />
+                    <button type="button" className="text-xs text-sys-danger underline" onClick={() => removeSideDrawing(side)}>
+                      Handschrift entfernen
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" className="text-xs text-sys-muted underline" onClick={() => addSideDrawing(side)}>
+                    ✎ Handschrift
+                  </button>
+                )}
+              </div>
+            ))}
             <TextField label="Thema (optional)" value={draft.topic} onChange={(t) => setDraft({ ...draft, topic: t })} placeholder="z. B. Kapitel 2" />
             {topics.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -211,16 +284,16 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
                 >
                   Löschen
                 </Button>
-                <Button disabled={!draft.front.trim() || !draft.back.trim()} onClick={() => save(false)}>
+                <Button disabled={!sideOk(draft, 'front') || !sideOk(draft, 'back')} onClick={() => save(false)}>
                   Speichern
                 </Button>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                <Button variant="ghost" disabled={!draft.front.trim() || !draft.back.trim()} onClick={() => save(false)}>
+                <Button variant="ghost" disabled={!sideOk(draft, 'front') || !sideOk(draft, 'back')} onClick={() => save(false)}>
                   Speichern
                 </Button>
-                <Button disabled={!draft.front.trim() || !draft.back.trim()} onClick={() => save(true)}>
+                <Button disabled={!sideOk(draft, 'front') || !sideOk(draft, 'back')} onClick={() => save(true)}>
                   + Nächste
                 </Button>
               </div>
@@ -228,6 +301,7 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
           </div>
         )}
       </Dialog>
+      <DrawingEditor id={drawing} onClose={() => setDrawing(null)} />
     </>
   )
 }
@@ -236,9 +310,9 @@ function CardRow({ card, onEdit }: { card: CardRecord; onEdit: () => void }) {
   return (
     <li>
       <button type="button" className="w-full py-2 text-left" onClick={onEdit}>
-        <span className="block truncate">{card.front}</span>
+        <span className="block truncate">{card.front || '✎ Handschrift'}</span>
         <span className="block truncate text-xs text-sys-muted">
-          {card.back} · {boxLabel(card.box)}
+          {card.back || '✎ Handschrift'} · {boxLabel(card.box)}
         </span>
       </button>
     </li>

@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { useSearchParams } from 'react-router'
-import { Button, Chips, Dialog, SystemWindow, TextField } from './ui'
-import type { FileCategory } from '../db/db'
+import { Button, Chips, Dialog, DrawingEditor, DrawingPreview, SystemWindow, TextField } from './ui'
+import { db, type FileCategory } from '../db/db'
+import { isEmpty } from '../lib/drawing'
 import { defaultTitle, hostOf, normalizeUrl, youtubeId } from '../lib/links'
 import {
   addFolder,
@@ -16,6 +17,7 @@ import {
   type MaterialItem,
 } from '../lib/material'
 import { addFiles, deleteFile, openFile, shareFile } from '../lib/uni'
+import { createDrawing, deleteDrawings, updateDrawingMeta } from '../lib/drawings'
 
 const CATEGORIES: { id: FileCategory; label: string; one: string }[] = [
   { id: 'script', label: 'Skripte', one: 'Skript' },
@@ -45,6 +47,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
   const [edit, setEdit] = useState<Edit | null>(null)
   const [folderName, setFolderName] = useState<{ from?: string; name: string } | null>(null)
   const [filter, setFilter] = useState('Alle')
+  const [drawing, setDrawing] = useState<number | null>(null)
 
   if (!items) return null
   const open = (f?: string) => setParams(f ? { bereich: 'dateien', ordner: f } : { bereich: 'dateien' }, { replace: true })
@@ -68,6 +71,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
     if (!edit) return
     const { item } = edit
     if (item.kind === 'file') await updateFile(item.id, { name: edit.name.trim() || item.name, category: edit.category, folder: edit.folder })
+    else if (item.kind === 'drawing') await updateDrawingMeta(item.id, { title: edit.name.trim() || 'Handschrift', category: edit.category, folder: edit.folder })
     else {
       const url = normalizeUrl(edit.url) || item.url
       await updateLink(item.id, { title: edit.name.trim() || defaultTitle(url), url, category: edit.category, folder: edit.folder })
@@ -132,11 +136,19 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
             </Button>
           </div>
         )}
-        <div className="mb-4 grid grid-cols-2 gap-2">
-          <Button disabled={busy} onClick={() => setUpload('script')}>
-            {busy ? 'Speichere…' : '+ Datei'}
+        <div className="mb-4 grid grid-cols-3 gap-2">
+          <Button disabled={busy} className="px-2" onClick={() => setUpload('script')}>
+            {busy ? '…' : '+ Datei'}
           </Button>
-          <Button onClick={() => setLink({ url: '', title: '', category: 'video', folder, touched: false })}>+ Link</Button>
+          <Button className="px-2" onClick={() => setLink({ url: '', title: '', category: 'video', folder, touched: false })}>
+            + Link
+          </Button>
+          <Button
+            className="px-2"
+            onClick={async () => setDrawing(await createDrawing({ subjectId, folder, category: 'note', title: `Notiz ${format(new Date(), 'd.M.')}` }))}
+          >
+            ✎ Schrift
+          </Button>
         </div>
         {kinds.length > 1 && <Chips options={['Alle', ...kinds.map((k) => k.one)]} value={active} onChange={setFilter} />}
         {!shown.length && <p className="mt-4 text-center text-sm text-sys-muted">Noch nichts hier.</p>}
@@ -147,6 +159,8 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
               item={i}
               onMore={() =>
                 setEdit({ item: i, name: i.kind === 'file' ? i.name : i.title, url: i.kind === 'link' ? i.url : '', category: i.category, folder: i.folder })
+              }
+              onOpen={() => (i.kind === 'file' ? openFile(i) : i.kind === 'link' ? window.open(i.url, '_blank', 'noopener') : setDrawing(i.id))
               }
             />
           ))}
@@ -191,10 +205,10 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
         )}
       </Dialog>
 
-      <Dialog open={!!edit} onClose={() => setEdit(null)} title={edit?.item.kind === 'link' ? 'Link' : 'Datei'}>
+      <Dialog open={!!edit} onClose={() => setEdit(null)} title={edit?.item.kind === 'link' ? 'Link' : edit?.item.kind === 'drawing' ? 'Handschrift' : 'Datei'}>
         {edit && (
           <div className="space-y-3">
-            <TextField label={edit.item.kind === 'link' ? 'Titel' : 'Name'} value={edit.name} onChange={(name) => setEdit({ ...edit, name })} />
+            <TextField label={edit.item.kind === 'file' ? 'Name' : 'Titel'} value={edit.name} onChange={(name) => setEdit({ ...edit, name })} />
             {edit.item.kind === 'link' && <TextField label="Adresse" value={edit.url} onChange={(url) => setEdit({ ...edit, url })} />}
             <Chips label="Art" options={CATEGORIES.map((c) => c.one)} value={one(edit.category)} onChange={(o) => setEdit({ ...edit, category: byOne(o) })} />
             <Chips
@@ -213,6 +227,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
                 variant="danger"
                 onClick={async () => {
                   if (edit.item.kind === 'file') await deleteFile(edit.item.id)
+                  else if (edit.item.kind === 'drawing') await deleteDrawings([edit.item.id])
                   else await deleteLink(edit.item.id)
                   setEdit(null)
                 }}
@@ -263,26 +278,41 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
           </div>
         )}
       </Dialog>
+      <DrawingEditor
+        id={drawing}
+        onClose={async () => {
+          const id = drawing
+          setDrawing(null)
+          const d = id ? await db.drawings.get(id) : undefined
+          if (id && d && isEmpty(d.pages)) await deleteDrawings([id])
+        }}
+      />
     </>
   )
 }
 
-function Row({ item, onMore }: { item: MaterialItem; onMore: () => void }) {
+function Row({ item, onMore, onOpen }: { item: MaterialItem; onMore: () => void; onOpen: () => void }) {
   const yt = item.kind === 'link' ? youtubeId(item.url) : null
   const [thumbOk, setThumbOk] = useState(true)
   const title = item.kind === 'file' ? item.name : item.title
   const sub =
     item.kind === 'file'
       ? `${one(item.category)} · ${sizeLabel(item.size)} · ${format(item.createdAt, 'd.M.yy')}`
-      : `${one(item.category)} · ${hostOf(item.url)}`
+      : item.kind === 'drawing'
+        ? `${one(item.category)} · Handschrift · ${format(item.updatedAt, 'd.M.yy')}`
+        : `${one(item.category)} · ${hostOf(item.url)}`
   return (
     <li className="flex items-center gap-3 py-2">
       <button
         type="button"
         className="flex min-w-0 flex-1 items-center gap-3 text-left"
-        onClick={() => (item.kind === 'file' ? openFile(item) : window.open(item.url, '_blank', 'noopener'))}
+        onClick={onOpen}
       >
-        {yt && thumbOk ? (
+        {item.kind === 'drawing' ? (
+          <span className="w-11 shrink-0">
+            <DrawingPreview id={item.id} />
+          </span>
+        ) : yt && thumbOk ? (
           <img
             src={`https://img.youtube.com/vi/${yt}/mqdefault.jpg`}
             alt=""

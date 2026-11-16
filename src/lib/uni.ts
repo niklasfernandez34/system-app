@@ -110,7 +110,7 @@ export function useSubjectOverview() {
     const subjects = await db.subjects.orderBy('order').toArray()
     const todos = await db.todos.filter((t) => !t.done).toArray()
     const exams = await db.bosses.filter((b) => b.kind === 'exam' && b.status === 'active').toArray()
-    const files = [...(await db.files.toArray()), ...(await db.links.toArray())]
+    const files = [...(await db.files.toArray()), ...(await db.links.toArray()), ...(await db.drawings.where('subjectId').above(0).toArray())]
     const cards = await db.cards.where('due').belowOrEqual(today).toArray()
     return subjects.map((s) => {
       const open = todos.filter((t) => t.subjectId === s.id)

@@ -46,6 +46,7 @@ export type NoteRecord = {
   createdAt: number
   updatedAt: number
   ref?: string
+  drawingId?: number
 }
 
 export type ExerciseRecord = {
@@ -169,6 +170,8 @@ export type CardRecord = {
   due: string
   createdAt: number
   reviewedAt?: number
+  frontDrawing?: number
+  backDrawing?: number
 }
 
 export type SheetRecord = {
@@ -177,6 +180,7 @@ export type SheetRecord = {
   title: string
   text: string
   photoIds: number[]
+  drawingIds?: number[]
   createdAt: number
   updatedAt: number
 }
@@ -191,6 +195,22 @@ export type StudyPlanRecord = {
   repeatDays: number
   tasks: PlanTask[]
   createdAt: number
+}
+
+export type StrokePoint = [number, number, number]
+export type Stroke = { tool: 'pen' | 'marker'; color: string; size: number; points: StrokePoint[] }
+export type Paper = 'blank' | 'lined' | 'grid'
+
+export type DrawingRecord = {
+  id: number
+  pages: Stroke[][]
+  paper: Paper
+  createdAt: number
+  updatedAt: number
+  subjectId?: number
+  folder?: string
+  title?: string
+  category?: FileCategory
 }
 
 export type FileCategory = 'script' | 'exercise' | 'note' | 'video' | 'web'
@@ -287,6 +307,7 @@ export const db = new Dexie('system-app') as Dexie & {
   sheets: EntityTable<SheetRecord, 'id'>
   studyPlans: EntityTable<StudyPlanRecord, 'id'>
   links: EntityTable<LinkRecord, 'id'>
+  drawings: EntityTable<DrawingRecord, 'id'>
 }
 
 db.version(1).stores({
@@ -351,4 +372,8 @@ db.version(12).stores({
 
 db.version(13).stores({
   links: '++id, subjectId, createdAt',
+})
+
+db.version(14).stores({
+  drawings: '++id, subjectId, updatedAt',
 })

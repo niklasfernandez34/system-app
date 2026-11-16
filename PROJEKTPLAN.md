@@ -199,6 +199,14 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Bereich „Dateien“ heißt jetzt **Material** (`src/components/Material.tsx`). Eigene **Ordner** pro Fach (Namen in `subjects.folders`, Feld `folder` an Dateien und Links). Ordner löschen schiebt den Inhalt nach „Ohne Ordner“, Umbenennen zieht den Inhalt mit. Geöffneter Ordner steht in der Adresse (`?bereich=dateien&ordner=…`).
 - **Links** (Tabelle `links`, Dexie-Version 13, im Daten-JSON): Adresse, Titel (leer → „YouTube-Video“ bzw. Seitenname), Art. Arten für Dateien und Links: Skript, Übung, Notiz, Video, Webseite. YouTube-Erkennung und Vorschaubild (`img.youtube.com`, nur online) in `src/lib/links.ts`.
 
+### Entscheidungen: Handschrift mit Apple Pencil
+
+- UI-Bausteine `DrawingEditor` (Vollbild-`<dialog>`, liegt damit auch über offenen Dialogen) und `DrawingPreview`. Striche mit `perfect-freehand` (Druck vom Pencil, sonst simuliert), als SVG gezeichnet.
+- Tabelle `drawings` (Dexie-Version 14, im Daten-JSON): Seiten im A4-Format (1000 × 1414 Einheiten) mit Strichen als Punktlisten, Papier liniert/kariert/leer. Werkzeuge Stift, Marker (35 % deckend), Radierer (löscht ganze Striche), 5 Farben, 3 Stärken, Rückgängig/Wiederholen (100 Schritte), Seiten hinzufügen/löschen. Speichert automatisch nach 0,6 s.
+- **Handballen-Schutz:** Sobald ein Pencil-Ereignis kommt, zeichnet nur noch der Stift, der Finger scrollt (manuell, weil `touch-action: none`). Ohne Pencil lässt sich der Finger zwischen Zeichnen und Scrollen umschalten.
+- Eingebaut in Notizen (`drawingId`, leere Handschrift-Notizen werden aufgeräumt), Lernzettel (`drawingIds`), Karteikarten (`frontDrawing`/`backDrawing`, Seite gilt als ausgefüllt mit Text oder Handschrift) und Material (Zeichnung mit `subjectId`/`folder`/`title`/`category`). Abbrechen löscht neu angelegte Zeichnungen.
+- Geplant: Sync zwischen iPhone und iPad über eine iCloud-Datei mit Zusammenführen (kostenlos, Daten bleiben beim Nutzer). Optional: in PDFs schreiben (pdf.js + Zeichenfläche).
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
