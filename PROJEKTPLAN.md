@@ -146,7 +146,8 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Einheit g/ml** pro Lebensmittel (`unit`), Werte pro 100 g bzw. 100 ml. Ab 1.000 ml Anzeige in Litern.
 - **Eingebaute Datenbank** `src/data/foods.json` (Skript `scripts/fetch-foods.mjs`, bei Bedarf neu ausführen): Schweizer Nährwertdatenbank (~1.200 Grundlebensmittel, Getränke über die Dichte auf 100 ml umgerechnet) + die ~9.100 meistgescannten Produkte aus Deutschland (Open Food Facts). Wird erst beim Öffnen der Suche geladen und ist offline verfügbar.
 - **Suche** mit MiniSearch (`src/lib/foodSearch.ts`): Text wird vereinheitlicht (Umlaute, „1,5 %“ = „1.5“), Wortanfänge, Tippfehler, zusammengesetzte Wörter (z. B. „Vollmilch“ findet „Milch“). Synonyme in `src/config/foodSynonyms.ts`.
-- **Online-Suche** über die schnellere Schnittstelle `search.openfoodfacts.org` als Ergänzung.
+- **Online-Suche** über `world.openfoodfacts.org/cgi/search.pl` (alle Sprachen, doppelte Treffer werden ausgeblendet, Zwischenspeicher pro Suchbegriff, 0,7 s Tipp-Pause). `search.openfoodfacts.org` ist schneller, erlaubt aber keine Anfragen aus dem Browser (kein CORS), wird nur im Daten-Skript benutzt. Limit der Suche: ca. 10 Anfragen pro Minute.
+- Lokale Suche: Passen nicht alle Wörter, kommen Treffer, bei denen höchstens ein Wort fehlt. Pulver (Whey, Isolat …) zählt immer in g.
 - **Rezepte-Seite** `/ernaehrung/rezepte`: Suche, Sortierung A–Z / nach Mahlzeit / zuletzt benutzt (Wahl wird lokal gemerkt). Rezepte werden dem Tag hinzugefügt, der auf der Essen-Seite offen war.
 
 ## 3. Funktionen

@@ -72,6 +72,7 @@ export function matchesFood(food: Pick<FoodRecord, 'name' | 'brand'>, query: str
 }
 
 const LIQUID_NAME = /(^|[\s-])(h-)?milch\b|vollmilch|drink|saft|nektar|getränk|limo|cola|wasser|bier\b|smoothie|eistee|schorle|kefir|ayran|lassi/i
+const POWDER = /pulver|powder|whey|isolat|casein/i
 const NOT_LIQUID = /pulver|schoko|riegel|reis|joghurt|quark|käse|creme|brot|keks|\beis\b|schnitte|bonbon|gummi|flocken/i
 
 const round1 = (n: number) => Math.round(n * 10) / 10
@@ -88,9 +89,10 @@ export function parseOffProduct(p: Record<string, unknown>): NewFood | null {
   if (!name || kcal === undefined) return null
   const brand = String((Array.isArray(p.brands) ? p.brands[0] : String(p.brands ?? '').split(',')[0]) ?? '').trim()
   const ml =
-    p.product_quantity_unit === 'ml' ||
+    !POWDER.test(name) &&
+    (p.product_quantity_unit === 'ml' ||
     /\d\s*(ml|cl|l)\b/i.test(String(p.quantity ?? '')) ||
-    (LIQUID_NAME.test(name) && !NOT_LIQUID.test(name))
+    (LIQUID_NAME.test(name) && !NOT_LIQUID.test(name)))
   return {
     name,
     brand: brand || undefined,

@@ -60,12 +60,14 @@ async function swiss() {
 }
 
 const LIQUID_NAME = /(^|[\s-])(h-)?milch\b|vollmilch|drink|saft|nektar|getränk|limo|cola|wasser|bier\b|smoothie|eistee|schorle|kefir|ayran|lassi/i
+const POWDER = /pulver|powder|whey|isolat|casein/i
 const NOT_LIQUID = /pulver|schoko|riegel|reis|joghurt|quark|käse|creme|brot|keks|\beis\b|schnitte|bonbon|gummi|flocken/i
 
 const isMl = (p, name) =>
-  p.product_quantity_unit === 'ml' ||
+  !POWDER.test(name) &&
+  (p.product_quantity_unit === 'ml' ||
   /\d\s*(ml|cl|l)\b/i.test(String(p.quantity ?? '')) ||
-  (LIQUID_NAME.test(name) && !NOT_LIQUID.test(name))
+  (LIQUID_NAME.test(name) && !NOT_LIQUID.test(name)))
 
 async function popular() {
   const out = []

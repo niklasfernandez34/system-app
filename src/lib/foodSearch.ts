@@ -42,8 +42,8 @@ export function synonymsOf(term: string) {
   return [...out]
 }
 
-export function buildQuery(text: string): Query | null {
-  const terms = words(text)
+export function buildQuery(text: string | string[]): Query | null {
+  const terms = typeof text === 'string' ? words(text) : text
   if (!terms.length) return null
   return {
     combineWith: 'AND',
@@ -73,7 +73,16 @@ export function createIndex(docs: SearchDoc[], boost?: (id: number) => number) {
   ms.addAll(docs)
   return (text: string, limit = 30) => {
     const query = buildQuery(text)
-    return query ? ms.search(query).slice(0, limit).map((r) => r.id as number) : []
+    if (!query) return []
+    const ids = ms.search(query).slice(0, limit).map((r) => r.id as number)
+    const terms = words(text).slice(0, 6)
+    if (terms.length < 2 || ids.length >= (terms.length === 2 ? 1 : 5)) return ids
+    const found = new Set(ids)
+    const more = terms
+      .flatMap((_, i) => ms.search(buildQuery(terms.filter((__, j) => j !== i))!))
+      .sort((a, b) => b.score - a.score)
+      .map((r) => r.id as number)
+    return [...ids, ...more.filter((id) => !found.has(id) && found.add(id))].slice(0, limit)
   }
 }
 

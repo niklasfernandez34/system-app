@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createIndex, loadBase, normalize, rowToFood, synonymsOf, words } from './foodSearch'
 import { fmtAmount, parseOffProduct } from './nutrition'
+import { dedupeFoods } from './foodApi'
 
 describe('Lebensmittel-Suche', () => {
   it('vereinheitlicht Text', () => {
@@ -31,6 +32,22 @@ describe('Lebensmittel-Suche', () => {
     expect(search('protien')).toEqual(expect.arrayContaining([3, 4]))
   })
 
+  it('zeigt Ersatztreffer, wenn nicht alle Wörter passen', () => {
+    const search = createIndex([
+      { id: 1, name: 'Whey Protein Vanilla', brand: 'Bulk' },
+      { id: 2, name: 'Erdnussbutter', brand: 'Bulk' },
+      { id: 3, name: 'Haferflocken' },
+    ])
+    expect(search('bulk pure whey')[0]).toBe(1)
+    expect(search('bulk pure whey')).not.toContain(3)
+    expect(search('haferflocken')).toEqual([3])
+  })
+
+  it('filtert doppelte Online-Treffer', () => {
+    const f = { name: 'Bulk pure whey', brand: 'Bulk', source: 'off' as const, kcal: 377, protein: 77, carbs: 5, fat: 6 }
+    expect(dedupeFoods([f, { ...f, barcode: '2' }, { ...f, kcal: 387 }])).toHaveLength(2)
+  })
+
   it('durchsucht die eingebaute Datenbank', async () => {
     const { rows, search } = await loadBase()
     expect(rows.length).toBeGreaterThan(5000)
@@ -49,6 +66,7 @@ describe('Lebensmittel-Suche', () => {
       unit: 'g',
       brand: 'Oryza',
     })
+    expect(parseOffProduct({ product_name: 'Pure Whey Protein', quantity: '1000 ml', nutriments: { 'energy-kcal_100g': 390 } })?.unit).toBe('g')
     expect(fmtAmount(1500, 'ml')).toBe('1,5 l')
     expect(fmtAmount(330, 'ml')).toBe('330 ml')
     expect(fmtAmount(250)).toBe('250 g')

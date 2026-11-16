@@ -151,7 +151,7 @@ export function FoodPicker({ open, onClose, onPick, title = 'Lebensmittel', acti
             {q && !base.ready && 'Datenbank wird geladen …'}
             {online.status === 'loading' && ' Suche online …'}
             {online.status === 'offline' && 'Offline: nur eingebaute Datenbank.'}
-            {online.status === 'error' && 'Online-Suche fehlgeschlagen.'}
+            {online.status === 'busy' && ' Online-Suche gerade nicht erreichbar, gleich nochmal versuchen.'}
             {online.status === 'done' && !shown.length && !baseHits.length && !remote.length && 'Nichts gefunden.'}
             {!q && !shown.length && 'Tippe, um über 10.000 Lebensmittel zu durchsuchen.'}
           </p>

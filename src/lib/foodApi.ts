@@ -4,14 +4,38 @@ import { parseOffProduct, type NewFood } from './nutrition'
 const FIELDS = 'code,product_name,product_name_de,brands,nutriments,product_quantity_unit,quantity'
 
 export async function searchOff(query: string, signal?: AbortSignal): Promise<NewFood[]> {
-  const params = new URLSearchParams({ q: query, langs: 'de', page_size: '25', fields: FIELDS })
-  const res = await fetch(`https://search.openfoodfacts.org/search?${params}`, { signal })
+  const key = query.toLowerCase()
+  const cached = cache.get(key)
+  if (cached) return cached
+  const params = new URLSearchParams({
+    search_terms: query,
+    search_simple: '1',
+    action: 'process',
+    json: '1',
+    page_size: '40',
+    fields: FIELDS,
+  })
+  const res = await fetch(`https://world.openfoodfacts.org/cgi/search.pl?${params}`, { signal })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const data = (await res.json()) as { hits?: Record<string, unknown>[] }
-  return (data.hits ?? []).map(parseOffProduct).filter((p): p is NewFood => !!p)
+  const data = (await res.json()) as { products?: Record<string, unknown>[] }
+  const results = dedupeFoods((data.products ?? []).map(parseOffProduct).filter((p): p is NewFood => !!p)).slice(0, 25)
+  cache.set(key, results)
+  return results
 }
 
-type OnlineState = { status: 'idle' | 'loading' | 'done' | 'offline' | 'error'; results: NewFood[] }
+const cache = new Map<string, NewFood[]>()
+
+export function dedupeFoods(foods: NewFood[]) {
+  const seen = new Set<string>()
+  return foods.filter((f) => {
+    const key = `${f.name}|${f.brand ?? ''}|${f.kcal}`.toLowerCase().replace(/\s+/g, ' ')
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
+type OnlineState = { status: 'idle' | 'loading' | 'done' | 'offline' | 'busy'; results: NewFood[] }
 
 export function useOnlineSearch(query: string, enabled: boolean): OnlineState {
   const [state, setState] = useState<OnlineState & { query: string }>({ query: '', status: 'idle', results: [] })
@@ -25,9 +49,10 @@ export function useOnlineSearch(query: string, enabled: boolean): OnlineState {
       searchOff(q, ctrl.signal)
         .then((results) => setState({ query: q, status: 'done', results }))
         .catch((e) => {
-          if ((e as Error).name !== 'AbortError') setState({ query: q, status: 'error', results: [] })
+          const err = e as Error
+          if (err.name !== 'AbortError') setState({ query: q, status: 'busy', results: [] })
         })
-    }, 300)
+    }, 700)
     return () => {
       clearTimeout(timer)
       ctrl.abort()
