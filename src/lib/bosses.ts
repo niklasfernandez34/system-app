@@ -1,7 +1,7 @@
 import { differenceInCalendarDays, parseISO } from 'date-fns'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { db, type BossRecord } from '../db/db'
-import { bossBest, nutritionBossStatus, type DayValues } from './boss'
+import { db, type BossRecord, type ExamResult } from '../db/db'
+import { bossBest, examOutcome, gradeLabel, nutritionBossStatus, type DayValues } from './boss'
 import { mealTotals } from './nutrition'
 import { currentDay, logEvent } from './events'
 import { onNewDay } from './startup'
@@ -21,6 +21,16 @@ export async function addNutritionBoss(boss: Pick<BossRecord, 'metric' | 'direct
     status: 'active',
   } as BossRecord)
 }
+
+export function addExamBoss(boss: { subjectId: number; target: number; deadline: string }) {
+  return db.bosses.add({ ...boss, kind: 'exam', exerciseId: 0, reps: 0, createdAt: Date.now(), status: 'active' } as BossRecord)
+}
+
+export function setExamResult(id: number, result: ExamResult) {
+  return db.bosses.update(id, { result })
+}
+
+const ATTR = { lift: ['str', 'Stärke'], nutrition: ['vit', 'Vitalität'], exam: ['int', 'Intelligenz'] } as const
 
 async function dayValues(from: string, to: string) {
   const out = new Map<string, DayValues>()
@@ -57,15 +67,23 @@ export async function checkBosses() {
   try {
     const today = await currentDay()
     for (const boss of await db.bosses.where('status').equals('active').toArray()) {
-      if (boss.kind === 'nutrition') {
+      if (boss.kind === 'exam') {
+        const outcome = examOutcome(boss)
+        if (outcome === 'lost') {
+          await db.bosses.update(boss.id, { status: 'lost' })
+          await logEvent('boss_failed', { bossId: boss.id })
+        }
+        if (outcome !== 'won') continue
+      } else if (boss.kind === 'nutrition') {
         if (!(await nutritionStatus(boss, today)).won) continue
       } else {
         if (boss.deadline < today) continue
         if ((await bestFor(boss)) < boss.target) continue
       }
       await db.bosses.update(boss.id, { status: 'won' })
-      await logEvent('boss_defeated', boss.kind === 'nutrition' ? { bossId: boss.id, attr: 'vit' } : { bossId: boss.id })
-      won.push({ id: boss.id, attr: boss.kind === 'nutrition' ? 'Vitalität' : 'Stärke' })
+      const [attr, attrName] = ATTR[boss.kind]
+      await logEvent('boss_defeated', boss.kind === 'lift' ? { bossId: boss.id } : { bossId: boss.id, attr })
+      won.push({ id: boss.id, attr: attrName })
     }
   } finally {
     checking = false
@@ -76,6 +94,7 @@ export async function checkBosses() {
 onNewDay(async (_missed, today) => {
   await checkBosses()
   for (const boss of await db.bosses.where('status').equals('active').toArray()) {
+    if (boss.kind === 'exam') continue
     const over = boss.kind === 'nutrition' ? (await nutritionStatus(boss, today)).impossible : boss.deadline < today
     if (!over) continue
     await db.bosses.update(boss.id, { status: 'lost' })
@@ -87,10 +106,15 @@ export function useBosses() {
   return useLiveQuery(async () => {
     const today = await currentDay()
     const names = new Map((await db.exercises.toArray()).map((e) => [e.id, e.name]))
+    const subjects = new Map((await db.subjects.toArray()).map((s) => [s.id, s.name]))
     const bosses = await db.bosses.toArray()
     const list = await Promise.all(
       bosses.map(async (b) => {
         const daysLeft = differenceInCalendarDays(parseISO(b.deadline), parseISO(today))
+        if (b.kind === 'exam') {
+          const name = `Klausur ${subjects.get(b.subjectId ?? 0) ?? 'Fach'}${b.target ? ` · Ziel ${gradeLabel(b.target)}` : ''}`
+          return { ...b, name, best: 0, goal: 1, daysLeft }
+        }
         if (b.kind === 'nutrition') {
           const st = b.status === 'active' ? await nutritionStatus(b, today) : null
           return { ...b, name: bossTitle(b), best: st?.done ?? 0, goal: b.days ?? 1, daysLeft }
@@ -116,4 +140,8 @@ export function useNutritionStamp() {
     const meals = await db.meals.where('day').equals(day).toArray()
     return `${day}|${meals.length}|${meals.reduce((a, m) => a + m.grams, 0)}|${(await db.water.get(day))?.ml ?? 0}`
   })
+}
+
+export function useExamStamp() {
+  return useLiveQuery(() => db.bosses.filter((b) => b.status === 'active' && !!b.result).count())
 }

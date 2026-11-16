@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bossBest, nutritionBossStatus, nutritionDayMet } from './boss'
+import { bossBest, nutritionBossStatus, nutritionDayMet, examOutcome } from './boss'
 
 const w = (sets: [number, number, boolean][], exerciseId = 1) => ({
   entries: [{ exerciseId, targetReps: 5, sets: sets.map(([weight, reps, done]) => ({ weight, reps, done })) }],
@@ -51,5 +51,22 @@ describe('Ernährungs-Boss', () => {
     const b = { ...min, metric: 'water' as const, target: 3000 }
     expect(nutritionDayMet(b, { kcal: 0, protein: 0, water: 3000, logged: false })).toBe(true)
     expect(nutritionDayMet({ ...b, metric: 'protein', target: 150 }, { kcal: 0, protein: 149, water: 0, logged: true })).toBe(false)
+  })
+})
+
+describe('examOutcome', () => {
+  it('wartet ohne Ergebnis', () => {
+    expect(examOutcome({ target: 2 })).toBe(null)
+  })
+  it('gewinnt bei bestanden ohne Wunschnote', () => {
+    expect(examOutcome({ target: 0, result: { passed: true } })).toBe('won')
+  })
+  it('gewinnt mit Wunschnote oder besser', () => {
+    expect(examOutcome({ target: 2, result: { passed: true, grade: 2 } })).toBe('won')
+    expect(examOutcome({ target: 2, result: { passed: true, grade: 1.3 } })).toBe('won')
+  })
+  it('verliert bei schlechterer Note oder nicht bestanden', () => {
+    expect(examOutcome({ target: 2, result: { passed: true, grade: 2.3 } })).toBe('lost')
+    expect(examOutcome({ target: 0, result: { passed: false } })).toBe('lost')
   })
 })

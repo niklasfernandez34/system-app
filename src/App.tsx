@@ -19,6 +19,8 @@ import { BodyPage } from './pages/BodyPage'
 import { PhotosPage } from './pages/PhotosPage'
 import { StatusPage } from './pages/StatusPage'
 import { AchievementsPage } from './pages/AchievementsPage'
+import { UniPage } from './pages/UniPage'
+import { StudyTimerFloat } from './components/StudyTimer'
 
 const tabs = [
   { to: '/', label: 'Heute' },
@@ -51,7 +53,7 @@ export default function App() {
             <Route path="/ernaehrung/rezepte" element={<RecipesPage />} />
             <Route path="/ernaehrung/rechner" element={<CalculatorPage />} />
             <Route path="/ernaehrung/rezept/:id" element={<RecipeEditPage />} />
-            <Route path="/uni" element={<PlaceholderPage title="Uni" />} />
+            <Route path="/uni" element={<UniPage />} />
             <Route path="/mehr" element={<MorePage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/erfolge" element={<AchievementsPage />} />
@@ -62,6 +64,7 @@ export default function App() {
           </Routes>
         </div>
       </main>
+      <StudyTimerFloat />
       <nav className="pb-safe px-safe border-t border-sys-line bg-sys-panel/95">
         <ul className="mx-auto flex max-w-xl">
           {tabs.map((t) => (

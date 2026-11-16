@@ -24,4 +24,8 @@ describe('penaltyTitle', () => {
     expect(penaltyTitle(`2026-01-0${1 + PENALTY_QUESTS.length}`)).toBe(PENALTY_QUESTS[0])
     expect(PENALTY_QUESTS).toContain(penaltyTitle('2025-06-01'))
   })
+  it('zeigt die Lern-Quest nur mit Fächern', () => {
+    expect(questStatus([], [], false, true).map((q) => q.id)).toContain('study')
+    expect(questStatus([{ type: 'study_session' }], [], false, true).find((q) => q.id === 'study')?.done).toBe(true)
+  })
 })

@@ -165,6 +165,14 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Boss-Prüfung läuft auch bei Änderungen an Essen/Wasser von heute (`useNutritionStamp`).
 - Scanner liest im gründlichen Modus (`TRY_HARDER`, auch 90° gedreht), nur EAN/UPC. `Dialog` reagiert nur auf sein eigenes Schließen (sonst schloss der Scanner das Auswahl-Fenster mit). Kamera-Erlaubnis fragt iOS bei Home-Bildschirm-Apps pro Sitzung neu, das lässt sich in der App nicht ändern.
 
+### Entscheidungen aus Phase 6a
+
+- **Uni-Seite** (`/uni`): Fächer (Tabelle `subjects`) mit To-dos (Tabelle `todos`, Dexie-Version 9). Deadlines sind To-dos mit optionaler Frist, keine eigene Tabelle. Fristen der nächsten 14 Tage oben auf der Uni-Seite, die der nächsten 3 Tage auf „Heute“.
+- **XP:** `study_session` 20, `todo_done` 5, beide Intelligenz. To-do wieder öffnen löscht das Ereignis.
+- **Lern-Timer:** Zustand in der Einstellung `studyTimer` (überlebt Seitenwechsel und Schließen). Lernzeit 25/30/45/50 Min., Pause 5/10/15 Min. Ende wird in einer Transaktion genau einmal gezählt (`finishStudyIfDue`), danach startet die Pause. Abbrechen gibt keine XP. Läuft der Timer, zeigt jede andere Seite einen Mini-Timer über der Navigation.
+- **Quest „Eine Lerneinheit“**, nur wenn ein aktives Fach existiert (ab dem Tag, an dem es angelegt wurde).
+- **Klausur-Boss** (`kind: 'exam'`, Felder `subjectId`, `result`; `target` = Wunschnote, 0 = egal): Ab dem Klausurtag „Ergebnis eintragen“. Sieg bei bestanden und Note ≤ Wunschnote (`boss_defeated` mit `attr: 'int'`), sonst Niederlage. Kein automatisches Verlieren nach dem Termin. Logik `examOutcome` in `src/lib/boss.ts`.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -243,7 +251,9 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**5a:** Tracker, Suche (Open Food Facts), Wasser, Ziele, Favoriten, Rezepte~~ – erledigt.
    - ~~**5a+:** Kalorienrechner, Ziel-Art (Abnehmen/Halten/Zunehmen), 2-Wochen-Prüfung mit Gewichtstrend~~ – erledigt.
    - ~~**5b:** Barcode-Scan, **Ernährungs-Bosse**~~ – erledigt.
-6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos, **Klausur-Bosse** und **Routine-/Habit-Bosse**
+6. **Uni und Hautbild**
+   - ~~**6a Uni:** Fächer, To-dos mit Fristen, Lern-Timer, **Klausur-Bosse**~~ – erledigt.
+   - **6b Hautbild:** Pflegeroutine morgens/abends, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)
 

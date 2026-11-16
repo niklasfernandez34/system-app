@@ -20,6 +20,8 @@ export const XP = {
   water_goal: 5,
   protein_goal: 10,
   kcal_goal: 10,
+  study_session: 20,
+  todo_done: 5,
 } as const
 
 export type EventType = keyof typeof XP
@@ -62,6 +64,8 @@ export const ATTRIBUTE_OF: Partial<Record<EventType, Attribute>> = {
   water_goal: 'vit',
   protein_goal: 'vit',
   kcal_goal: 'vit',
+  study_session: 'int',
+  todo_done: 'int',
 }
 
 export const ATTRIBUTE_BASE = 10

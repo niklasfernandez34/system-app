@@ -123,8 +123,10 @@ export type BossMetric = 'kcal' | 'protein' | 'water'
 
 export type BossRecord = {
   id: number
-  kind: 'lift' | 'nutrition'
+  kind: 'lift' | 'nutrition' | 'exam'
   exerciseId: number
+  subjectId?: number
+  result?: ExamResult
   metric?: BossMetric
   direction?: 'min' | 'max'
   days?: number
@@ -134,6 +136,26 @@ export type BossRecord = {
   deadline: string
   createdAt: number
   status: 'active' | 'won' | 'lost'
+}
+
+export type ExamResult = { passed: boolean; grade?: number }
+
+export type SubjectRecord = {
+  id: number
+  name: string
+  order: number
+  createdAt: number
+  archived?: boolean
+}
+
+export type TodoRecord = {
+  id: number
+  subjectId: number
+  text: string
+  due?: string
+  done: boolean
+  doneAt?: number
+  createdAt: number
 }
 
 export const MEAL_SLOTS = ['Frühstück', 'Mittag', 'Abend', 'Snack'] as const
@@ -199,6 +221,8 @@ export const db = new Dexie('system-app') as Dexie & {
   meals: EntityTable<MealRecord, 'id'>
   water: EntityTable<WaterRecord, 'day'>
   recipes: EntityTable<RecipeRecord, 'id'>
+  subjects: EntityTable<SubjectRecord, 'id'>
+  todos: EntityTable<TodoRecord, 'id'>
 }
 
 db.version(1).stores({
@@ -241,4 +265,9 @@ db.version(8).stores({
   meals: '++id, day, group',
   water: 'day',
   recipes: '++id, name',
+})
+
+db.version(9).stores({
+  subjects: '++id, order',
+  todos: '++id, subjectId, due',
 })

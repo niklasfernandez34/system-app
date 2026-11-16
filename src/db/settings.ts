@@ -20,7 +20,12 @@ export const DEFAULT_SETTINGS = {
   nutritionSince: '' as string,
   goalMode: 'gain' as GoalMode,
   nutritionPlan: null as NutritionPlan | null,
+  focusMinutes: 25,
+  breakMinutes: 5,
+  studyTimer: null as StudyTimer | null,
 }
+
+export type StudyTimer = { subjectId: number; phase: 'focus' | 'break'; endsAt: number; total: number }
 
 export type Settings = typeof DEFAULT_SETTINGS
 export type SettingKey = keyof Settings

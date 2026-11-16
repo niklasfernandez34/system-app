@@ -5,10 +5,10 @@ type DayEvent = { type: string; data?: Record<string, unknown> }
 
 export type QuestStatus = { id: QuestId; title: string; done: boolean }
 
-export function questStatus(dayEvents: DayEvent[], habitIds: number[], withFood = false): QuestStatus[] {
+export function questStatus(dayEvents: DayEvent[], habitIds: number[], withFood = false, withStudy = false): QuestStatus[] {
   const types = new Set(dayEvents.map((e) => e.type))
   const doneHabits = new Set(dayEvents.filter((e) => e.type === 'habit_done').map((e) => e.data?.habitId))
-  return QUESTS.filter((q) => (q.id !== 'habits' || habitIds.length > 0) && (q.id !== 'food' || withFood)).map((q) => ({
+  return QUESTS.filter((q) => (q.id !== 'habits' || habitIds.length > 0) && (q.id !== 'food' || withFood) && (q.id !== 'study' || withStudy)).map((q) => ({
     id: q.id,
     title: q.title,
     done:

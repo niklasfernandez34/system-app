@@ -15,7 +15,10 @@ async function statusFor(day: string) {
   const habits = await db.habits.filter((h) => !h.archived).toArray()
   const habitIds = habits.filter((h) => logicalDay(new Date(h.createdAt), dayStartHour) <= day).map((h) => h.id)
   const since = await getSetting('nutritionSince')
-  return { events, quests: questStatus(events, habitIds, !!since && day >= since) }
+  const withStudy = (await db.subjects.filter((s) => !s.archived).toArray()).some(
+    (s) => logicalDay(new Date(s.createdAt), dayStartHour) <= day,
+  )
+  return { events, quests: questStatus(events, habitIds, !!since && day >= since, withStudy) }
 }
 
 onNewDay(async (missed, today) => {

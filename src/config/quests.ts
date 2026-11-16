@@ -4,6 +4,7 @@ export const QUESTS = [
   { id: 'move', title: 'Training oder Körperdaten', anyOf: ['workout_done', 'body_logged'] },
   { id: 'journal', title: 'Tagebuch schreiben', anyOf: ['journal_written'] },
   { id: 'food', title: 'Ernährung eintragen', anyOf: ['meal_logged'] },
+  { id: 'study', title: 'Eine Lerneinheit', anyOf: ['study_session'] },
 ] as const
 
 export type QuestId = (typeof QUESTS)[number]['id']
