@@ -16,6 +16,10 @@ export const XP = {
   rank_up: 0,
   boss_defeated: 100,
   boss_failed: 0,
+  meal_logged: 2,
+  water_goal: 5,
+  protein_goal: 10,
+  kcal_goal: 10,
 } as const
 
 export type EventType = keyof typeof XP
@@ -54,9 +58,14 @@ export const ATTRIBUTE_OF: Partial<Record<EventType, Attribute>> = {
   checkin_done: 'wil',
   journal_written: 'wil',
   habit_done: 'wil',
+  meal_logged: 'vit',
+  water_goal: 'vit',
+  protein_goal: 'vit',
+  kcal_goal: 'vit',
 }
 
 export const ATTRIBUTE_BASE = 10
 export const ATTRIBUTE_XP_PER_POINT = 50
 
 export const MAX_PENALTY_DAYS = 3
+export const MEAL_XP_MAX_PER_DAY = 5

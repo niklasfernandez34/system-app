@@ -130,6 +130,47 @@ export type BossRecord = {
   status: 'active' | 'won' | 'lost'
 }
 
+export const MEAL_SLOTS = ['Frühstück', 'Mittag', 'Abend', 'Snack'] as const
+export type MealSlot = (typeof MEAL_SLOTS)[number]
+
+export type Macros = { kcal: number; protein: number; carbs: number; fat: number }
+
+export type FoodRecord = Macros & {
+  id: number
+  name: string
+  brand?: string
+  barcode?: string
+  source: 'own' | 'off'
+  favorite?: boolean
+  lastGrams?: number
+  lastUsedAt?: number
+}
+
+export type MealRecord = {
+  id: number
+  day: string
+  slot: MealSlot
+  foodId: number
+  name: string
+  grams: number
+  per100: Macros
+  createdAt: number
+  group: string
+  recipeId?: number
+  recipeName?: string
+}
+
+export type WaterRecord = { day: string; ml: number }
+
+export type RecipeRecord = {
+  id: number
+  name: string
+  slot?: MealSlot
+  items: { foodId: number; grams: number }[]
+  createdAt: number
+  lastUsedAt?: number
+}
+
 export const db = new Dexie('system-app') as Dexie & {
   events: EntityTable<EventRecord, 'id'>
   settings: EntityTable<SettingRecord, 'key'>
@@ -144,6 +185,10 @@ export const db = new Dexie('system-app') as Dexie & {
   quests: EntityTable<QuestRecord, 'day'>
   ranks: EntityTable<RankRecord, 'rank'>
   bosses: EntityTable<BossRecord, 'id'>
+  foods: EntityTable<FoodRecord, 'id'>
+  meals: EntityTable<MealRecord, 'id'>
+  water: EntityTable<WaterRecord, 'day'>
+  recipes: EntityTable<RecipeRecord, 'id'>
 }
 
 db.version(1).stores({
@@ -179,4 +224,11 @@ db.version(6).stores({
 
 db.version(7).stores({
   bosses: '++id, status',
+})
+
+db.version(8).stores({
+  foods: '++id, name, barcode, lastUsedAt',
+  meals: '++id, day, group',
+  water: 'day',
+  recipes: '++id, name',
 })

@@ -130,6 +130,17 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Erfolge-Seite** (`/erfolge`, über die Status-Seite): alle Titel nach Kategorie, gesperrte grau mit Hinweis. Ein freigeschalteter Titel kann getragen werden (`activeTitle`) und steht unter dem Rang.
 - **Meldungen** laufen über eine Warteschlange im `SystemWatcher`: Stufe, Rang, Boss besiegt, Titel erhalten. Beim ersten Start mit Titeln (`seenTitles` leer) werden bereits verdiente Titel still übernommen.
 
+### Entscheidungen aus Phase 5a
+
+- **Dexie Version 8**, **Backup Version 8**: `foods` (Werte pro 100 g, Barcode, Favorit, letzte Menge), `meals` (Eintrag pro Tag und Mahlzeit, Werte als Kopie, damit alte Tage gleich bleiben), `water` (ml pro Tag), `recipes`.
+- **Mahlzeiten:** Frühstück, Mittag, Abend, Snack. Vergangene Tage lassen sich über die Pfeile nachtragen.
+- **Suche:** zuerst lokal, dann online bei Open Food Facts (de). Gewählte Treffer werden lokal gespeichert und sind danach offline da. Eigene Lebensmittel möglich. Favoriten (★) stehen in der Auswahl oben.
+- **Rezepte:** Name, Zutaten mit Mengen, optional feste Mahlzeit. Antippen fügt alle Zutaten als Gruppe ein. Ohne feste Mahlzeit wird gefragt (gilt nur für den Tag). Mengen am Tag ändern das Rezept nicht.
+- **Ziele** (Einstellungen `kcalGoal`, `proteinGoal`, `carbsGoal`, `fatGoal`, `waterGoal`): erreicht, wenn der Wert mindestens so hoch ist.
+- **XP** (alle Vitalität): `meal_logged` +2 pro Eintrag bzw. Rezept (max. 5 pro Tag), `water_goal` +5, `protein_goal` +10, `kcal_goal` +10. `syncNutrition` gleicht die Ereignisse eines Tages nach jeder Änderung ab (auch Löschen).
+- **Neue Tagesquest** „Ernährung eintragen“, gilt ab dem Tag des Updates (`nutritionSince`), damit alte Tage nicht bestraft werden.
+- **Titel:** 16 neue Ernährungs-Titel (jetzt 122).
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -163,6 +174,7 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Ziele für Kalorien und Makros, eigener Balken für Protein
 - Wasser-Tracker
 - Lieblingsmahlzeiten mit einem Tipp hinzufügen
+- Rezepte (ganze Gerichte mit Zutaten und Mengen) per Schnellauswahl
 
 ### Uni
 - Lern-Timer (Pomodoro) mit XP
@@ -203,7 +215,9 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**4a:** XP, Level, Ränge, Attribute, Quests, Penalty, Level-Up-Animation~~ – erledigt.
    - ~~**4b:** Ränge mit Stufen, Aufstiegsprüfung, Quest-Serie, Status-Seite~~ – erledigt.
    - ~~**4c:** Bosse (Trainingsziele mit Countdown), 106 Titel und Erfolge~~ – erledigt.
-5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten, **Ernährungs-Bosse**
+5. **Ernährung**
+   - ~~**5a:** Tracker, Suche (Open Food Facts), Wasser, Ziele, Favoriten, Rezepte~~ – erledigt.
+   - **5b:** Barcode-Scan, **Ernährungs-Bosse**
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos, **Klausur-Bosse** und **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)

@@ -17,6 +17,11 @@ export type Metric =
   | 'notes'
   | 'rank'
   | 'xp'
+  | 'meals'
+  | 'proteinDays'
+  | 'proteinStreak'
+  | 'kcalDays'
+  | 'waterDays'
 
 type Group = {
   metric: Metric
@@ -234,6 +239,57 @@ export const TITLE_GROUPS: Group[] = [
       [1, 'Notizgeber'],
       [25, 'Gedankensammler'],
       [100, 'Archivar'],
+    ],
+  },
+  {
+    metric: 'meals',
+    category: 'Ernährung',
+    hint: (n) => (n === 1 ? 'Erste Mahlzeit eintragen' : `${de(n)} Mahlzeiten eintragen`),
+    tiers: [
+      [1, 'Erster Bissen'],
+      [50, 'Mahlzeitenzähler'],
+      [200, 'Ernährungsbewusst'],
+      [500, 'Kalorienbuchhalter'],
+      [1000, 'Meister der Küche'],
+    ],
+  },
+  {
+    metric: 'proteinDays',
+    category: 'Ernährung',
+    hint: (n) => `An ${de(n)} Tagen das Eiweißziel schaffen`,
+    tiers: [
+      [7, 'Muskelfutter'],
+      [30, 'Eiweißkrieger'],
+      [100, 'Proteinmonarch'],
+    ],
+  },
+  {
+    metric: 'proteinStreak',
+    category: 'Ernährung',
+    hint: (n) => `${de(n)} Tage am Stück das Eiweißziel schaffen`,
+    tiers: [
+      [7, 'Eiweiß-Woche'],
+      [30, 'Eiweiß-Monat'],
+    ],
+  },
+  {
+    metric: 'kcalDays',
+    category: 'Ernährung',
+    hint: (n) => `An ${de(n)} Tagen das Kalorienziel schaffen`,
+    tiers: [
+      [7, 'Gut genährt'],
+      [30, 'Energiespeicher'],
+      [100, 'Unerschöpflich'],
+    ],
+  },
+  {
+    metric: 'waterDays',
+    category: 'Ernährung',
+    hint: (n) => `An ${de(n)} Tagen das Wasserziel schaffen`,
+    tiers: [
+      [7, 'Durstlöscher'],
+      [30, 'Quellwasser'],
+      [100, 'Herr der Fluten'],
     ],
   },
   {

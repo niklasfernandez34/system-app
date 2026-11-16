@@ -11,6 +11,12 @@ export const DEFAULT_SETTINGS = {
   seenStage: 0,
   seenTitles: null as string[] | null,
   activeTitle: '' as string,
+  kcalGoal: 2500,
+  proteinGoal: 150,
+  carbsGoal: 300,
+  fatGoal: 80,
+  waterGoal: 3000,
+  nutritionSince: '' as string,
 }
 
 export type Settings = typeof DEFAULT_SETTINGS

@@ -4,6 +4,8 @@ import { runStartup } from './lib/startup'
 import { SystemWatcher } from './components/SystemWatcher'
 import { TodayPage } from './pages/TodayPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
+import { NutritionPage } from './pages/NutritionPage'
+import { RecipeEditPage } from './pages/RecipeEditPage'
 import { MorePage } from './pages/MorePage'
 import { JournalPage } from './pages/JournalPage'
 import { HabitsPage } from './pages/HabitsPage'
@@ -43,7 +45,8 @@ export default function App() {
             <Route path="/sport/training" element={<WorkoutPage />} />
             <Route path="/sport/koerper" element={<BodyPage />} />
             <Route path="/sport/fotos" element={<PhotosPage />} />
-            <Route path="/ernaehrung" element={<PlaceholderPage title="Ernährung" />} />
+            <Route path="/ernaehrung" element={<NutritionPage />} />
+            <Route path="/ernaehrung/rezept/:id" element={<RecipeEditPage />} />
             <Route path="/uni" element={<PlaceholderPage title="Uni" />} />
             <Route path="/mehr" element={<MorePage />} />
             <Route path="/status" element={<StatusPage />} />

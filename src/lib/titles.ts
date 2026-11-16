@@ -27,6 +27,11 @@ export function computeMetrics(events: LogEvent[], today: string): Record<Metric
     notes: count('note_added'),
     rank: rankIndexOf(events),
     xp: totalXp(events),
+    meals: count('meal_logged'),
+    proteinDays: new Set(days('protein_goal')).size,
+    proteinStreak: calcStreak(days('protein_goal'), today).longest,
+    kcalDays: new Set(days('kcal_goal')).size,
+    waterDays: new Set(days('water_goal')).size,
   }
 }
 

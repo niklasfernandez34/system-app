@@ -2,7 +2,7 @@ import { addDays, format, parseISO } from 'date-fns'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { MAX_PENALTY_DAYS, QUEST_STREAK_DAYS } from '../config/xp'
 import { db } from '../db/db'
-import { getSetting } from '../db/settings'
+import { getSetting, setSetting } from '../db/settings'
 import { logicalDay } from './day'
 import { currentDay, logEvent } from './events'
 import { penaltyTitle, questStatus } from './questCheck'
@@ -14,7 +14,8 @@ async function statusFor(day: string) {
   const events = await db.events.where('day').equals(day).toArray()
   const habits = await db.habits.filter((h) => !h.archived).toArray()
   const habitIds = habits.filter((h) => logicalDay(new Date(h.createdAt), dayStartHour) <= day).map((h) => h.id)
-  return { events, quests: questStatus(events, habitIds) }
+  const since = await getSetting('nutritionSince')
+  return { events, quests: questStatus(events, habitIds, !!since && day >= since) }
 }
 
 onNewDay(async (missed, today) => {
@@ -46,6 +47,7 @@ onNewDay(async (missed, today) => {
 export async function ensureTodayQuests() {
   const day = await currentDay()
   if (!(await db.quests.get(day))) await db.quests.add({ day })
+  if (!(await getSetting('nutritionSince'))) await setSetting('nutritionSince', day)
 }
 
 let syncing = false

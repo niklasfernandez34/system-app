@@ -10,6 +10,8 @@ import { QuestList } from '../components/QuestList'
 import { currentDay } from '../lib/events'
 import { useTodayCheckin } from '../lib/journal'
 import { useRunningWorkout, useTrainedToday } from '../lib/sport'
+import { NutritionSummary } from '../components/NutritionSummary'
+import { useDayNutrition } from '../lib/nutrition'
 
 export function TodayPage() {
   const day = useLiveQuery(() => currentDay())
@@ -57,6 +59,7 @@ export function TodayPage() {
           </div>
         )}
       </SystemWindow>
+      <TodayNutrition />
       <SystemWindow title="Habits">
         <HabitChecklist />
         <Button variant="ghost" className="mt-3 w-full" onClick={() => navigate('/habits')}>
@@ -64,5 +67,24 @@ export function TodayPage() {
         </Button>
       </SystemWindow>
     </div>
+  )
+}
+
+function TodayNutrition() {
+  const data = useDayNutrition()
+  const navigate = useNavigate()
+  if (!data) return null
+  return (
+    <SystemWindow title="Ernährung">
+      <NutritionSummary totals={data.totals} goals={data.goals} compact />
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <span className="text-sm text-sys-muted">
+          Wasser {data.water.toLocaleString('de-DE')} / {data.goals.water.toLocaleString('de-DE')} ml
+        </span>
+        <Button variant="ghost" onClick={() => navigate('/ernaehrung')}>
+          Öffnen
+        </Button>
+      </div>
+    </SystemWindow>
   )
 }
