@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 
-type Props = { file: { blob: Blob; name: string } | null; onClose: () => void; onShare?: () => void }
+type Props = { file: { blob: Blob; name: string; type?: string } | null; onClose: () => void; onShare?: () => void }
 
 export function FileViewer({ file, onClose, onShare }: Props) {
   const ref = useRef<HTMLDialogElement>(null)
@@ -14,7 +14,7 @@ export function FileViewer({ file, onClose, onShare }: Props) {
     if (!file && d.open) d.close()
   }, [file])
 
-  const type = file?.blob.type ?? ''
+  const type = file?.type || file?.blob.type || ''
   const btn = 'min-h-9 rounded-md border border-sys-line px-3 text-sm text-sys-muted active:bg-sys-line/30'
 
   return (

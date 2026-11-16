@@ -37,7 +37,7 @@ export function StudySheets({ subjectId }: { subjectId: number }) {
   const area = useRef<HTMLTextAreaElement>(null)
   const [drawing, setDrawing] = useState<number | null>(null)
   const [viewing, setViewing] = useState<PhotoRecord | null>(null)
-  const viewFile = useMemo(() => (viewing ? { blob: viewing.blob, name: 'Foto.jpg' } : null), [viewing])
+  const viewFile = useMemo(() => (viewing ? { blob: viewing.blob, name: 'Foto.jpg', type: 'image/jpeg' } : null), [viewing])
   const viewer = (
     <FileViewer
       file={viewFile}

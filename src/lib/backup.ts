@@ -31,6 +31,15 @@ async function saveFile(blob: Blob, name: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
+const withType = (blob: Blob, type: string) => (blob.type === type ? blob : new Blob([blob], { type }))
+
+export async function repairBlobTypes() {
+  const photos = (await db.photos.toArray()).filter((p) => !p.blob.type.startsWith('image/'))
+  for (const p of photos) await db.photos.update(p.id, { blob: withType(p.blob, 'image/jpeg') })
+  const files = (await db.files.toArray()).filter((f) => f.type && f.blob.type !== f.type)
+  for (const f of files) await db.files.update(f.id, { blob: withType(f.blob, f.type) })
+}
+
 export async function snapshotData(): Promise<Snapshot> {
   const tables = Object.fromEntries(await Promise.all(DATA_TABLES.map(async (t) => [t, await db.table(t).toArray()])))
   const photosMeta = (await db.photos.toArray()).map(({ blob: _b, ...m }) => m)
@@ -55,12 +64,12 @@ export async function applyData(snap: Snapshot, blobs: Map<string, Blob>) {
   const photos: PhotoRecord[] = []
   for (const m of snap.photosMeta ?? []) {
     const blob = blobs.get(photoKey(m)) ?? localPhotos.get(photoKey(m))
-    if (blob) photos.push({ ...m, blob: blob.type ? blob : new Blob([blob], { type: 'image/jpeg' }) })
+    if (blob) photos.push({ ...m, blob: withType(blob, 'image/jpeg') })
   }
   const files: FileRecord[] = []
   for (const m of snap.filesMeta ?? []) {
     const blob = blobs.get(fileKey(m)) ?? localFileBlobs.get(fileKey(m))
-    if (blob) files.push({ ...m, blob: blob.type ? blob : new Blob([blob], { type: m.type }) })
+    if (blob) files.push({ ...m, blob: withType(blob, m.type) })
   }
   const keepLocal = localFiles.filter((f) => f.noSync).map(({ id: _id, ...rest }) => rest)
   const tables = [...DATA_TABLES.map((t) => db.table(t)), db.photos, db.files]

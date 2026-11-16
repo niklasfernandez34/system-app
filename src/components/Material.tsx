@@ -48,7 +48,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
   const [folderName, setFolderName] = useState<{ from?: string; name: string } | null>(null)
   const [filter, setFilter] = useState('Alle')
   const [drawing, setDrawing] = useState<number | null>(null)
-  const [viewing, setViewing] = useState<{ blob: Blob; name: string } | null>(null)
+  const [viewing, setViewing] = useState<{ blob: Blob; name: string; type?: string } | null>(null)
 
   if (!items) return null
   const open = (f?: string) => setParams(f ? { bereich: 'dateien', ordner: f } : { bereich: 'dateien' }, { replace: true })
@@ -161,7 +161,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
               onMore={() =>
                 setEdit({ item: i, name: i.kind === 'file' ? i.name : i.title, url: i.kind === 'link' ? i.url : '', category: i.category, folder: i.folder, noSync: i.kind === 'file' ? i.noSync : undefined })
               }
-              onOpen={() => (i.kind === 'file' ? setViewing({ blob: i.blob, name: i.name }) : i.kind === 'link' ? window.open(i.url, '_blank', 'noopener') : setDrawing(i.id))
+              onOpen={() => (i.kind === 'file' ? setViewing({ blob: i.blob, name: i.name, type: i.type }) : i.kind === 'link' ? window.open(i.url, '_blank', 'noopener') : setDrawing(i.id))
               }
             />
           ))}

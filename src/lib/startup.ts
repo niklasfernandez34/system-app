@@ -1,6 +1,7 @@
 import { getSetting, setSetting } from '../db/settings'
 import { daysBetween } from './day'
 import { currentDay } from './events'
+import { repairBlobTypes } from './backup'
 
 type DayHandler = (missedDays: string[], today: string) => Promise<void>
 
@@ -25,6 +26,8 @@ async function startup() {
   } catch {
     /* Speicher nicht dauerhaft möglich */
   }
+
+  await repairBlobTypes().catch(() => undefined)
 
   const today = await currentDay()
   const last = await getSetting('lastOpenedDay')
