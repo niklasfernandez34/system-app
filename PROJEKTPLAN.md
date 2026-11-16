@@ -188,6 +188,12 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Fach-Kachel zeigt fällige Karten.
 - Reihenfolge einstellbar (Einstellung `cardOrder`, gilt für alle Fächer): fest = in der Reihenfolge des Anlegens, zufällig = neu gemischt pro Runde.
 
+### Entscheidungen aus Phase 6a+ (Teil 3: Lernzettel und Lernplan)
+
+- **Lernzettel** (Tabelle `sheets`, Dexie-Version 12): Titel, Text als Markdown (`react-markdown` + `remark-breaks`, einfache Zeilenumbrüche bleiben), Knöpfe für Überschrift, Liste und Fett. Fotos über `PhotoCapture` in `photos` mit `kind: 'sheet'`, IDs am Lernzettel (`photoIds`). Abbrechen löscht neu aufgenommene Fotos, Löschen des Zettels löscht seine Fotos. `TextField` hat dafür `textareaRef`.
+- **Lernplan** (Tabelle `studyPlans`, einer pro Fach): Klausurtermin (Vorschlag vom Klausur-Boss), Themen (eins pro Zeile), Wiederholungstage. `buildPlan` in `src/lib/studyPlan.ts` verteilt die Themen gleichmäßig ab heute bis vor der Klausur, danach je ein Tag „Wiederholen: alle Themen“. „Neu planen“ behält Erledigtes und verteilt den Rest ab heute neu.
+- XP `plan_task_done` 5 (Intelligenz). „Heute“ zeigt die Aufgaben des Tages und verpasste Themen (rot „nachholen“), solange die Klausur nicht vorbei ist.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -268,7 +274,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**5b:** Barcode-Scan, **Ernährungs-Bosse**~~ – erledigt.
 6. **Uni und Hautbild**
    - ~~**6a Uni:** Fächer, To-dos mit Fristen, Lern-Timer, **Klausur-Bosse**~~ – erledigt.
-   - **6a+ Fach-Ordner:** ~~Teil 1: Kacheln, Ordner, Dateien~~ – erledigt. ~~Teil 2: Karteikarten~~ – erledigt. Teil 3: Lernzettel (einfache Formatierung + Fotos), Lernplan (Themen bis zur Klausur verteilt, Tagesaufgabe auf „Heute“).
+   - **6a+ Fach-Ordner:** ~~Teil 1: Kacheln, Ordner, Dateien~~ – erledigt. ~~Teil 2: Karteikarten~~ – erledigt. ~~Teil 3: Lernzettel, Lernplan~~ – erledigt.
    - **6b Hautbild:** Pflegeroutine morgens/abends, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)

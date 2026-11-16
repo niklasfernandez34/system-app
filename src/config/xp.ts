@@ -23,6 +23,7 @@ export const XP = {
   study_session: 20,
   todo_done: 5,
   cards_round: 10,
+  plan_task_done: 5,
 } as const
 
 export type EventType = keyof typeof XP
@@ -68,6 +69,7 @@ export const ATTRIBUTE_OF: Partial<Record<EventType, Attribute>> = {
   study_session: 'int',
   todo_done: 'int',
   cards_round: 'int',
+  plan_task_done: 'int',
 }
 
 export const ATTRIBUTE_BASE = 10
