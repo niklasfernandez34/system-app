@@ -106,11 +106,11 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 
 ### Entscheidungen aus Phase 4b
 
-- **Rang + Stufe statt Level:** Jeder Rang hat 5 Stufen (I–V). Anzeige z. B. „D · III“. XP pro Rang (`RANKS` in `xp.ts`): E 550 (~1 Woche), D 1.700 (~3 Wochen), C 5.000 (~2 Monate), B 12.000 (~5 Monate), A 30.000 (~1 Jahr). Bei ~80 XP/Tag dauert es bis S etwa 2 Jahre. S hat endlose Stufen (je 6.000 XP).
+- **Rang + Stufe statt Level:** Jeder Rang hat 5 Stufen (I–V). Anzeige z. B. „D · III“. XP pro Rang (`RANKS` in `xp.ts`): E 550 (~1 Woche), D 1.500 (~3 Wochen), C 3.500 (~6 Wochen), B 8.000 (~3,5 Monate), A 15.000 (~6 Monate). Bei ~80 XP/Tag dauert es bis S etwa 1 Jahr. S hat endlose Stufen (je 3.000 XP).
 - **Rang aus dem Log:** Der Rang ist die Anzahl der `rank_up`-Ereignisse. Er geht nie verloren. Die Stufe wird aus den Gesamt-XP ab Rangbeginn berechnet und kann durch Penalty sinken. XP über Stufe V hinaus bleiben erhalten und zählen im nächsten Rang.
 - **Aufstiegsprüfung:** Aufstieg nur bei voller Stufe V **und** 5 Bedingungen (`src/lib/rankExam.ts`, `src/lib/ranks.ts`):
   - 3 Sport: Beim Rangbeginn werden 3 zufällige Übungen aus den aktiven Plänen ausgelost (fehlende werden nachgelost, sobald es Pläne gibt). Startwert = bester Satz (kg × WDH) im letzten Training davor, sonst das erste Training danach. Ziel: bester Satz seit Rangbeginn ≥ Start × (1 + Steigerung). Steigerung: E 5 %, D 7,5 %, C 10 %, B 12,5 %, A 15 %.
-  - 2 andere (**vorläufig**, Nutzer legt sie nach Abschluss aller Phasen fest): an X Tagen alle Quests (5/15/40/90/180) und eine Habit-Serie von X Tagen (7/14/30/60/100), jeweils seit Rangbeginn.
+  - 2 andere (**vorläufig**, Nutzer legt sie nach Abschluss aller Phasen fest): an X Tagen alle Quests (5/15/30/60/120) und eine Habit-Serie von X Tagen (7/14/30/60/100), jeweils seit Rangbeginn.
 - **Dexie Version 6:** Tabelle `ranks` (pro Rang: `startedAt`, `startDay`, `exercises` mit `baseline`). **Backup Version 6** enthält sie.
 - **Zusatz-XP:** `quest_streak` (+50 XP) bei jeder 7er-Serie mit allen Quests.
 - **Status-Seite** (`/status`, Tipp auf das Rang-Fenster oder über „Mehr“): Rang, Stufe, Gesamt-XP, Attribute, Prüfung mit Fortschritt.

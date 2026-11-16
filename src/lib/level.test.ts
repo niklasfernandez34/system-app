@@ -36,12 +36,12 @@ describe('rankProgress', () => {
     expect(rankProgress(2000, 0)).toEqual({ rank: 'E', stage: 5, into: 110, stageSize: 110, ready: true })
   })
   it('zählt im nächsten Rang ab dessen Startwert', () => {
-    expect(rankProgress(550, 1)).toMatchObject({ rank: 'D', stage: 1, into: 0, stageSize: 340 })
+    expect(rankProgress(550, 1)).toMatchObject({ rank: 'D', stage: 1, into: 0, stageSize: 300 })
     expect(rankProgress(100, 1)).toMatchObject({ stage: 1, into: 0 })
   })
   it('hat in Rang S endlose Stufen', () => {
-    const start = 550 + 1700 + 5000 + 12000 + 30000
-    expect(rankProgress(start + 6000 * 7 + 5, 5)).toMatchObject({ rank: 'S', stage: 8, into: 5, ready: false })
+    const start = 550 + 1500 + 3500 + 8000 + 15000
+    expect(rankProgress(start + 3000 * 7 + 5, 5)).toMatchObject({ rank: 'S', stage: 8, into: 5, ready: false })
   })
 })
 

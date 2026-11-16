@@ -24,11 +24,11 @@ export const QUEST_STREAK_DAYS = 7
 
 export const RANKS = [
   { rank: 'E', xp: 550, increase: 0.05, questDays: 5, habitStreak: 7 },
-  { rank: 'D', xp: 1700, increase: 0.075, questDays: 15, habitStreak: 14 },
-  { rank: 'C', xp: 5000, increase: 0.1, questDays: 40, habitStreak: 30 },
-  { rank: 'B', xp: 12000, increase: 0.125, questDays: 90, habitStreak: 60 },
-  { rank: 'A', xp: 30000, increase: 0.15, questDays: 180, habitStreak: 100 },
-  { rank: 'S', xp: 30000, increase: 0, questDays: 0, habitStreak: 0 },
+  { rank: 'D', xp: 1500, increase: 0.075, questDays: 15, habitStreak: 14 },
+  { rank: 'C', xp: 3500, increase: 0.1, questDays: 30, habitStreak: 30 },
+  { rank: 'B', xp: 8000, increase: 0.125, questDays: 60, habitStreak: 60 },
+  { rank: 'A', xp: 15000, increase: 0.15, questDays: 120, habitStreak: 100 },
+  { rank: 'S', xp: 15000, increase: 0, questDays: 0, habitStreak: 0 },
 ] as const
 
 export type Rank = (typeof RANKS)[number]['rank']
