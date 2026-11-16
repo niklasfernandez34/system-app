@@ -229,6 +229,14 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Routine-/Habit-Bosse (`kind: 'routine'`, Felder `routine` = morning/evening/both oder `habitId`): „X Tage bis zum Termin“. Logik `daysBossStatus`/`routineDays` in `src/lib/boss.ts`. Sieg Charisma (Routine) bzw. Willenskraft (Habit), Niederlage, sobald es nicht mehr zu schaffen ist.
 - `useObjectUrl` erzeugt den Blob-Link jetzt im Effect (vorher brach er im StrictMode).
 
+### Entscheidungen aus Phase 7a (Auswertung)
+
+- Seite `/auswertung` (Mehr → Auswertung). Rechenlogik rein in `src/lib/stats.ts` (getestet), Laden in `src/lib/statsData.ts`.
+- **Quellen:** Aktionen (XP, Quests, Trainings, Volumen, PRs, Lernzeit, Karteikarten, Aufgaben, Pflegeroutinen, Hautzustand, Habits) nur aus dem Ereignis-Log. Messwerte (Kalorien, Eiweiß, Wasser, Gewicht, Schlaf, Stimmung, Energie) aus ihren Tabellen, weil sie sich nachträglich ändern lassen.
+- **Statistiken:** Zeitraum 4 Wochen (pro Tag), 3 Monate (pro Woche ab Montag), 1 Jahr (pro Monat). Bereiche XP, Sport, Uni, Ernährung, Körper, Tagebuch, Haut, Habits. Zähler als Balken (Summe), Messwerte als Linie (Schnitt nur über Tage mit Wert). Dazu „Lernzeit pro Fach“.
+- **Wochenrückblick** (Mo–So) oben auf der Seite: sonntags die laufende Woche, sonst die letzte. Vergleich mit der Vorwoche (▲ grün / ▼ rot, Kalorien neutral). Sonntags Hinweis auf „Heute“, bis der Rückblick geöffnet wurde (Einstellung `reviewSeenWeek`).
+- **Backup-Erinnerung** auf „Heute“ nur ohne Dropbox-Sync, wenn das letzte Backup älter als 7 Tage ist, mit Knopf „Jetzt sichern“.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -311,7 +319,9 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**6a Uni:** Fächer, To-dos mit Fristen, Lern-Timer, **Klausur-Bosse**~~ – erledigt.
    - **6a+ Fach-Ordner:** ~~Teil 1: Kacheln, Ordner, Dateien~~ – erledigt. ~~Teil 2: Karteikarten~~ – erledigt. ~~Teil 3: Lernzettel, Lernplan~~ – erledigt.
    - ~~**6b Hautbild:** Pflegeroutine morgens/abends, Hautzustand, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**~~ – erledigt.
-7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
+7. **Erinnerungen und Auswertung**
+   - ~~**7a:** Statistiken, Wochenrückblick, Backup-Erinnerung~~ – erledigt.
+   - **7b:** Zusammenhänge, Kalenderexport (Training, Lernplan, Klausuren/Fristen, Pflegeroutine)
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)
 
 (Die frühere Phase 8 „Veröffentlichen“ ist in Phase 1 aufgegangen.)

@@ -4,6 +4,7 @@ import { runStartup } from './lib/startup'
 import { SystemWatcher } from './components/SystemWatcher'
 import { TodayPage } from './pages/TodayPage'
 import { PlaceholderPage } from './pages/PlaceholderPage'
+import { StatsPage } from './pages/StatsPage'
 import { NutritionPage } from './pages/NutritionPage'
 import { RecipeEditPage } from './pages/RecipeEditPage'
 import { RecipesPage } from './pages/RecipesPage'
@@ -79,6 +80,7 @@ export default function App() {
             <Route path="/uni/fach/:id" element={<SubjectPage />} />
             <Route path="/mehr" element={<MorePage />} />
             <Route path="/status" element={<StatusPage />} />
+            <Route path="/auswertung" element={<StatsPage />} />
             <Route path="/erfolge" element={<AchievementsPage />} />
             <Route path="/tagebuch" element={<JournalPage />} />
             <Route path="/habits" element={<HabitsPage />} />

@@ -24,6 +24,7 @@ export const DEFAULT_SETTINGS = {
   breakMinutes: 5,
   studyTimer: null as StudyTimer | null,
   cardOrder: 'fixed' as 'fixed' | 'random',
+  reviewSeenWeek: '' as string,
 }
 
 export type StudyTimer = { subjectId: number; phase: 'focus' | 'break'; endsAt: number; total: number }

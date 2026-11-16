@@ -10,6 +10,7 @@ import { QuestList } from '../components/QuestList'
 import { Deadlines } from '../components/Deadlines'
 import { TodayPlan } from '../components/TodayPlan'
 import { SkinRoutines } from '../components/SkinRoutines'
+import { TodayHints } from '../components/TodayHints'
 import { currentDay } from '../lib/events'
 import { useTodayCheckin } from '../lib/journal'
 import { useRunningWorkout, useTrainedToday } from '../lib/sport'
@@ -31,6 +32,7 @@ export function TodayPage() {
         </p>
         <LevelPanel />
       </SystemWindow>
+      <TodayHints />
       <SystemWindow title="Tägliche Quests">
         <QuestList />
       </SystemWindow>
