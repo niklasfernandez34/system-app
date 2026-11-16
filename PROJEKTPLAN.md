@@ -141,7 +141,11 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Ränge:** E → D → C → B → A → S
 - **XP** für erledigte Aktionen in allen Bereichen. Die Werte stehen zentral in einer Datei und sind leicht anpassbar.
 - **Tägliche Quests** werden automatisch aus den Bereichen erzeugt. Wer eine verpasst, bekommt eine Penalty Quest oder verliert XP.
-- **Boss-Kämpfe:** Klausuren und Trainingsziele mit Countdown und Extra-XP
+- **Boss-Kämpfe** für alle Bereiche, mit Countdown und Extra-XP. Beim Anlegen wählt man die Boss-Art:
+  - **Sport:** Zielgewicht bei einer Übung (fertig seit 4c)
+  - **Ernährung:** an X Tagen ein Tagesziel schaffen, z. B. „10 × über 2500 kcal in 12 Tagen“ (auch Protein, Wasser)
+  - **Uni:** Klausur mit Datum. Sieg, wenn sie nach dem Termin als bestanden (optional mit Wunschnote) eingetragen wird.
+  - **Hautbild / Antrieb:** an X Tagen eine Routine oder ein Habit erledigen
 - **Titel und Erfolge**, z. B. „30 Tage Streak“ oder „100 kg Bankdrücken“
 - Animation beim Level-Up
 
@@ -199,8 +203,8 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**4a:** XP, Level, Ränge, Attribute, Quests, Penalty, Level-Up-Animation~~ – erledigt.
    - ~~**4b:** Ränge mit Stufen, Aufstiegsprüfung, Quest-Serie, Status-Seite~~ – erledigt.
    - ~~**4c:** Bosse (Trainingsziele mit Countdown), 106 Titel und Erfolge~~ – erledigt.
-5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten
-6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos
+5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten, **Ernährungs-Bosse**
+6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos, **Klausur-Bosse** und **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)
 
