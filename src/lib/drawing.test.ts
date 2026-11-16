@@ -23,6 +23,14 @@ describe('strokePath', () => {
   })
 })
 
+describe('Punkte', () => {
+  it('zeichnet ein Antippen als Punkt', () => {
+    const d = strokePath({ ...line, points: [[50, 50, 0.5]] })
+    expect(d).toContain('a')
+    expect(d.endsWith('Z')).toBe(true)
+  })
+})
+
 describe('isEmpty', () => {
   it('erkennt leere Seiten', () => {
     expect(isEmpty([[], []])).toBe(true)

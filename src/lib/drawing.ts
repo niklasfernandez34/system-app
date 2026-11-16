@@ -21,21 +21,32 @@ function svgPath(points: number[][]) {
   return d + 'Z'
 }
 
+function dot(s: Stroke) {
+  const [x, y, p] = s.points[0]
+  const r = Math.max(1.5, (s.size / 2) * (s.tool === 'pen' ? 0.6 + p * 0.6 : 1))
+  return `M${(x - r).toFixed(1)},${y.toFixed(1)} a${r.toFixed(1)},${r.toFixed(1)} 0 1,0 ${(2 * r).toFixed(1)},0 a${r.toFixed(1)},${r.toFixed(1)} 0 1,0 ${(-2 * r).toFixed(1)},0Z`
+}
+
 export function strokePath(s: Stroke, done = true) {
+  if (!s.points.length) return ''
+  const [x0, y0] = s.points[0]
+  const tiny = s.points.every(([x, y]) => Math.abs(x - x0) < 2 && Math.abs(y - y0) < 2)
+  if (tiny) return dot(s)
   const pen = s.tool === 'pen'
   const pressure = s.points.some((p) => p[2] !== 0.5)
-  return svgPath(
+  const d = svgPath(
     getStroke(s.points, {
       size: s.size,
       thinning: pen ? 0.6 : 0,
       smoothing: 0.5,
-      streamline: 0.45,
+      streamline: 0.3,
       simulatePressure: pen && !pressure,
       last: done,
       start: { cap: true },
       end: { cap: true },
     }),
   )
+  return d || dot(s)
 }
 
 export function hitStroke(s: Stroke, x: number, y: number, r: number) {

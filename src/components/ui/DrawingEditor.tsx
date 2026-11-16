@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent as RPointerEvent } from 'react'
 import { db, type Paper, type Stroke, type StrokePoint } from '../../db/db'
-import { hitStroke, PAGE_H, PAGE_W } from '../../lib/drawing'
+import { hitStroke, PAGE_H, PAGE_W, strokePath } from '../../lib/drawing'
 import { saveDrawing } from '../../lib/drawings'
-import { PAPER_BG, PageStrokes, PaperLines, StrokePath } from './DrawingPage'
+import { PAPER_BG, PageStrokes, PaperLines } from './DrawingPage'
 
 type Tool = 'pen' | 'marker' | 'eraser'
 const COLORS = ['#dbeafe', '#38bdf8', '#f43f5e', '#4ade80', '#facc15']
@@ -21,28 +21,47 @@ const capture = (e: RPointerEvent<SVGSVGElement>) => {
   }
 }
 
-type Current = { page: number; pointerId: number; stroke: Stroke } | null
+const PEN_KEY = 'system-pen-seen'
+const readPen = () => {
+  try {
+    return localStorage.getItem(PEN_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+const rememberPen = () => {
+  try {
+    localStorage.setItem(PEN_KEY, '1')
+  } catch {
+    return
+  }
+}
+
+type Current = { page: number; pointerId: number; pen: boolean; stroke: Stroke } | null
 type Props = { id: number | null; onClose: () => void }
 
 export function DrawingEditor({ id, onClose }: Props) {
   const ref = useRef<HTMLDialogElement>(null)
   const scroller = useRef<HTMLDivElement>(null)
+  const live = useRef<(SVGPathElement | null)[]>([])
+  const raf = useRef(0)
+  const hooked = useRef(new WeakSet<SVGSVGElement>())
   const [pages, setPages] = useState<Stroke[][] | null>(null)
   const [paper, setPaper] = useState<Paper>('lined')
   const [tool, setTool] = useState<Tool>('pen')
   const [color, setColor] = useState(COLORS[0])
   const [sizeIdx, setSizeIdx] = useState(1)
-  const [penSeen, setPenSeen] = useState(false)
+  const [penSeen, setPenSeen] = useState(readPen)
   const [fingerDraw, setFingerDraw] = useState(true)
   const [undo, setUndo] = useState<Stroke[][][]>([])
   const [redo, setRedo] = useState<Stroke[][][]>([])
-  const [, setTick] = useState(0)
   const cur = useRef<Current>(null)
   const erase = useRef<{ pointerId: number; page: number; snap: Stroke[][] } | null>(null)
-  const scroll = useRef<{ pointerId: number; y: number } | null>(null)
+  const mode = useRef({ penSeen, fingerDraw: true })
   const pagesRef = useRef<Stroke[][] | null>(null)
   const dirty = useRef(false)
   pagesRef.current = pages
+  mode.current = { penSeen, fingerDraw }
 
   useEffect(() => {
     const d = ref.current
@@ -100,18 +119,45 @@ export function DrawingEditor({ id, onClose }: Props) {
     setPages(next)
   }
 
+  const paint = () => {
+    if (raf.current) return
+    raf.current = requestAnimationFrame(() => {
+      raf.current = 0
+      const c = cur.current
+      live.current.forEach((el, i) => {
+        if (!el) return
+        if (!c || c.page !== i) return el.setAttribute('d', '')
+        el.setAttribute('d', strokePath(c.stroke, false))
+        el.setAttribute('fill', c.stroke.color)
+        el.setAttribute('opacity', c.stroke.tool === 'marker' ? '0.35' : '1')
+      })
+    })
+  }
+
+  const hook = (svg: SVGSVGElement | null) => {
+    if (!svg || hooked.current.has(svg)) return
+    hooked.current.add(svg)
+    const block = (e: TouchEvent) => {
+      const touches = [...Array.from(e.touches), ...Array.from(e.changedTouches)]
+      const stylus = touches.some((t) => (t as Touch & { touchType?: string }).touchType === 'stylus')
+      if (stylus || cur.current?.pen || (!mode.current.penSeen && mode.current.fingerDraw)) e.preventDefault()
+    }
+    svg.addEventListener('touchstart', block, { passive: false })
+    svg.addEventListener('touchmove', block, { passive: false })
+  }
+
   const down = (e: RPointerEvent<SVGSVGElement>, page: number) => {
     const pen = e.pointerType === 'pen'
-    if (pen && !penSeen) setPenSeen(true)
-    const fingerScrolls = e.pointerType === 'touch' && (penSeen || !fingerDraw)
-    if (fingerScrolls) {
-      if (penSeen) {
-        scroll.current = { pointerId: e.pointerId, y: e.clientY }
-        capture(e)
-      }
-      return
+    if (pen && !penSeen) {
+      setPenSeen(true)
+      rememberPen()
     }
-    if (cur.current || erase.current) return
+    if (!pen && e.pointerType === 'touch' && (penSeen || !fingerDraw)) return
+    if (erase.current) return
+    if (cur.current) {
+      if (!pen || cur.current.pen) return
+      cur.current = null
+    }
     e.preventDefault()
     capture(e)
     const pt = point(e.nativeEvent, e.currentTarget)
@@ -120,17 +166,11 @@ export function DrawingEditor({ id, onClose }: Props) {
       eraseAt(page, pt)
       return
     }
-    cur.current = { page, pointerId: e.pointerId, stroke: { tool, color, size: SIZES[tool][sizeIdx], points: [pt] } }
-    setTick((t) => t + 1)
+    cur.current = { page, pointerId: e.pointerId, pen, stroke: { tool, color, size: SIZES[tool][sizeIdx], points: [pt] } }
+    paint()
   }
 
   const move = (e: RPointerEvent<SVGSVGElement>) => {
-    const s = scroll.current
-    if (s && s.pointerId === e.pointerId) {
-      scroller.current?.scrollBy(0, s.y - e.clientY)
-      s.y = e.clientY
-      return
-    }
     const co = e.nativeEvent.getCoalescedEvents?.()
     const events = co?.length ? co : [e.nativeEvent]
     const er = erase.current
@@ -141,11 +181,10 @@ export function DrawingEditor({ id, onClose }: Props) {
     const c = cur.current
     if (!c || c.pointerId !== e.pointerId) return
     for (const ev of events) c.stroke.points.push(point(ev, e.currentTarget))
-    setTick((t) => t + 1)
+    paint()
   }
 
   const up = (e: RPointerEvent<SVGSVGElement>) => {
-    if (scroll.current?.pointerId === e.pointerId) scroll.current = null
     const er = erase.current
     if (er && er.pointerId === e.pointerId) {
       erase.current = null
@@ -155,11 +194,13 @@ export function DrawingEditor({ id, onClose }: Props) {
     const c = cur.current
     if (!c || c.pointerId !== e.pointerId) return
     cur.current = null
+    if (e.type === 'pointercancel' && c.stroke.points.length < 3) return paint()
     const all = pagesRef.current!
     change(
       all.map((p, i) => (i === c.page ? [...p, c.stroke] : p)),
       all,
     )
+    paint()
   }
 
   const doUndo = () => {
@@ -185,7 +226,7 @@ export function DrawingEditor({ id, onClose }: Props) {
     setPaper(p)
   }
 
-  const drawTouch = penSeen || fingerDraw
+  const drawTouch = !penSeen && fingerDraw
   const seg = (active: boolean) =>
     `min-h-9 rounded-md border px-2 text-sm ${active ? 'border-sys-glow bg-sys-glow/15 text-sys-text shadow-glow' : 'border-sys-line text-sys-muted'}`
 
@@ -265,6 +306,7 @@ export function DrawingEditor({ id, onClose }: Props) {
             {pages?.map((strokes, i) => (
               <div key={i}>
                 <svg
+                  ref={hook}
                   viewBox={`0 0 ${PAGE_W} ${PAGE_H}`}
                   className="block w-full select-none rounded border border-sys-line"
                   style={{ background: PAPER_BG, touchAction: drawTouch ? 'none' : 'pan-y', WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
@@ -275,7 +317,11 @@ export function DrawingEditor({ id, onClose }: Props) {
                 >
                   <PaperLines paper={paper} />
                   <PageStrokes strokes={strokes} />
-                  {cur.current?.page === i && <StrokePath stroke={cur.current.stroke} done={false} />}
+                  <path
+                    ref={(el) => {
+                      live.current[i] = el
+                    }}
+                  />
                 </svg>
                 <div className="mt-1 flex justify-between text-xs text-sys-muted">
                   <span>
