@@ -1,3 +1,5 @@
+export const DEFAULT_APP_KEY = '0q077c3th21sx99'
+
 export type RemoteMeta = { rev: string; modified: string }
 
 export type Remote = {

@@ -215,6 +215,7 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Anmeldung per OAuth PKCE ohne Weiterleitung: Der Nutzer kopiert den Code von Dropbox in die App (funktioniert auch als Home-Bildschirm-App, wo Weiterleitungen in einem anderen Speicher landen). App key, Token und Sync-Stand liegen in `localStorage` (`system-sync`), nicht in IndexedDB, damit ein geladener Stand sie nicht überschreibt.
 - Ablauf (`src/lib/sync.ts`, Entscheidung in `syncDecide.ts`): Vergleich von Dropbox-`rev` und SHA-256 des lokalen Stands mit dem letzten Sync. Nur Dropbox neu → herunterladen. Nur lokal neu → hochladen, Fotos und Dateien nur, wenn sie fehlen; verwaiste werden gelöscht. Beides neu → Dialog „Dropbox-Stand laden“ oder „Diesen Stand behalten“. Ganzer Stand, keine Zusammenführung einzelner Einträge.
 - Beim Öffnen wartet die App bis zu 10 s auf den Sync, bevor Tageswechsel und Quests laufen. Hochladen alle 5 Minuten (sichtbar), beim Verlassen der App und wenn das Netz wiederkommt.
+- Eigene Dropbox-App „System-Sync-k7q4m“ (App-Ordner, files.content.read/write, öffentliche Clients an). App key `0q077c3th21sx99` steht als `DEFAULT_APP_KEY` in `src/lib/dropbox.ts` (öffentlich, kein Geheimnis) und ist im Feld vorausgefüllt.
 - Dateien können „nur auf diesem Gerät“ bleiben (`noSync`), dann sind sie nicht im Sync und nicht im Backup.
 
 ## 3. Funktionen

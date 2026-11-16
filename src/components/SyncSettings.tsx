@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { Button, ProgressBar, SystemWindow, TextField } from './ui'
-import { finishAuth, startAuth } from '../lib/dropbox'
+import { DEFAULT_APP_KEY, finishAuth, startAuth } from '../lib/dropbox'
 import { connect, disconnect, pendingAuth, rememberAuthStart, syncNow, usage, useSyncStatus } from '../lib/sync'
 
 const gb = (b: number) => `${(b / 1024 ** 3).toFixed(2).replace('.', ',')} GB`
 
 export function SyncSettings() {
   const s = useSyncStatus()
-  const [appKey, setAppKey] = useState(() => pendingAuth().appKey ?? '')
+  const [appKey, setAppKey] = useState(() => pendingAuth().appKey ?? DEFAULT_APP_KEY)
   const [code, setCode] = useState('')
   const [started, setStarted] = useState(() => !!pendingAuth().verifier)
   const [error, setError] = useState('')
@@ -53,12 +53,12 @@ export function SyncSettings() {
           eigenen Dropbox-Konto.
         </p>
         <details className="mb-3 text-sm">
-          <summary className="cursor-pointer text-sys-glow">Einmalige Einrichtung (ca. 5 Min.)</summary>
+          <summary className="cursor-pointer text-sys-glow">Eigene Dropbox-App verwenden (optional)</summary>
           <ol className="mt-2 list-decimal space-y-1 pl-5 text-sys-muted">
             <li>Auf dropbox.com/developers/apps anmelden und „Create app“ wählen.</li>
             <li>„Scoped access“ und „App folder“ wählen, einen Namen eingeben (z. B. „System-Sync-Niklas“), erstellen.</li>
             <li>Im Reiter „Permissions“ files.content.write und files.content.read anhaken, unten „Submit“.</li>
-            <li>Im Reiter „Settings“ den „App key“ kopieren und hier einfügen.</li>
+            <li>Im Reiter „Settings“ den „App key“ kopieren und unten statt des eingetragenen einfügen.</li>
           </ol>
         </details>
         <div className="space-y-3">
