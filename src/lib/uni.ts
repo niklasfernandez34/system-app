@@ -147,20 +147,22 @@ export function deleteFile(id: number) {
   return db.files.delete(id)
 }
 
-export function openFile(f: FileRecord) {
-  const url = URL.createObjectURL(f.blob)
-  const win = window.open(url, '_blank')
-  if (!win) location.href = url
-  setTimeout(() => URL.revokeObjectURL(url), 60_000)
-}
-
-export async function shareFile(f: FileRecord) {
-  const file = new File([f.blob], f.name, { type: f.type })
+export async function shareBlob(blob: Blob, name: string) {
+  const file = new File([blob], name, { type: blob.type })
   if (navigator.canShare?.({ files: [file] })) {
     try {
       await navigator.share({ files: [file] })
     } catch {
       return
     }
-  } else openFile(f)
+    return
+  }
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = name
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
+
+export const shareFile = (f: FileRecord) => shareBlob(f.blob, f.name)

@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { format } from 'date-fns'
 import Markdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
-import { Button, Dialog, DrawingEditor, DrawingPreview, PhotoCapture, SystemWindow, TextField } from './ui'
+import { Button, Dialog, DrawingEditor, DrawingPreview, FileViewer, PhotoCapture, SystemWindow, TextField } from './ui'
+import { shareBlob } from '../lib/uni'
 import { db, type PhotoRecord, type SheetRecord } from '../db/db'
 import { useObjectUrl } from '../lib/photos'
 import { addSheetPhoto, deleteSheet, saveSheet, usePhotos, useSheets } from '../lib/sheets'
@@ -35,6 +36,15 @@ export function StudySheets({ subjectId }: { subjectId: number }) {
   const [draft, setDraft] = useState<Draft | null>(null)
   const area = useRef<HTMLTextAreaElement>(null)
   const [drawing, setDrawing] = useState<number | null>(null)
+  const [viewing, setViewing] = useState<PhotoRecord | null>(null)
+  const viewFile = useMemo(() => (viewing ? { blob: viewing.blob, name: 'Foto.jpg' } : null), [viewing])
+  const viewer = (
+    <FileViewer
+      file={viewFile}
+      onClose={() => setViewing(null)}
+      onShare={() => viewing && shareBlob(viewing.blob, 'Foto.jpg')}
+    />
+  )
 
   const edit = (s?: SheetRecord) =>
     setDraft({
@@ -87,8 +97,9 @@ export function StudySheets({ subjectId }: { subjectId: number }) {
         {(open.drawingIds ?? []).map((d) => (
           <DrawingPreview key={d} id={d} allPages className="mt-3" onClick={() => setDrawing(d)} />
         ))}
-        <SheetPhotos ids={open.photoIds} />
+        <SheetPhotos ids={open.photoIds} onOpen={setViewing} />
         <DrawingEditor id={drawing} onClose={() => setDrawing(null)} />
+        {viewer}
         <div className="mt-4 grid grid-cols-2 gap-2">
           <Button variant="ghost" onClick={() => setOpen(null)}>
             Zurück
@@ -143,6 +154,7 @@ export function StudySheets({ subjectId }: { subjectId: number }) {
             <TextField multiline rows={10} textareaRef={area} value={draft.text} onChange={(text) => setDraft({ ...draft, text })} placeholder="Text …" />
             <SheetPhotos
               ids={draft.photoIds}
+              onOpen={setViewing}
               onRemove={(id) =>
                 setDraft({
                   ...draft,
@@ -228,29 +240,30 @@ export function StudySheets({ subjectId }: { subjectId: number }) {
           }}
         />
       )}
+      {viewer}
     </>
   )
 }
 
-function SheetPhotos({ ids, onRemove }: { ids: number[]; onRemove?: (id: number) => void }) {
+function SheetPhotos({ ids, onRemove, onOpen }: { ids: number[]; onRemove?: (id: number) => void; onOpen: (p: PhotoRecord) => void }) {
   const photos = usePhotos(ids)
   if (!photos?.length) return null
   return (
     <div className="mt-3 grid grid-cols-3 gap-2">
       {photos.map((p) => (
-        <Thumb key={p.id} photo={p} onRemove={onRemove} />
+        <Thumb key={p.id} photo={p} onRemove={onRemove} onOpen={() => onOpen(p)} />
       ))}
     </div>
   )
 }
 
-function Thumb({ photo, onRemove }: { photo: PhotoRecord; onRemove?: (id: number) => void }) {
+function Thumb({ photo, onRemove, onOpen }: { photo: PhotoRecord; onRemove?: (id: number) => void; onOpen: () => void }) {
   const url = useObjectUrl(photo.blob)
   return (
     <div className="relative">
-      <a href={url} target="_blank" rel="noreferrer">
+      <button type="button" className="block w-full" onClick={onOpen}>
         <img src={url} alt="" className="aspect-square w-full rounded border border-sys-line object-cover" />
-      </a>
+      </button>
       {onRemove && (
         <button
           type="button"

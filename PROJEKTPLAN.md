@@ -197,6 +197,7 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 ### Entscheidungen aus Phase 6a+ (Material: Ordner und Links)
 
 - Bereich „Dateien“ heißt jetzt **Material** (`src/components/Material.tsx`). Eigene **Ordner** pro Fach (Namen in `subjects.folders`, Feld `folder` an Dateien und Links). Ordner löschen schiebt den Inhalt nach „Ohne Ordner“, Umbenennen zieht den Inhalt mit. Geöffneter Ordner steht in der Adresse (`?bereich=dateien&ordner=…`).
+- Dateien und Lernzettel-Fotos öffnen sich im UI-Baustein `FileViewer` (Vollbild-Dialog: Bild, Video, PDF/Text per iframe, sonst „In anderer App öffnen“). Grund: Blob-Links in neuem Fenster bleiben in der Home-Bildschirm-App auf iOS beim Laden hängen.
 - **Links** (Tabelle `links`, Dexie-Version 13, im Daten-JSON): Adresse, Titel (leer → „YouTube-Video“ bzw. Seitenname), Art. Arten für Dateien und Links: Skript, Übung, Notiz, Video, Webseite. YouTube-Erkennung und Vorschaubild (`img.youtube.com`, nur online) in `src/lib/links.ts`.
 
 ### Entscheidungen: Handschrift mit Apple Pencil

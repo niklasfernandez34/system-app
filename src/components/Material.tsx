@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { useSearchParams } from 'react-router'
-import { Button, Chips, Dialog, DrawingEditor, DrawingPreview, SystemWindow, TextField } from './ui'
+import { Button, Chips, Dialog, DrawingEditor, DrawingPreview, FileViewer, SystemWindow, TextField } from './ui'
 import { db, type FileCategory } from '../db/db'
 import { isEmpty } from '../lib/drawing'
 import { defaultTitle, hostOf, normalizeUrl, youtubeId } from '../lib/links'
@@ -16,7 +16,7 @@ import {
   useMaterial,
   type MaterialItem,
 } from '../lib/material'
-import { addFiles, deleteFile, openFile, shareFile } from '../lib/uni'
+import { addFiles, deleteFile, shareBlob, shareFile } from '../lib/uni'
 import { createDrawing, deleteDrawings, updateDrawingMeta } from '../lib/drawings'
 
 const CATEGORIES: { id: FileCategory; label: string; one: string }[] = [
@@ -48,6 +48,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
   const [folderName, setFolderName] = useState<{ from?: string; name: string } | null>(null)
   const [filter, setFilter] = useState('Alle')
   const [drawing, setDrawing] = useState<number | null>(null)
+  const [viewing, setViewing] = useState<{ blob: Blob; name: string } | null>(null)
 
   if (!items) return null
   const open = (f?: string) => setParams(f ? { bereich: 'dateien', ordner: f } : { bereich: 'dateien' }, { replace: true })
@@ -160,7 +161,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
               onMore={() =>
                 setEdit({ item: i, name: i.kind === 'file' ? i.name : i.title, url: i.kind === 'link' ? i.url : '', category: i.category, folder: i.folder, noSync: i.kind === 'file' ? i.noSync : undefined })
               }
-              onOpen={() => (i.kind === 'file' ? openFile(i) : i.kind === 'link' ? window.open(i.url, '_blank', 'noopener') : setDrawing(i.id))
+              onOpen={() => (i.kind === 'file' ? setViewing({ blob: i.blob, name: i.name }) : i.kind === 'link' ? window.open(i.url, '_blank', 'noopener') : setDrawing(i.id))
               }
             />
           ))}
@@ -284,6 +285,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
           </div>
         )}
       </Dialog>
+      <FileViewer file={viewing} onClose={() => setViewing(null)} onShare={() => viewing && shareBlob(viewing.blob, viewing.name)} />
       <DrawingEditor
         id={drawing}
         onClose={async () => {
