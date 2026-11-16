@@ -5,20 +5,32 @@ import { Button, Chips, NumberInput, SystemWindow } from '../components/ui'
 import type { BodyRecord } from '../db/db'
 import { BODY_FIELDS, bodyChange, lastKnown, saveBody, useBody, type BodyKey, type BodyValues } from '../lib/body'
 import { fmt } from '../lib/sport'
+import { PlanCheckDialog } from '../components/PlanCheckDialog'
+import { useSetting } from '../db/settings'
+import type { PlanCheck } from '../lib/calorieCalc'
+import { runPlanCheck } from '../lib/nutritionPlan'
 
 export function BodyPage() {
   const data = useBody()
+  const [check, setCheck] = useState<PlanCheck | null>(null)
+  const kcalGoal = useSetting('kcalGoal')
   if (!data) return null
   const todayEntry = data.entries.find((e) => e.day === data.today)
   return (
     <div className="space-y-4">
-      <BodyForm key={todayEntry?.updatedAt ?? 'neu'} entries={data.entries} todayEntry={todayEntry} />
+      <BodyForm
+        key={todayEntry?.updatedAt ?? 'neu'}
+        entries={data.entries}
+        todayEntry={todayEntry}
+        onSaved={async () => setCheck(await runPlanCheck())}
+      />
       <BodyChart entries={data.entries} today={data.today} />
+      <PlanCheckDialog check={check} currentKcal={kcalGoal} onClose={() => setCheck(null)} />
     </div>
   )
 }
 
-function BodyForm({ entries, todayEntry }: { entries: BodyRecord[]; todayEntry?: BodyRecord }) {
+function BodyForm({ entries, todayEntry, onSaved }: { entries: BodyRecord[]; todayEntry?: BodyRecord; onSaved: () => void }) {
   const [values, setValues] = useState<BodyValues>(() => (todayEntry ? lastKnown([todayEntry]) : lastKnown(entries)))
   const known = lastKnown(entries)
   const hidden = BODY_FIELDS.filter((f) => values[f.key] === undefined)
@@ -57,7 +69,11 @@ function BodyForm({ entries, todayEntry }: { entries: BodyRecord[]; todayEntry?:
             ))}
           </div>
         )}
-        <Button className="w-full" disabled={!Object.values(values).some((v) => v !== undefined)} onClick={() => saveBody(values)}>
+        <Button className="w-full" disabled={!Object.values(values).some((v) => v !== undefined)} onClick={async () => {
+            await saveBody(values)
+            if (values.weight !== undefined) onSaved()
+          }}
+        >
           Speichern
         </Button>
       </div>

@@ -2,7 +2,9 @@ import { addDays, format, parseISO } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router'
-import { Button, Dialog, NumberInput, ProgressBar, SystemWindow } from '../components/ui'
+import { Button, Chips, Dialog, NumberInput, ProgressBar, SystemWindow } from '../components/ui'
+import { GOAL_MODES } from '../lib/calorieCalc'
+import { usePlanStatus } from '../lib/nutritionPlan'
 import { FoodPicker, MacroLine } from '../components/FoodPicker'
 import { NutritionSummary } from '../components/NutritionSummary'
 import { MEAL_SLOTS, type MealRecord, type MealSlot } from '../db/db'
@@ -55,9 +57,15 @@ export function NutritionPage() {
 
       <SystemWindow title="Tagesbilanz">
         <NutritionSummary totals={data.totals} goals={data.goals} />
-        <Button variant="ghost" className="mt-3 w-full" onClick={() => setGoalsOpen(true)}>
-          Ziele anpassen
-        </Button>
+        <PlanStatus />
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Button variant="ghost" onClick={() => setGoalsOpen(true)}>
+            Ziele
+          </Button>
+          <Button variant="ghost" onClick={() => navigate('/ernaehrung/rechner')}>
+            Rechner
+          </Button>
+        </div>
       </SystemWindow>
 
       <SystemWindow title="Wasser">
@@ -213,16 +221,39 @@ function GoalsDialog({ open, goals, onClose }: { open: boolean; goals: Goals; on
   return (
     <Dialog open={open} onClose={onClose} title="Tagesziele">
       <div className="space-y-3">
+        <Chips
+          label="Ziel"
+          options={GOAL_MODES.map((m) => m.label)}
+          value={GOAL_MODES.find((m) => m.mode === goals.mode)!.label}
+          onChange={(l) => setSetting('goalMode', GOAL_MODES.find((m) => m.label === l)!.mode)}
+        />
         <NumberInput label="Kalorien" unit="kcal" step={50} min={0} value={goals.kcal} onChange={(v) => setSetting('kcalGoal', v)} />
         <NumberInput label="Eiweiß" unit="g" step={5} min={0} value={goals.protein} onChange={(v) => setSetting('proteinGoal', v)} />
         <NumberInput label="Kohlenhydrate" unit="g" step={10} min={0} value={goals.carbs} onChange={(v) => setSetting('carbsGoal', v)} />
         <NumberInput label="Fett" unit="g" step={5} min={0} value={goals.fat} onChange={(v) => setSetting('fatGoal', v)} />
         <NumberInput label="Wasser" unit="ml" step={250} min={0} value={goals.water} onChange={(v) => setSetting('waterGoal', v)} />
-        <p className="text-xs text-sys-muted">Ziel erreicht = Kalorien, Eiweiß bzw. Wasser mindestens so hoch wie das Ziel.</p>
+        <p className="text-xs text-sys-muted">
+          Kalorienziel erreicht: Abnehmen 80–100 %, Halten 90–110 %, Zunehmen ab 100 %. Eiweiß und Wasser: mindestens das Ziel.
+        </p>
         <Button className="w-full" onClick={onClose}>
           Fertig
         </Button>
       </div>
     </Dialog>
+  )
+}
+
+const kg = (n: number) => `${n > 0 ? '+' : n < 0 ? '−' : '±'}${(Math.round(Math.abs(n) * 10) / 10).toLocaleString('de-DE')} kg/Woche`
+
+function PlanStatus() {
+  const status = usePlanStatus()
+  if (!status) return null
+  const { plan, trend } = status
+  const label = GOAL_MODES.find((m) => m.mode === plan.mode)!.label
+  return (
+    <p className="mt-3 text-center text-xs text-sys-muted">
+      Ziel: {label}
+      {plan.rate !== 0 && ` ${kg(plan.rate)}`} · Trend: {trend === null ? 'noch zu wenig Wiegungen' : kg(trend)}
+    </p>
   )
 }

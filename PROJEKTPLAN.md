@@ -150,6 +150,14 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Lokale Suche: Passen nicht alle Wörter, kommen Treffer, bei denen höchstens ein Wort fehlt. Pulver (Whey, Isolat …) zählt immer in g.
 - **Rezepte-Seite** `/ernaehrung/rezepte`: Suche, Sortierung A–Z / nach Mahlzeit / zuletzt benutzt (Wahl wird lokal gemerkt). Rezepte werden dem Tag hinzugefügt, der auf der Essen-Seite offen war.
 
+### Entscheidungen aus Phase 5a+ (Kalorienrechner)
+
+- **Ziel-Art** (`goalMode`): Abnehmen / Halten / Zunehmen. Kalorienziel erreicht (XP `kcal_goal`): Abnehmen 80–100 %, Halten 90–110 %, Zunehmen ab 100 %.
+- **Rechner** (`/ernaehrung/rechner`, Logik in `src/lib/calorieCalc.ts`): Grundumsatz nach Mifflin-St Jeor × Aktivität (1,2 / 1,375 / 1,55 / 1,725 / 1,9). Tempo pro Woche oder Zielgewicht bis Datum. kcal = Umsatz + Tempo × 7.700 / 7, mindestens 1.500 (Mann) bzw. 1.200 (Frau). Eiweiß 2,0 g/kg (Abnehmen 2,2), Fett 0,9 g/kg, Rest Kohlenhydrate, Wasser 35 ml/kg. Warnung ab 1 % Körpergewicht/Woche Abnahme bzw. 0,5 kg/Woche Zunahme. Gewicht kommt aus den Körperdaten.
+- **Plan** in der Einstellung `nutritionPlan` (kommt mit ins Backup).
+- **2-Wochen-Prüfung** nach dem Speichern eines Gewichts (`runPlanCheck`): frühestens 14 Tage nach Berechnung/Anpassung/„Nein“. Trendlinie über alle Wiegungen seit der Berechnung (mind. 4, über mind. 11 Tage). Gefragt wird nur, wenn der Trend mehr als 0,25 kg/Woche **und** mehr als die doppelte Messunsicherheit vom Plan abweicht, an mind. 10 Tagen gegessen wurde und der Schnitt höchstens 10 % neben dem Ziel liegt. Neuer Umsatz = Schnitt gegessen − Trend × 7.700 / 7.
+- Auf der Essen-Seite: Statuszeile „Ziel · Trend“, Knöpfe „Ziele“ und „Rechner“.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -226,7 +234,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**4c:** Bosse (Trainingsziele mit Countdown), 106 Titel und Erfolge~~ – erledigt.
 5. **Ernährung**
    - ~~**5a:** Tracker, Suche (Open Food Facts), Wasser, Ziele, Favoriten, Rezepte~~ – erledigt.
-   - **5a+:** Kalorienrechner, Ziel-Art (Abnehmen/Halten/Zunehmen), 2-Wochen-Prüfung mit Gewichtstrend
+   - ~~**5a+:** Kalorienrechner, Ziel-Art (Abnehmen/Halten/Zunehmen), 2-Wochen-Prüfung mit Gewichtstrend~~ – erledigt.
    - **5b:** Barcode-Scan, **Ernährungs-Bosse**
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos, **Klausur-Bosse** und **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken

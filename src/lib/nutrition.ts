@@ -12,9 +12,10 @@ import {
   type RecipeRecord,
 } from '../db/db'
 import { getSetting } from '../db/settings'
+import { kcalGoalReached, type GoalMode } from './calorieCalc'
 import { currentDay } from './events'
 
-export type Goals = Macros & { water: number }
+export type Goals = Macros & { water: number; mode: GoalMode }
 export type NutritionEvent = 'meal_logged' | 'water_goal' | 'protein_goal' | 'kcal_goal'
 export type NewFood = Omit<FoodRecord, 'id'>
 
@@ -44,7 +45,7 @@ export function nutritionTargets(meals: MealLike[], waterMl: number, goals: Goal
     meal_logged: Math.min(MEAL_XP_MAX_PER_DAY, new Set(meals.map((m) => m.group)).size),
     water_goal: goals.water > 0 && waterMl >= goals.water ? 1 : 0,
     protein_goal: goals.protein > 0 && t.protein >= goals.protein ? 1 : 0,
-    kcal_goal: goals.kcal > 0 && t.kcal >= goals.kcal ? 1 : 0,
+    kcal_goal: kcalGoalReached(t.kcal, goals.kcal, goals.mode) ? 1 : 0,
   }
 }
 
@@ -122,6 +123,7 @@ async function readGoals(): Promise<Goals> {
     carbs: await getSetting('carbsGoal'),
     fat: await getSetting('fatGoal'),
     water: await getSetting('waterGoal'),
+    mode: await getSetting('goalMode'),
   }
 }
 

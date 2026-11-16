@@ -3,7 +3,7 @@ import type { MealRecord } from '../db/db'
 import { groupMeals, matchesFood, mealTotals, nutritionTargets, parseOffProduct, portion } from './nutrition'
 
 const per100 = { kcal: 200, protein: 10, carbs: 30, fat: 5 }
-const goals = { kcal: 500, protein: 25, carbs: 100, fat: 30, water: 2000 }
+const goals = { kcal: 500, protein: 25, carbs: 100, fat: 30, water: 2000, mode: 'gain' as const }
 const meal = (group: string, grams: number, extra: Partial<MealRecord> = {}) =>
   ({ id: 0, day: '2026-11-16', slot: 'Mittag', foodId: 1, name: 'x', grams, per100, createdAt: 0, group, ...extra }) as MealRecord
 

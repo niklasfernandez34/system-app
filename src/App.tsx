@@ -7,6 +7,7 @@ import { PlaceholderPage } from './pages/PlaceholderPage'
 import { NutritionPage } from './pages/NutritionPage'
 import { RecipeEditPage } from './pages/RecipeEditPage'
 import { RecipesPage } from './pages/RecipesPage'
+import { CalculatorPage } from './pages/CalculatorPage'
 import { MorePage } from './pages/MorePage'
 import { JournalPage } from './pages/JournalPage'
 import { HabitsPage } from './pages/HabitsPage'
@@ -48,6 +49,7 @@ export default function App() {
             <Route path="/sport/fotos" element={<PhotosPage />} />
             <Route path="/ernaehrung" element={<NutritionPage />} />
             <Route path="/ernaehrung/rezepte" element={<RecipesPage />} />
+            <Route path="/ernaehrung/rechner" element={<CalculatorPage />} />
             <Route path="/ernaehrung/rezept/:id" element={<RecipeEditPage />} />
             <Route path="/uni" element={<PlaceholderPage title="Uni" />} />
             <Route path="/mehr" element={<MorePage />} />

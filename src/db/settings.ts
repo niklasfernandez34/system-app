@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from './db'
+import type { GoalMode, NutritionPlan } from '../lib/calorieCalc'
 
 export const DEFAULT_SETTINGS = {
   dayStartHour: 4,
@@ -17,6 +18,8 @@ export const DEFAULT_SETTINGS = {
   fatGoal: 80,
   waterGoal: 3000,
   nutritionSince: '' as string,
+  goalMode: 'gain' as GoalMode,
+  nutritionPlan: null as NutritionPlan | null,
 }
 
 export type Settings = typeof DEFAULT_SETTINGS
