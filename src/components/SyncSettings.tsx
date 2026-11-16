@@ -15,6 +15,17 @@ export function SyncSettings() {
   const [error, setError] = useState('')
   const [space, setSpace] = useState<{ used: number; allocated: number } | null>(null)
   const [, setNow] = useState(0)
+  const [auth, setAuth] = useState<{ key: string; verifier: string; url: string } | null>(null)
+
+  useEffect(() => {
+    const key = appKey.trim()
+    if (s.connected || !key) return setAuth(null)
+    let alive = true
+    startAuth(key).then((a) => alive && setAuth({ key, ...a }))
+    return () => {
+      alive = false
+    }
+  }, [appKey, s.connected])
 
   useEffect(() => {
     if (!s.connected) return
@@ -23,12 +34,13 @@ export function SyncSettings() {
     return () => clearInterval(t)
   }, [s.connected, s.lastSyncedAt])
 
-  const login = async () => {
+  const login = () => {
     setError('')
-    const { verifier, url } = await startAuth(appKey.trim())
-    rememberAuthStart(appKey.trim(), verifier)
+    if (!auth) return
+    rememberAuthStart(auth.key, auth.verifier)
     setStarted(true)
-    window.open(url, '_blank')
+    const win = window.open(auth.url, '_blank')
+    if (!win) setError('Das Fenster wurde blockiert. Bitte den Link unten antippen.')
   }
 
   const finish = async () => {
@@ -63,9 +75,17 @@ export function SyncSettings() {
         </details>
         <div className="space-y-3">
           <TextField label="App key" value={appKey} onChange={setAppKey} placeholder="z. B. a1b2c3d4e5f6g7h" />
-          <Button className="w-full" disabled={!appKey.trim()} onClick={login}>
+          <Button className="w-full" disabled={!auth} onClick={login}>
             Bei Dropbox anmelden
           </Button>
+          {started && auth && pendingAuth().verifier === auth.verifier && (
+            <p className="text-center text-xs text-sys-muted">
+              Nichts passiert?{' '}
+              <a href={auth.url} target="_blank" rel="noreferrer" className="text-sys-glow underline">
+                Dropbox-Anmeldung hier öffnen
+              </a>
+            </p>
+          )}
           {started && (
             <>
               <p className="text-xs text-sys-muted">Nach „Zulassen“ zeigt Dropbox einen Code. Kopieren, hierher zurückkehren und einfügen:</p>
