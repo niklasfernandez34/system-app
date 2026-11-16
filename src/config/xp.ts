@@ -12,20 +12,23 @@ export const XP = {
   quests_completed: 20,
   quest_failed: -10,
   penalty_done: 0,
+  quest_streak: 50,
+  rank_up: 0,
 } as const
 
 export type EventType = keyof typeof XP
 
-export const LEVEL_BASE_XP = 100
-export const LEVEL_STEP_XP = 20
+export const STAGES_PER_RANK = 5
+export const SPORT_CONDITIONS = 3
+export const QUEST_STREAK_DAYS = 7
 
 export const RANKS = [
-  { rank: 'E', from: 1 },
-  { rank: 'D', from: 10 },
-  { rank: 'C', from: 20 },
-  { rank: 'B', from: 35 },
-  { rank: 'A', from: 50 },
-  { rank: 'S', from: 75 },
+  { rank: 'E', xp: 550, increase: 0.05, questDays: 5, habitStreak: 7 },
+  { rank: 'D', xp: 1700, increase: 0.075, questDays: 15, habitStreak: 14 },
+  { rank: 'C', xp: 5000, increase: 0.1, questDays: 40, habitStreak: 30 },
+  { rank: 'B', xp: 12000, increase: 0.125, questDays: 90, habitStreak: 60 },
+  { rank: 'A', xp: 30000, increase: 0.15, questDays: 180, habitStreak: 100 },
+  { rank: 'S', xp: 30000, increase: 0, questDays: 0, habitStreak: 0 },
 ] as const
 
 export type Rank = (typeof RANKS)[number]['rank']

@@ -96,19 +96,31 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 ### Entscheidungen aus Phase 4a
 
 - **XP** werden nur aus dem Ereignis-Log berechnet (`src/lib/level.ts`). Gesamt-XP fallen nie unter 0.
-- **Level:** Von Level n zu n+1 braucht es 100 + 20 × (n−1) XP. **Ränge:** E ab 1, D ab 10, C ab 20, B ab 35, A ab 50, S ab 75. Alles in `src/config/xp.ts`.
+- **Level** (100 + 20 × (n−1) XP pro Level) wurde in Phase 4b durch Rang + Stufe ersetzt.
 - **Attribute** = 10 + 1 Punkt pro 50 XP aus passenden Ereignissen (`ATTRIBUTE_OF`). Bisher: Stärke (Sport) und Willenskraft (Check-in, Tagebuch, Habits).
 - **Tägliche Quests** stehen in `src/config/quests.ts`: Check-in, alle Habits (nur wenn es Habits gibt), Training oder Körperdaten, Tagebuch. Erledigt wird aus dem Log gelesen. Sind alle erledigt, gibt es `quests_completed` (+20 XP). Wird danach etwas rückgängig gemacht, wird der Bonus wieder entfernt.
 - **Dexie Version 5:** Tabelle `quests` (ein Eintrag pro Tag: `evaluated`, `penalty`). **Backup Version 5** enthält sie.
 - **Penalty:** Beim Tageswechsel werden offene Tage ausgewertet, höchstens die letzten 3. Jede verpasste Quest gibt `quest_failed` (−10 XP). Dazu kommt eine Penalty Quest für heute (wechselt täglich). Wird sie abgehakt (`penalty_done`), gibt es den Abzug zurück. Der erste Tag mit dem Levelsystem wird nicht bestraft.
 - **Start-Sperre:** `runStartup` läuft nie doppelt gleichzeitig, damit kein Abzug doppelt kommt.
-- **Level-Up:** `SystemWatcher` (in `App.tsx`) merkt sich das höchste gesehene Level (`seenLevel`) und zeigt beim Aufstieg ein Fenster mit Animation. Nach einem Abzug gibt es beim Wiedererreichen keine zweite Meldung.
+- **Level-Up:** `SystemWatcher` (in `App.tsx`) zeigt beim Aufstieg ein Fenster mit Animation. Nach einem Abzug gibt es beim Wiedererreichen keine zweite Meldung.
+
+### Entscheidungen aus Phase 4b
+
+- **Rang + Stufe statt Level:** Jeder Rang hat 5 Stufen (I–V). Anzeige z. B. „D · III“. XP pro Rang (`RANKS` in `xp.ts`): E 550 (~1 Woche), D 1.700 (~3 Wochen), C 5.000 (~2 Monate), B 12.000 (~5 Monate), A 30.000 (~1 Jahr). Bei ~80 XP/Tag dauert es bis S etwa 2 Jahre. S hat endlose Stufen (je 6.000 XP).
+- **Rang aus dem Log:** Der Rang ist die Anzahl der `rank_up`-Ereignisse. Er geht nie verloren. Die Stufe wird aus den Gesamt-XP ab Rangbeginn berechnet und kann durch Penalty sinken. XP über Stufe V hinaus bleiben erhalten und zählen im nächsten Rang.
+- **Aufstiegsprüfung:** Aufstieg nur bei voller Stufe V **und** 5 Bedingungen (`src/lib/rankExam.ts`, `src/lib/ranks.ts`):
+  - 3 Sport: Beim Rangbeginn werden 3 zufällige Übungen aus den aktiven Plänen ausgelost (fehlende werden nachgelost, sobald es Pläne gibt). Startwert = bester Satz (kg × WDH) im letzten Training davor, sonst das erste Training danach. Ziel: bester Satz seit Rangbeginn ≥ Start × (1 + Steigerung). Steigerung: E 5 %, D 7,5 %, C 10 %, B 12,5 %, A 15 %.
+  - 2 andere (**vorläufig**, Nutzer legt sie nach Abschluss aller Phasen fest): an X Tagen alle Quests (5/15/40/90/180) und eine Habit-Serie von X Tagen (7/14/30/60/100), jeweils seit Rangbeginn.
+- **Dexie Version 6:** Tabelle `ranks` (pro Rang: `startedAt`, `startDay`, `exercises` mit `baseline`). **Backup Version 6** enthält sie.
+- **Zusatz-XP:** `quest_streak` (+50 XP) bei jeder 7er-Serie mit allen Quests.
+- **Status-Seite** (`/status`, Tipp auf das Rang-Fenster oder über „Mehr“): Rang, Stufe, Gesamt-XP, Attribute, Prüfung mit Fortschritt.
+- **Meldungen:** „Stufe auf!“ und „Rangaufstieg!“ (Einstellung `seenStage`).
 
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
 - Tägliche Quests, heutiges Training, Essen und Wasser, Erinnerungen, Streaks
-- Aktuelles Level, XP-Balken und Attribute auf einen Blick
+- Aktueller Rang und Stufe, XP-Balken und Attribute auf einen Blick
 
 ### Levelsystem
 - **Attribute:** Stärke (Sport), Intelligenz (Uni), Vitalität (Ernährung), Charisma (Hautbild), Willenskraft (Antrieb)
@@ -171,7 +183,8 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**3b Daten:** Übungsdatenbank (wger-Skript), Körperdaten, Fortschrittsfotos~~ – erledigt.
 4. **Levelsystem**
    - ~~**4a:** XP, Level, Ränge, Attribute, Quests, Penalty, Level-Up-Animation~~ – erledigt.
-   - **4b:** Bosse (Trainingsziele mit Countdown), Titel und Erfolge
+   - ~~**4b:** Ränge mit Stufen, Aufstiegsprüfung, Quest-Serie, Status-Seite~~ – erledigt.
+   - **4c:** Bosse (Trainingsziele mit Countdown), Titel und Erfolge
 5. **Ernährung:** Tracker, Barcode, Wasser, Ziele, Favoriten
 6. **Uni und Hautbild:** Timer, Deadlines, To-dos, Pflegeroutine, Hautfotos
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken

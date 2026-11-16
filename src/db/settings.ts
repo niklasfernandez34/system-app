@@ -8,7 +8,7 @@ export const DEFAULT_SETTINGS = {
   pinHash: '' as string,
   restSeconds: 90,
   weightIncrement: 2.5,
-  seenLevel: 0,
+  seenStage: 0,
 }
 
 export type Settings = typeof DEFAULT_SETTINGS

@@ -1,12 +1,13 @@
 import { addDays, format, parseISO } from 'date-fns'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { MAX_PENALTY_DAYS } from '../config/xp'
+import { MAX_PENALTY_DAYS, QUEST_STREAK_DAYS } from '../config/xp'
 import { db } from '../db/db'
 import { getSetting } from '../db/settings'
 import { logicalDay } from './day'
 import { currentDay, logEvent } from './events'
 import { penaltyTitle, questStatus } from './questCheck'
 import { onNewDay } from './startup'
+import { calcStreak } from './streak'
 
 async function statusFor(day: string) {
   const dayStartHour = await getSetting('dayStartHour')
@@ -59,6 +60,13 @@ export async function syncQuestBonus() {
     const allDone = quests.length > 0 && quests.every((q) => q.done)
     if (allDone && !bonus) await logEvent('quests_completed')
     if (!allDone && bonus) await db.events.delete(bonus.id)
+
+    const streakBonus = events.find((e) => e.type === 'quest_streak')
+    const completeDays = (await db.events.where('type').equals('quests_completed').toArray()).map((e) => e.day)
+    const streak = allDone ? calcStreak(completeDays, day).current : 0
+    const earned = streak > 0 && streak % QUEST_STREAK_DAYS === 0
+    if (earned && !streakBonus) await logEvent('quest_streak', { days: streak })
+    if (!earned && streakBonus) await db.events.delete(streakBonus.id)
   } finally {
     syncing = false
   }

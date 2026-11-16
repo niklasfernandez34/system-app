@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { attributes, levelFromXp, rankOf, totalXp, xpOf } from './level'
+import { attributes, rankIndexOf, rankProgress, roman, totalXp, xpOf } from './level'
 
 describe('xpOf', () => {
   it('liest Werte aus der Konfiguration', () => {
@@ -18,22 +18,36 @@ describe('totalXp', () => {
   })
 })
 
-describe('levelFromXp', () => {
-  it('startet bei Level 1', () => {
-    expect(levelFromXp(0)).toEqual({ level: 1, rank: 'E', into: 0, need: 100 })
-  })
-  it('steigt mit wachsendem Bedarf', () => {
-    expect(levelFromXp(100)).toEqual({ level: 2, rank: 'E', into: 0, need: 120 })
-    expect(levelFromXp(250)).toEqual({ level: 3, rank: 'E', into: 30, need: 140 })
+describe('rankIndexOf', () => {
+  it('zählt Rangaufstiege', () => {
+    expect(rankIndexOf([])).toBe(0)
+    expect(rankIndexOf([{ type: 'rank_up' }, { type: 'rank_up' }])).toBe(2)
   })
 })
 
-describe('rankOf', () => {
-  it('ordnet Ränge zu', () => {
-    expect(rankOf(9)).toBe('E')
-    expect(rankOf(10)).toBe('D')
-    expect(rankOf(49)).toBe('B')
-    expect(rankOf(80)).toBe('S')
+describe('rankProgress', () => {
+  it('startet bei E I', () => {
+    expect(rankProgress(0, 0)).toEqual({ rank: 'E', stage: 1, into: 0, stageSize: 110, ready: false })
+  })
+  it('steigt in Stufen auf', () => {
+    expect(rankProgress(230, 0)).toMatchObject({ stage: 3, into: 10 })
+  })
+  it('bleibt bei Stufe V voll, bis die Prüfung bestanden ist', () => {
+    expect(rankProgress(2000, 0)).toEqual({ rank: 'E', stage: 5, into: 110, stageSize: 110, ready: true })
+  })
+  it('zählt im nächsten Rang ab dessen Startwert', () => {
+    expect(rankProgress(550, 1)).toMatchObject({ rank: 'D', stage: 1, into: 0, stageSize: 340 })
+    expect(rankProgress(100, 1)).toMatchObject({ stage: 1, into: 0 })
+  })
+  it('hat in Rang S endlose Stufen', () => {
+    const start = 550 + 1700 + 5000 + 12000 + 30000
+    expect(rankProgress(start + 6000 * 7 + 5, 5)).toMatchObject({ rank: 'S', stage: 8, into: 5, ready: false })
+  })
+})
+
+describe('roman', () => {
+  it('schreibt römische Zahlen', () => {
+    expect([1, 4, 5].map(roman)).toEqual(['I', 'IV', 'V'])
   })
 })
 

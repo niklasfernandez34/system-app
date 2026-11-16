@@ -112,6 +112,13 @@ export type QuestRecord = {
   penalty?: { title: string; failed: number }
 }
 
+export type RankRecord = {
+  rank: string
+  startedAt: number
+  startDay: string
+  exercises: { exerciseId: number; baseline: number | null }[]
+}
+
 export const db = new Dexie('system-app') as Dexie & {
   events: EntityTable<EventRecord, 'id'>
   settings: EntityTable<SettingRecord, 'key'>
@@ -124,6 +131,7 @@ export const db = new Dexie('system-app') as Dexie & {
   workouts: EntityTable<WorkoutRecord, 'id'>
   body: EntityTable<BodyRecord, 'day'>
   quests: EntityTable<QuestRecord, 'day'>
+  ranks: EntityTable<RankRecord, 'rank'>
 }
 
 db.version(1).stores({
@@ -151,4 +159,8 @@ db.version(4).stores({
 
 db.version(5).stores({
   quests: 'day',
+})
+
+db.version(6).stores({
+  ranks: 'rank',
 })
