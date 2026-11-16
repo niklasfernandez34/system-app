@@ -1,6 +1,6 @@
 import { differenceInCalendarDays, parseISO } from 'date-fns'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { db } from '../db/db'
+import { db, type FileCategory, type FileRecord } from '../db/db'
 import { getSetting, setSetting } from '../db/settings'
 import { currentDay, logEvent } from './events'
 
@@ -102,4 +102,74 @@ export async function finishStudyIfDue(now = Date.now()) {
     await setSetting('studyTimer', { ...timer, phase: 'break', endsAt: now + brk * 60_000, total: brk * 60 })
     return 'focus'
   })
+}
+
+export function useSubjectOverview() {
+  return useLiveQuery(async () => {
+    const today = await currentDay()
+    const subjects = await db.subjects.orderBy('order').toArray()
+    const todos = await db.todos.filter((t) => !t.done).toArray()
+    const exams = await db.bosses.filter((b) => b.kind === 'exam' && b.status === 'active').toArray()
+    const files = await db.files.toArray()
+    return subjects.map((s) => {
+      const open = todos.filter((t) => t.subjectId === s.id)
+      const nextDue = open.map((t) => t.due).filter(Boolean).sort()[0]
+      const exam = exams.filter((b) => b.subjectId === s.id).sort((a, b) => a.deadline.localeCompare(b.deadline))[0]
+      return {
+        ...s,
+        open: open.length,
+        files: files.filter((f) => f.subjectId === s.id).length,
+        dueIn: nextDue ? daysBetween(today, nextDue) : undefined,
+        examIn: exam ? daysBetween(today, exam.deadline) : undefined,
+      }
+    })
+  })
+}
+
+export function useSubjectFiles(subjectId: number) {
+  return useLiveQuery(() => db.files.where('subjectId').equals(subjectId).reverse().sortBy('createdAt'), [subjectId])
+}
+
+export async function addFiles(subjectId: number, category: FileCategory, list: FileList) {
+  for (const f of Array.from(list)) {
+    await db.files.add({
+      subjectId,
+      category,
+      name: f.name,
+      type: f.type || 'application/octet-stream',
+      size: f.size,
+      createdAt: Date.now(),
+      blob: f,
+    })
+  }
+}
+
+export function renameFile(id: number, name: string) {
+  return db.files.update(id, { name })
+}
+
+export function moveFile(id: number, category: FileCategory) {
+  return db.files.update(id, { category })
+}
+
+export function deleteFile(id: number) {
+  return db.files.delete(id)
+}
+
+export function openFile(f: FileRecord) {
+  const url = URL.createObjectURL(f.blob)
+  const win = window.open(url, '_blank')
+  if (!win) location.href = url
+  setTimeout(() => URL.revokeObjectURL(url), 60_000)
+}
+
+export async function shareFile(f: FileRecord) {
+  const file = new File([f.blob], f.name, { type: f.type })
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file] })
+    } catch {
+      return
+    }
+  } else openFile(f)
 }

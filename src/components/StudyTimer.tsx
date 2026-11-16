@@ -32,7 +32,9 @@ export function StudyTimerFloat() {
     if (timer && left === 0) finishStudyIfDue().then((r) => r && beep())
   }, [timer, left])
 
-  if (!timer || location.pathname === '/uni') return null
+  const visible =
+    location.pathname === '/uni' || (location.pathname === `/uni/fach/${timer?.subjectId}` && !location.search.includes('bereich'))
+  if (!timer || visible) return null
   const name = subjects?.find((s) => s.id === timer.subjectId)?.name
   return (
     <button
@@ -46,7 +48,7 @@ export function StudyTimerFloat() {
   )
 }
 
-export function StudyTimer() {
+export function StudyTimer({ subjectId: fixed }: { subjectId?: number }) {
   const timer = useSetting('studyTimer')
   const focus = useSetting('focusMinutes')
   const brk = useSetting('breakMinutes')
@@ -55,7 +57,7 @@ export function StudyTimer() {
   const [subjectId, setSubjectId] = useState<number>()
   const now = useTicker()
   const left = timer ? Math.min(timer.total, Math.max(0, Math.ceil((timer.endsAt - now) / 1000))) : 0
-  const chosen = subjects?.find((s) => s.id === subjectId) ?? subjects?.[0]
+  const chosen = subjects?.find((s) => s.id === (fixed ?? subjectId)) ?? (fixed ? undefined : subjects?.[0])
 
   useEffect(() => {
     if (timer && left === 0) finishStudyIfDue().then((r) => r && beep())
@@ -63,6 +65,7 @@ export function StudyTimer() {
 
   if (!subjects) return null
   if (!subjects.length) return <p className="text-center text-sys-muted">Lege unten ein Fach an, um zu lernen.</p>
+  const other = timer && fixed && timer.subjectId !== fixed
 
   const summary = today && (
     <p className="text-center text-xs text-sys-muted">
@@ -70,7 +73,7 @@ export function StudyTimer() {
     </p>
   )
 
-  if (timer) {
+  if (timer && !other) {
     const name = subjects.find((s) => s.id === timer.subjectId)?.name ?? ''
     return (
       <div className="space-y-3">
@@ -89,12 +92,14 @@ export function StudyTimer() {
 
   return (
     <div className="space-y-3">
-      <Chips
-        label="Fach"
-        options={subjects.map((s) => s.name)}
-        value={chosen?.name ?? ''}
-        onChange={(n) => setSubjectId(subjects.find((s) => s.name === n)?.id)}
-      />
+      {!fixed && (
+        <Chips
+          label="Fach"
+          options={subjects.map((s) => s.name)}
+          value={chosen?.name ?? ''}
+          onChange={(n) => setSubjectId(subjects.find((s) => s.name === n)?.id)}
+        />
+      )}
       <Chips
         label="Lernzeit (Min.)"
         options={FOCUS}
@@ -109,7 +114,7 @@ export function StudyTimer() {
       />
       <Button
         className="w-full"
-        disabled={!chosen}
+        disabled={!chosen || !!other}
         onClick={() => {
           unlockAudio()
           if (chosen) startStudy(chosen.id)
@@ -117,6 +122,7 @@ export function StudyTimer() {
       >
         Lernen starten (+{XP.study_session} XP)
       </Button>
+      {other && <p className="text-center text-xs text-sys-muted">Gerade läuft ein Timer für ein anderes Fach.</p>}
       {summary}
     </div>
   )

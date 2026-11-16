@@ -158,6 +158,19 @@ export type TodoRecord = {
   createdAt: number
 }
 
+export type FileCategory = 'script' | 'exercise' | 'note'
+
+export type FileRecord = {
+  id: number
+  subjectId: number
+  category: FileCategory
+  name: string
+  type: string
+  size: number
+  createdAt: number
+  blob: Blob
+}
+
 export const MEAL_SLOTS = ['Frühstück', 'Mittag', 'Abend', 'Snack'] as const
 export type MealSlot = (typeof MEAL_SLOTS)[number]
 
@@ -223,6 +236,7 @@ export const db = new Dexie('system-app') as Dexie & {
   recipes: EntityTable<RecipeRecord, 'id'>
   subjects: EntityTable<SubjectRecord, 'id'>
   todos: EntityTable<TodoRecord, 'id'>
+  files: EntityTable<FileRecord, 'id'>
 }
 
 db.version(1).stores({
@@ -270,4 +284,8 @@ db.version(8).stores({
 db.version(9).stores({
   subjects: '++id, order',
   todos: '++id, subjectId, due',
+})
+
+db.version(10).stores({
+  files: '++id, subjectId, createdAt',
 })

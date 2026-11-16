@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import JSZip from 'jszip'
-import { db, type PhotoRecord } from '../db/db'
+import { db, type FileRecord, type PhotoRecord } from '../db/db'
 import { setSetting } from '../db/settings'
 
 const BACKUP_VERSION = 8
@@ -55,22 +55,30 @@ export async function importData(file: File) {
 
 export async function exportPhotos() {
   const photos = await db.photos.toArray()
+  const files = await db.files.toArray()
   const zip = new JSZip()
   const meta = photos.map(({ blob, ...rest }) => {
     zip.file(`fotos/${rest.id}.jpg`, blob)
     return rest
   })
-  zip.file('fotos.json', JSON.stringify({ app: 'system-app', version: BACKUP_VERSION, photos: meta }))
+  const fileMeta = files.map(({ blob, ...rest }) => {
+    zip.file(`dateien/${rest.id}`, blob)
+    return rest
+  })
+  zip.file('fotos.json', JSON.stringify({ app: 'system-app', version: BACKUP_VERSION, photos: meta, files: fileMeta }))
   const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/zip' })
   await saveFile(blob, `system-fotos_${stamp()}.zip`)
-  return photos.length
+  return photos.length + files.length
 }
 
 export async function importPhotos(file: File) {
   const zip = await JSZip.loadAsync(file)
   const metaFile = zip.file('fotos.json')
   if (!metaFile) throw new Error('Keine gültige Foto-Backup-Datei.')
-  const meta = JSON.parse(await metaFile.async('string')) as { photos: Omit<PhotoRecord, 'blob'>[] }
+  const meta = JSON.parse(await metaFile.async('string')) as {
+    photos: Omit<PhotoRecord, 'blob'>[]
+    files?: Omit<FileRecord, 'blob'>[]
+  }
   const records: PhotoRecord[] = []
   for (const m of meta.photos) {
     const entry = zip.file(`fotos/${m.id}.jpg`)
@@ -78,9 +86,20 @@ export async function importPhotos(file: File) {
     const data = await entry.async('arraybuffer')
     records.push({ ...m, blob: new Blob([data], { type: 'image/jpeg' }) })
   }
-  await db.transaction('rw', db.photos, async () => {
+  const files: FileRecord[] = []
+  for (const m of meta.files ?? []) {
+    const entry = zip.file(`dateien/${m.id}`)
+    if (!entry) continue
+    const data = await entry.async('arraybuffer')
+    files.push({ ...m, blob: new Blob([data], { type: m.type }) })
+  }
+  await db.transaction('rw', db.photos, db.files, async () => {
     await db.photos.clear()
     await db.photos.bulkAdd(records)
+    if (meta.files) {
+      await db.files.clear()
+      await db.files.bulkAdd(files)
+    }
   })
-  return records.length
+  return records.length + files.length
 }

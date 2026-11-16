@@ -39,7 +39,7 @@ export function MorePage() {
     await run(async () =>
       p.kind === 'data'
         ? (await importData(p.file), 'Daten wiederhergestellt.')
-        : `${await importPhotos(p.file)} Fotos wiederhergestellt.`,
+        : `${await importPhotos(p.file)} Fotos und Dateien wiederhergestellt.`,
     )
   }
 
@@ -79,14 +79,14 @@ export function MorePage() {
           <Button onClick={() => run(async () => (await exportData(), 'Daten exportiert.'))}>
             Daten sichern
           </Button>
-          <Button onClick={() => run(async () => `${await exportPhotos()} Fotos exportiert.`)}>
-            Fotos sichern
+          <Button onClick={() => run(async () => `${await exportPhotos()} Fotos und Dateien exportiert.`)}>
+            Fotos + Dateien sichern
           </Button>
           <Button variant="ghost" onClick={() => dataInput.current?.click()}>
             Daten laden
           </Button>
           <Button variant="ghost" onClick={() => photoInput.current?.click()}>
-            Fotos laden
+            Fotos + Dateien laden
           </Button>
         </div>
         <input ref={dataInput} type="file" accept="application/json,.json" className="hidden" onChange={pick('data')} />
@@ -96,7 +96,7 @@ export function MorePage() {
 
       <Dialog open={!!pending} onClose={() => setPending(null)} title="Warnung">
         <p className="mb-4 text-center">
-          {pending?.kind === 'data' ? 'Alle aktuellen Daten' : 'Alle aktuellen Fotos'} werden durch das Backup
+          {pending?.kind === 'data' ? 'Alle aktuellen Daten' : 'Alle aktuellen Fotos und Uni-Dateien'} werden durch das Backup
           ersetzt. Fortfahren?
         </p>
         <div className="grid grid-cols-2 gap-2">

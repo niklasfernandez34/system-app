@@ -52,9 +52,11 @@ const label = (b: Listed) => (b.kind === 'lift' ? `${b.name} ${fmt(b.target)} kg
 
 type Result = { id: number; name: string; passed: boolean; grade: string }
 
-export function BossList({ compact = false, only }: { compact?: boolean; only?: BossRecord['kind'] }) {
+type ListProps = { compact?: boolean; only?: BossRecord['kind']; subjectId?: number }
+
+export function BossList({ compact = false, only, subjectId }: ListProps) {
   const all = useBosses()
-  const bosses = only ? all?.filter((b) => b.kind === only) : all
+  const bosses = all?.filter((b) => (!only || b.kind === only) && (!subjectId || b.subjectId === subjectId))
   const subjects = useSubjects()?.filter((s) => !s.archived)
   const [result, setResult] = useState<Result | null>(null)
   const names = useExerciseNames()
@@ -91,7 +93,7 @@ export function BossList({ compact = false, only }: { compact?: boolean; only?: 
     target: kind === 'Sport' ? 50 : kind === 'Uni' ? 0 : goalFor(goals, 'kcal'),
     reps: 1,
     deadline: inDays(kind === 'Ernährung' ? 12 : 30),
-    subjectId: subjects?.[0]?.id,
+    subjectId: subjectId ?? subjects?.[0]?.id,
     metric: 'kcal',
     direction: goals?.mode === 'lose' ? 'max' : 'min',
     days: 10,
@@ -204,7 +206,7 @@ export function BossList({ compact = false, only }: { compact?: boolean; only?: 
             {!only && <Chips options={KINDS} value={draft.kind} onChange={(kind) => setDraft(fresh(kind))} />}
             {exam ? (
               <>
-                {subjects?.length ? (
+                {subjectId ? null : subjects?.length ? (
                   <Chips
                     label="Fach"
                     options={subjects.map((s) => s.name)}

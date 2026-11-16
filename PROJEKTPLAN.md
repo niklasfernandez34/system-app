@@ -173,6 +173,13 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Quest „Eine Lerneinheit“**, nur wenn ein aktives Fach existiert (ab dem Tag, an dem es angelegt wurde).
 - **Klausur-Boss** (`kind: 'exam'`, Felder `subjectId`, `result`; `target` = Wunschnote, 0 = egal): Ab dem Klausurtag „Ergebnis eintragen“. Sieg bei bestanden und Note ≤ Wunschnote (`boss_defeated` mit `attr: 'int'`), sonst Niederlage. Kein automatisches Verlieren nach dem Termin. Logik `examOutcome` in `src/lib/boss.ts`.
 
+### Entscheidungen aus Phase 6a+ (Fach-Ordner, Teil 1)
+
+- **Uni-Seite:** oben Lern-Timer und Fristen, darunter Fächer als Kacheln (offene To-dos, nächste Frist, Klausur-Countdown, Anzahl Dateien). Klausuren und To-dos stehen nur noch im Fach-Ordner.
+- **Fach-Ordner** `/uni/fach/:id?bereich=…` mit fünf Bereichen: Übersicht (Timer fest auf das Fach, To-dos/Fristen, Klausur-Boss), Karteikarten, Lernzettel, Lernplan (Teil 2 und 3), Dateien.
+- **Dateien** (Tabelle `files`, Dexie-Version 10): PDFs, Bilder und andere Dateien unverändert als Blob, Art Skript/Übung/Notiz. Öffnen über Blob-URL, dazu „Teilen / In anderer App öffnen“. Backup in der Foto-ZIP unter `dateien/` (alte ZIPs ohne Dateien lassen vorhandene Dateien unangetastet).
+- Mini-Timer wird auch in der Übersicht des laufenden Fachs ausgeblendet.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -253,6 +260,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**5b:** Barcode-Scan, **Ernährungs-Bosse**~~ – erledigt.
 6. **Uni und Hautbild**
    - ~~**6a Uni:** Fächer, To-dos mit Fristen, Lern-Timer, **Klausur-Bosse**~~ – erledigt.
+   - **6a+ Fach-Ordner:** ~~Teil 1: Kacheln, Ordner, Dateien~~ – erledigt. Teil 2: Karteikarten (Karteikasten 1/2/4/8/16 Tage, XP pro Runde ab 10 Karten). Teil 3: Lernzettel (einfache Formatierung + Fotos), Lernplan (Themen bis zur Klausur verteilt, Tagesaufgabe auf „Heute“).
    - **6b Hautbild:** Pflegeroutine morgens/abends, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)

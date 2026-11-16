@@ -20,6 +20,7 @@ import { PhotosPage } from './pages/PhotosPage'
 import { StatusPage } from './pages/StatusPage'
 import { AchievementsPage } from './pages/AchievementsPage'
 import { UniPage } from './pages/UniPage'
+import { SubjectPage } from './pages/SubjectPage'
 import { StudyTimerFloat } from './components/StudyTimer'
 
 const tabs = [
@@ -54,6 +55,7 @@ export default function App() {
             <Route path="/ernaehrung/rechner" element={<CalculatorPage />} />
             <Route path="/ernaehrung/rezept/:id" element={<RecipeEditPage />} />
             <Route path="/uni" element={<UniPage />} />
+            <Route path="/uni/fach/:id" element={<SubjectPage />} />
             <Route path="/mehr" element={<MorePage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/erfolge" element={<AchievementsPage />} />
