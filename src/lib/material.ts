@@ -29,7 +29,7 @@ export function updateLink(id: number, changes: Partial<Pick<LinkRecord, 'title'
   return db.links.update(id, changes)
 }
 
-export function updateFile(id: number, changes: Partial<Pick<FileRecord, 'name' | 'category' | 'folder'>>) {
+export function updateFile(id: number, changes: Partial<Pick<FileRecord, 'name' | 'category' | 'folder' | 'noSync'>>) {
   return db.files.update(id, changes)
 }
 

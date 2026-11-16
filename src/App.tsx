@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Route, Routes } from 'react-router'
 import { runStartup } from './lib/startup'
 import { SystemWatcher } from './components/SystemWatcher'
@@ -22,6 +22,9 @@ import { AchievementsPage } from './pages/AchievementsPage'
 import { UniPage } from './pages/UniPage'
 import { SubjectPage } from './pages/SubjectPage'
 import { StudyTimerFloat } from './components/StudyTimer'
+import { SyncWatcher } from './components/SyncWatcher'
+import { SystemWindow } from './components/ui'
+import { isConnected, syncOnOpen } from './lib/sync'
 
 const tabs = [
   { to: '/', label: 'Heute' },
@@ -32,12 +35,29 @@ const tabs = [
 ]
 
 export default function App() {
+  const [ready, setReady] = useState(() => !isConnected())
+
   useEffect(() => {
+    if (ready) return
+    syncOnOpen().finally(() => setReady(true))
+  }, [ready])
+
+  useEffect(() => {
+    if (!ready) return
     runStartup()
-    const onVisible = () => document.visibilityState === 'visible' && runStartup()
+    const onVisible = () => document.visibilityState === 'visible' && syncOnOpen().finally(runStartup)
     document.addEventListener('visibilitychange', onVisible)
     return () => document.removeEventListener('visibilitychange', onVisible)
-  }, [])
+  }, [ready])
+
+  if (!ready)
+    return (
+      <div className="pt-safe flex h-full items-center justify-center p-6">
+        <SystemWindow title="System">
+          <p className="animate-pulse text-center text-sys-glow">Synchronisiere mit Dropbox …</p>
+        </SystemWindow>
+      </div>
+    )
 
   return (
     <div className="flex h-full flex-col">
@@ -87,6 +107,7 @@ export default function App() {
         </ul>
       </nav>
       <SystemWatcher />
+      <SyncWatcher />
     </div>
   )
 }

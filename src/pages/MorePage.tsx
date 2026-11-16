@@ -5,9 +5,10 @@ import { de } from 'date-fns/locale'
 import { Button, Dialog, NumberInput, SystemWindow } from '../components/ui'
 import { setSetting, useSetting } from '../db/settings'
 import { PinSettings } from '../components/PinSettings'
-import { exportData, exportPhotos, importData, importPhotos } from '../lib/backup'
+import { exportBackup, importBackup } from '../lib/backup'
+import { SyncSettings } from '../components/SyncSettings'
 
-type Pending = { kind: 'data' | 'photos'; file: File } | null
+type Pending = { file: File } | null
 
 export function MorePage() {
   const navigate = useNavigate()
@@ -15,8 +16,7 @@ export function MorePage() {
   const lastBackupAt = useSetting('lastBackupAt')
   const [pending, setPending] = useState<Pending>(null)
   const [message, setMessage] = useState('')
-  const dataInput = useRef<HTMLInputElement>(null)
-  const photoInput = useRef<HTMLInputElement>(null)
+  const input = useRef<HTMLInputElement>(null)
 
   const run = async (fn: () => Promise<string>) => {
     try {
@@ -26,21 +26,17 @@ export function MorePage() {
     }
   }
 
-  const pick = (kind: 'data' | 'photos') => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const pick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     e.target.value = ''
-    if (file) setPending({ kind, file })
+    if (file) setPending({ file })
   }
 
   const confirmImport = async () => {
     if (!pending) return
     const p = pending
     setPending(null)
-    await run(async () =>
-      p.kind === 'data'
-        ? (await importData(p.file), 'Daten wiederhergestellt.')
-        : `${await importPhotos(p.file)} Fotos und Dateien wiederhergestellt.`,
-    )
+    await run(async () => (await importBackup(p.file), 'Backup geladen.'))
   }
 
   return (
@@ -70,34 +66,27 @@ export function MorePage() {
 
       <PinSettings />
 
+      <SyncSettings />
+
       <SystemWindow title="Backup">
         <p className="mb-3 text-sm text-sys-muted">
           Letztes Backup:{' '}
           {lastBackupAt ? formatDistanceToNow(lastBackupAt, { addSuffix: true, locale: de }) : 'noch nie'}
         </p>
         <div className="grid grid-cols-2 gap-2">
-          <Button onClick={() => run(async () => (await exportData(), 'Daten exportiert.'))}>
-            Daten sichern
-          </Button>
-          <Button onClick={() => run(async () => `${await exportPhotos()} Fotos und Dateien exportiert.`)}>
-            Fotos + Dateien sichern
-          </Button>
-          <Button variant="ghost" onClick={() => dataInput.current?.click()}>
-            Daten laden
-          </Button>
-          <Button variant="ghost" onClick={() => photoInput.current?.click()}>
-            Fotos + Dateien laden
+          <Button onClick={() => run(async () => (await exportBackup(), 'Backup erstellt.'))}>Backup sichern</Button>
+          <Button variant="ghost" onClick={() => input.current?.click()}>
+            Backup laden
           </Button>
         </div>
-        <input ref={dataInput} type="file" accept="application/json,.json" className="hidden" onChange={pick('data')} />
-        <input ref={photoInput} type="file" accept="application/zip,.zip" className="hidden" onChange={pick('photos')} />
+        <p className="mt-2 text-xs text-sys-muted">Eine Datei mit allem: Daten, Fotos, Dateien und Handschrift. Name enthält Datum und Uhrzeit.</p>
+        <input ref={input} type="file" accept="application/zip,.zip,application/json,.json" className="hidden" onChange={pick} />
         {message && <p className="mt-3 text-center text-sm text-sys-glow">{message}</p>}
       </SystemWindow>
 
       <Dialog open={!!pending} onClose={() => setPending(null)} title="Warnung">
         <p className="mb-4 text-center">
-          {pending?.kind === 'data' ? 'Alle aktuellen Daten' : 'Alle aktuellen Fotos und Uni-Dateien'} werden durch das Backup
-          ersetzt. Fortfahren?
+          Alle aktuellen Daten, Fotos und Dateien werden durch „{pending?.file.name}“ ersetzt. Fortfahren?
         </p>
         <div className="grid grid-cols-2 gap-2">
           <Button variant="ghost" onClick={() => setPending(null)}>

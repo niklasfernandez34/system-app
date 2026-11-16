@@ -206,7 +206,16 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Handballen-Schutz:** Sobald ein Pencil-Ereignis kommt, zeichnet nur noch der Stift, der Finger scrollt (manuell, weil `touch-action: none`). Ohne Pencil lässt sich der Finger zwischen Zeichnen und Scrollen umschalten.
 - **Stift-Fix:** Scroll-Sperre über native `touchstart`/`touchmove`-Listener (`passive: false`), die bei `touchType === 'stylus'` und während eines Stiftstrichs `preventDefault` aufrufen. Der Finger scrollt nativ (`touch-action: pan-y`). Der Stift hat Vorrang und bricht einen Finger-Strich ab. Pencil-Erkennung bleibt in `localStorage`. Der aktuelle Strich wird per Ref und `requestAnimationFrame` direkt gezeichnet, ohne React-Neuaufbau. Antippen wird ein Punkt.
 - Eingebaut in Notizen (`drawingId`, leere Handschrift-Notizen werden aufgeräumt), Lernzettel (`drawingIds`), Karteikarten (`frontDrawing`/`backDrawing`, Seite gilt als ausgefüllt mit Text oder Handschrift) und Material (Zeichnung mit `subjectId`/`folder`/`title`/`category`). Abbrechen löscht neu angelegte Zeichnungen.
-- Geplant: Sync zwischen iPhone und iPad über eine iCloud-Datei mit Zusammenführen (kostenlos, Daten bleiben beim Nutzer). Optional: in PDFs schreiben (pdf.js + Zeichenfläche).
+- Optional später: in PDFs schreiben (pdf.js + Zeichenfläche).
+
+### Entscheidungen: Ein Backup und Dropbox-Sync
+
+- **Backup** ist nur noch eine ZIP-Datei `System-Backup JJJJ-MM-TT HH-MM.zip` mit `data.json` (alle Tabellen + `photosMeta`/`filesMeta`) und `blobs/` (Fotos `photo-<id>-<createdAt>`, Dateien `file-<id>-<createdAt>`). Laden ersetzt alles. Alte JSON- und Foto-ZIP-Backups lassen sich weiter laden.
+- **Sync über Dropbox** (Entscheidung geändert: vorher kein Geräte-Sync). Grund: iCloud Drive ist für Web-Apps ohne Tippen nicht erreichbar, CloudKit kostet 99 €/Jahr. Dropbox ist kostenlos (2 GB) und die Daten liegen im eigenen Konto, im App-Ordner.
+- Anmeldung per OAuth PKCE ohne Weiterleitung: Der Nutzer kopiert den Code von Dropbox in die App (funktioniert auch als Home-Bildschirm-App, wo Weiterleitungen in einem anderen Speicher landen). App key, Token und Sync-Stand liegen in `localStorage` (`system-sync`), nicht in IndexedDB, damit ein geladener Stand sie nicht überschreibt.
+- Ablauf (`src/lib/sync.ts`, Entscheidung in `syncDecide.ts`): Vergleich von Dropbox-`rev` und SHA-256 des lokalen Stands mit dem letzten Sync. Nur Dropbox neu → herunterladen. Nur lokal neu → hochladen, Fotos und Dateien nur, wenn sie fehlen; verwaiste werden gelöscht. Beides neu → Dialog „Dropbox-Stand laden“ oder „Diesen Stand behalten“. Ganzer Stand, keine Zusammenführung einzelner Einträge.
+- Beim Öffnen wartet die App bis zu 10 s auf den Sync, bevor Tageswechsel und Quests laufen. Hochladen alle 5 Minuten (sichtbar), beim Verlassen der App und wenn das Netz wiederkommt.
+- Dateien können „nur auf diesem Gerät“ bleiben (`noSync`), dann sind sie nicht im Sync und nicht im Backup.
 
 ## 3. Funktionen
 

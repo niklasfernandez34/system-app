@@ -18,14 +18,14 @@ Offline-PWA zur Selbstoptimierung (Solo-Leveling-Stil). Vollständiger Plan: `PR
 Vite + React + TypeScript + Tailwind, React Router, Dexie.js + dexie-react-hooks, date-fns, Recharts, vite-plugin-pwa, @zxing/browser (Barcode), JSZip (Foto-Backup), MiniSearch (Lebensmittelsuche), Vitest (nur Rechenlogik). Hosting: GitHub Pages via GitHub Actions.
 
 ## Feste Entscheidungen
-- 100 % offline nutzbar; Daten nur lokal in IndexedDB. iPhone = Hauptgerät, kein Geräte-Sync.
+- 100 % offline nutzbar; Daten lokal in IndexedDB. Optionaler Sync iPhone/iPad über das eigene Dropbox-Konto (`src/lib/sync.ts`).
 - Alle erledigten Aktionen über das zentrale Ereignis-Log (`logEvent`). Levelsystem, Streaks und Statistiken lesen nur das Log.
 - XP-Werte nur in `src/config/xp.ts`.
 - Tageswechsel um 4:00 Uhr (einstellbar). Auswertung verpasster Quests/Streaks beim App-Start.
 - UI nur aus den gemeinsamen Bausteinen in `src/components/ui/` (System-Fenster, Button, Balken, Zahleneingabe, Dialog, Fotoaufnahme).
 - Dunkles „System-Fenster“-Design mit blauem Glow; mobil zuerst (iPhone), Safe Areas beachten.
 - Fotos beim Speichern auf ~1080 px JPEG verkleinern.
-- Backup: Daten als JSON, Fotos getrennt als ZIP.
+- Backup: eine ZIP-Datei mit allem (`data.json` + `blobs/`).
 - Dexie-Schema pro Phase per neuer Version erweitern, nie alte Versionen ändern.
 - PIN-Sperre ist nur Sichtschutz.
 - Texte in der App auf Deutsch.

@@ -34,7 +34,7 @@ const sizeLabel = (b: number) => (b < 1024 * 1024 ? `${Math.max(1, Math.round(b 
 const fileIcon = (t: string) => (t === 'application/pdf' ? 'PDF' : t.startsWith('image/') ? 'BILD' : t.startsWith('video/') ? 'VIDEO' : 'DATEI')
 
 type LinkDraft = { id?: number; url: string; title: string; category: FileCategory; folder?: string; touched: boolean }
-type Edit = { item: MaterialItem; name: string; url: string; category: FileCategory; folder?: string }
+type Edit = { item: MaterialItem; name: string; url: string; category: FileCategory; folder?: string; noSync?: boolean }
 
 export function Material({ subjectId, folders }: { subjectId: number; folders: string[] }) {
   const items = useMaterial(subjectId)
@@ -70,7 +70,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
   const saveEdit = async () => {
     if (!edit) return
     const { item } = edit
-    if (item.kind === 'file') await updateFile(item.id, { name: edit.name.trim() || item.name, category: edit.category, folder: edit.folder })
+    if (item.kind === 'file') await updateFile(item.id, { name: edit.name.trim() || item.name, category: edit.category, folder: edit.folder, noSync: edit.noSync || undefined })
     else if (item.kind === 'drawing') await updateDrawingMeta(item.id, { title: edit.name.trim() || 'Handschrift', category: edit.category, folder: edit.folder })
     else {
       const url = normalizeUrl(edit.url) || item.url
@@ -158,7 +158,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
               key={`${i.kind}${i.id}`}
               item={i}
               onMore={() =>
-                setEdit({ item: i, name: i.kind === 'file' ? i.name : i.title, url: i.kind === 'link' ? i.url : '', category: i.category, folder: i.folder })
+                setEdit({ item: i, name: i.kind === 'file' ? i.name : i.title, url: i.kind === 'link' ? i.url : '', category: i.category, folder: i.folder, noSync: i.kind === 'file' ? i.noSync : undefined })
               }
               onOpen={() => (i.kind === 'file' ? openFile(i) : i.kind === 'link' ? window.open(i.url, '_blank', 'noopener') : setDrawing(i.id))
               }
@@ -217,6 +217,12 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
               value={edit.folder && folders.includes(edit.folder) ? edit.folder : NO_FOLDER}
               onChange={(f) => setEdit({ ...edit, folder: f === NO_FOLDER ? undefined : f })}
             />
+            {edit.item.kind === 'file' && (
+              <label className="flex items-center gap-2 text-sm text-sys-muted">
+                <input type="checkbox" className="h-5 w-5 accent-sys-glow" checked={!!edit.noSync} onChange={(e) => setEdit({ ...edit, noSync: e.target.checked })} />
+                Nur auf diesem Gerät (nicht synchronisieren, nicht im Backup)
+              </label>
+            )}
             {edit.item.kind === 'file' && (
               <Button variant="ghost" className="w-full" onClick={() => edit.item.kind === 'file' && shareFile(edit.item)}>
                 Teilen / In anderer App öffnen
@@ -297,7 +303,7 @@ function Row({ item, onMore, onOpen }: { item: MaterialItem; onMore: () => void;
   const title = item.kind === 'file' ? item.name : item.title
   const sub =
     item.kind === 'file'
-      ? `${one(item.category)} · ${sizeLabel(item.size)} · ${format(item.createdAt, 'd.M.yy')}`
+      ? `${one(item.category)} · ${sizeLabel(item.size)} · ${format(item.createdAt, 'd.M.yy')}${item.noSync ? ' · nur hier' : ''}`
       : item.kind === 'drawing'
         ? `${one(item.category)} · Handschrift · ${format(item.updatedAt, 'd.M.yy')}`
         : `${one(item.category)} · ${hostOf(item.url)}`

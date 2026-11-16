@@ -225,6 +225,7 @@ export type FileRecord = {
   createdAt: number
   blob: Blob
   folder?: string
+  noSync?: boolean
 }
 
 export type LinkRecord = {
