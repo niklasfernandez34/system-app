@@ -15,8 +15,8 @@ export function Chips<T extends string>({ options, value, onChange, label }: Pro
             key={o}
             type="button"
             onClick={() => onChange(o)}
-            className={`min-h-9 rounded-full border px-3 text-sm transition-colors ${
-              o === value ? 'border-sys-glow bg-sys-glow/15 text-sys-text shadow-glow' : 'border-sys-line text-sys-muted'
+            className={`min-h-9 rounded-full px-3.5 text-sm font-semibold transition-colors ${
+              o === value ? 'bg-white text-black' : 'bg-sys-raised text-sys-muted'
             }`}
           >
             {o}
@@ -46,8 +46,8 @@ export function MultiChips<T extends string>({ options, value, onChange, label }
             type="button"
             aria-pressed={value.includes(o)}
             onClick={() => toggle(o)}
-            className={`min-h-9 rounded-full border px-3 text-sm transition-colors ${
-              value.includes(o) ? 'border-sys-glow bg-sys-glow/15 text-sys-text shadow-glow' : 'border-sys-line text-sys-muted'
+            className={`min-h-9 rounded-full px-3.5 text-sm font-semibold transition-colors ${
+              value.includes(o) ? 'bg-white text-black' : 'bg-sys-raised text-sys-muted'
             }`}
           >
             {value.includes(o) ? '✓ ' : ''}

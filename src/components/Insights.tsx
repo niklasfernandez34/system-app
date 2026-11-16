@@ -29,7 +29,7 @@ export function Insights() {
                 <span>
                   {rule.when}: <span className="font-semibold">{rule.what}</span>
                 </span>
-                <span className={`shrink-0 font-semibold ${diff > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                <span className={`shrink-0 font-semibold ${diff > 0 ? 'text-sys-ok' : 'text-sys-danger'}`}>
                   {diff > 0 ? '+' : '−'}
                   {num(Math.abs(diff), 0)} %
                 </span>

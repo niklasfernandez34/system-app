@@ -32,7 +32,7 @@ export function WorkoutPage() {
         {prs.length ? (
           <ul className="mb-4 space-y-2">
             {prs.map((p, i) => (
-              <li key={i} className="rounded-md border border-sys-glow bg-sys-glow/10 p-2 text-center">
+              <li key={i} className="rounded-xl border border-sys-glow bg-sys-glow/10 p-2 text-center">
                 <div className="text-xs uppercase tracking-widest text-sys-glow">Neue Bestleistung</div>
                 <div>
                   {names?.get(p.exerciseId)}: {fmt(p.value)} kg {p.kind === 'e1rm' && '(1RM geschätzt)'}
@@ -125,60 +125,90 @@ function RunningWorkout({ workout, title, names, onFinish, onCancel }: Props) {
 
   return (
     <div className="space-y-4">
-      <SystemWindow title={title}>
-        <p className="text-center text-sm text-sys-muted">
+      <header className="px-1 pt-2">
+        <h1 className="text-[22px] font-extrabold uppercase tracking-wide">{title}</h1>
+        <p className="mt-0.5 text-xs font-medium text-sys-muted">
           {doneCount} / {total} Sätze erledigt
         </p>
-      </SystemWindow>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sys-raised">
+          <div className="h-full rounded-full bg-sys-glow transition-[width] duration-500" style={{ width: `${total ? (doneCount / total) * 100 : 0}%` }} />
+        </div>
+      </header>
 
-      {entries.map((entry, e) => (
-        <SystemWindow key={e} title={names?.get(entry.exerciseId) ?? '?'}>
-          <div className="-mt-2 mb-1 text-right">
-            <button type="button" className="text-sm text-sys-muted" onClick={() => setInfoId(entry.exerciseId)}>
-              ⓘ Infos
-            </button>
-          </div>
-          {entry.lastWeight !== undefined && (
-            <p className="mb-2 text-center text-xs text-sys-muted">
-              Letztes Mal {fmt(entry.lastWeight)} kg
-              {entry.sets[0] && entry.sets[0].weight > entry.lastWeight && (
-                <span className="text-sys-glow"> · heute mehr ↑</span>
-              )}
-            </p>
-          )}
-          <ul className="space-y-2">
-            {entry.sets.map((set, s) => (
-              <li key={s} className="flex items-center gap-2">
-                <span className="w-14 text-xs text-sys-muted">Satz {s + 1}</span>
-                <button
-                  type="button"
-                  className="min-h-11 flex-1 rounded-md border border-sys-line text-center active:bg-sys-line/30"
-                  onClick={() => setEditing({ e, s, weight: set.weight, reps: set.reps })}
-                >
-                  {fmt(set.weight)} kg × {set.reps}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => toggle(e, s)}
-                  className={`flex h-11 w-11 items-center justify-center rounded-md border text-lg ${
-                    set.done ? 'border-sys-glow bg-sys-glow text-sys-bg shadow-glow' : 'border-sys-muted'
-                  }`}
-                >
-                  {set.done ? '✓' : ''}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <div className="mt-3 grid grid-cols-2 gap-2">
-            <Button variant="ghost" disabled={!entry.sets.length} onClick={() => removeSet(e)}>
-              − Satz
-            </Button>
-            <Button variant="ghost" onClick={() => addSet(e)}>
-              + Satz
-            </Button>
-          </div>
-        </SystemWindow>
-      ))}
+      {entries.map((entry, e) => {
+        const next = entry.sets.findIndex((x) => !x.done)
+        return (
+          <section key={e} className="card p-4">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="text-xs font-medium text-sys-muted">
+                  Übung {e + 1} / {entries.length}
+                </p>
+                <h2 className="text-lg font-bold">{names?.get(entry.exerciseId) ?? '?'}</h2>
+              </div>
+              <button
+                type="button"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sys-raised text-sm text-sys-muted"
+                onClick={() => setInfoId(entry.exerciseId)}
+                aria-label="Infos"
+              >
+                ⓘ
+              </button>
+            </div>
+            {entry.lastWeight !== undefined && (
+              <p className="mt-1 text-xs font-medium text-sys-muted">
+                Letztes Mal {fmt(entry.lastWeight)} kg
+                {entry.sets[0] && entry.sets[0].weight > entry.lastWeight && (
+                  <span className="text-sys-glow"> · heute mehr ↑</span>
+                )}
+              </p>
+            )}
+            <div className="mt-3 grid grid-cols-[2.5rem_1fr_1fr_2.75rem] items-center text-center">
+              <span className="py-1 text-[11px] font-bold tracking-wider text-sys-muted">SATZ</span>
+              <span className="py-1 text-[11px] font-bold tracking-wider text-sys-muted">WDH</span>
+              <span className="py-1 text-[11px] font-bold tracking-wider text-sys-muted">KG</span>
+              <span />
+              {entry.sets.map((set, s) => {
+                const cur = s === next
+                const row = cur ? 'bg-sys-raised' : ''
+                const tone = set.done || cur ? 'text-sys-text' : 'text-[#5c5c63]'
+                const edit = () => setEditing({ e, s, weight: set.weight, reps: set.reps })
+                return [
+                  <span key={`n${s}`} className={`rounded-l-xl py-2.5 text-lg font-bold ${row} ${tone}`}>
+                    {s + 1}
+                  </span>,
+                  <button key={`r${s}`} type="button" onClick={edit} className={`py-2.5 text-lg font-bold ${row} ${tone}`}>
+                    {set.reps}
+                  </button>,
+                  <button key={`w${s}`} type="button" onClick={edit} className={`py-2.5 text-lg font-bold ${row} ${tone}`}>
+                    {fmt(set.weight)}
+                  </button>,
+                  <span key={`c${s}`} className={`flex justify-center rounded-r-xl py-1.5 ${row}`}>
+                    <button
+                      type="button"
+                      onClick={() => toggle(e, s)}
+                      aria-label={`Satz ${s + 1} abhaken`}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-extrabold ${
+                        set.done ? 'bg-sys-ok text-black' : 'border-2 border-[#3a3a41]'
+                      }`}
+                    >
+                      {set.done ? '✓' : ''}
+                    </button>
+                  </span>,
+                ]
+              })}
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <Button variant="ghost" disabled={!entry.sets.length} onClick={() => removeSet(e)}>
+                − Satz
+              </Button>
+              <Button variant="ghost" onClick={() => addSet(e)}>
+                + Satz
+              </Button>
+            </div>
+          </section>
+        )
+      })}
 
       <div className="grid grid-cols-2 gap-2">
         <Button variant="danger" onClick={() => setConfirmCancel(true)}>
@@ -190,7 +220,7 @@ function RunningWorkout({ workout, title, names, onFinish, onCancel }: Props) {
       </div>
 
       {workout.restEndsAt && (
-        <div className="sticky bottom-2">
+        <div className="sticky bottom-28 z-10">
           <RestTimer workoutId={workout.id} endsAt={workout.restEndsAt} total={restSeconds} />
         </div>
       )}

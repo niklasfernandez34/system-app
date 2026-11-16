@@ -20,7 +20,7 @@ export function PlanCheckDialog({ check, currentKcal, onClose }: { check: PlanCh
             Du hast im Schnitt {fmtNum(check.avgIntake)} kcal gegessen. Dein echter Umsatz liegt damit bei etwa{' '}
             {fmtNum(check.newTdee)} kcal.
           </p>
-          <div className="rounded-md border border-sys-glow/40 p-3 text-center">
+          <div className="rounded-xl border border-sys-glow/40 p-3 text-center">
             <div className="text-sm text-sys-muted line-through">{fmtNum(currentKcal)} kcal</div>
             <div className="text-2xl font-bold text-sys-glow">{fmtNum(check.goals.kcal)} kcal</div>
             <div className="text-sm text-sys-muted">

@@ -29,20 +29,20 @@ export function NumberInput({ value, onChange, step = 1, min, max, label, unit }
 
   return (
     <label className="block">
-      {label && <span className="mb-1 block text-xs text-sys-muted">{label}</span>}
+      {label && <span className="mb-1 block text-center text-xs font-medium text-sys-muted">{label}</span>}
       <div className="flex items-stretch gap-2">
         <button
           type="button"
-          className="w-11 rounded-md border border-sys-line text-xl text-sys-glow active:bg-sys-line/30"
+          className="h-11 w-11 shrink-0 self-center rounded-full bg-sys-raised text-xl font-semibold text-sys-text active:bg-sys-line"
           onClick={() => stepBy(-step)}
         >
           −
         </button>
-        <div className="flex flex-1 items-center rounded-md border border-sys-line bg-sys-bg px-3">
+        <div className="flex flex-1 items-center rounded-2xl bg-sys-bg/60 px-3">
           <input
             type="text"
             inputMode="decimal"
-            className="w-full bg-transparent py-2 text-center text-lg outline-none"
+            className="w-full bg-transparent py-2 text-center text-xl font-bold outline-none"
             value={draft ?? show(value)}
             onFocus={(e) => e.target.select()}
             onChange={(e) => {
@@ -64,7 +64,7 @@ export function NumberInput({ value, onChange, step = 1, min, max, label, unit }
         </div>
         <button
           type="button"
-          className="w-11 rounded-md border border-sys-line text-xl text-sys-glow active:bg-sys-line/30"
+          className="h-11 w-11 shrink-0 self-center rounded-full bg-sys-raised text-xl font-semibold text-sys-text active:bg-sys-line"
           onClick={() => stepBy(step)}
         >
           +

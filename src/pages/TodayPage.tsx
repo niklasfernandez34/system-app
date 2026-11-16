@@ -1,6 +1,3 @@
-import { format, parseISO } from 'date-fns'
-import { de } from 'date-fns/locale'
-import { useLiveQuery } from 'dexie-react-hooks'
 import { useNavigate } from 'react-router'
 import { Button, SystemWindow } from '../components/ui'
 import { HabitChecklist } from '../components/HabitChecklist'
@@ -11,14 +8,12 @@ import { Deadlines } from '../components/Deadlines'
 import { TodayPlan } from '../components/TodayPlan'
 import { SkinRoutines } from '../components/SkinRoutines'
 import { TodayHints } from '../components/TodayHints'
-import { currentDay } from '../lib/events'
 import { useTodayCheckin } from '../lib/journal'
 import { useRunningWorkout, useTrainedToday } from '../lib/sport'
 import { NutritionSummary } from '../components/NutritionSummary'
 import { useDayNutrition } from '../lib/nutrition'
 
 export function TodayPage() {
-  const day = useLiveQuery(() => currentDay())
   const checkin = useTodayCheckin()
   const navigate = useNavigate()
   const trained = useTrainedToday()
@@ -26,10 +21,7 @@ export function TodayPage() {
 
   return (
     <div className="space-y-4">
-      <SystemWindow title="System">
-        <p className="mb-3 text-center text-sys-muted">
-          {day ? format(parseISO(day), 'EEEE, d. MMMM', { locale: de }) : '…'}
-        </p>
+      <SystemWindow>
         <LevelPanel />
       </SystemWindow>
       <TodayHints />
@@ -42,7 +34,7 @@ export function TodayPage() {
       <SystemWindow title="Check-in">
         {checkin !== undefined && (
           <div className="flex items-center justify-between gap-3">
-            <span className={checkin ? 'text-sys-glow' : 'text-sys-muted'}>
+            <span className={checkin ? 'font-semibold text-sys-ok' : 'text-sys-muted'}>
               {checkin ? '✓ Erledigt' : 'Noch offen'}
             </span>
             <Button variant={checkin ? 'ghost' : 'primary'} onClick={() => navigate('/tagebuch')}>
@@ -54,7 +46,7 @@ export function TodayPage() {
       <SystemWindow title="Training">
         {trained !== undefined && (
           <div className="flex items-center justify-between gap-3">
-            <span className={trained ? 'text-sys-glow' : 'text-sys-muted'}>
+            <span className={trained ? 'font-semibold text-sys-ok' : 'text-sys-muted'}>
               {trained ? '✓ Trainiert' : running ? 'Läuft gerade' : 'Noch kein Training'}
             </span>
             <Button

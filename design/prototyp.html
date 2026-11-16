@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700;1,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090b; --card:#18181b; --card2:#222226; --line:#2a2a2f; --text:#f4f4f5; --muted:#8b8b93;
+  --sport:#ff8a3d; --food:#4ade80; --uni:#a78bfa; --skin:#f472b6; --will:#facc15; --xp:#60a5fa;
+  --protein:#fb923c; --carbs:#c084fc; --fat:#38bdf8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#111114;font-family:Montserrat,sans-serif;color:var(--text);padding:40px;display:flex;gap:36px;flex-wrap:wrap}
+.phone{width:390px;height:844px;background:var(--bg);border-radius:52px;border:10px solid #2b2b30;position:relative;overflow:hidden;box-shadow:0 30px 80px rgb(0 0 0/.6)}
+.scr{height:100%;overflow:hidden;padding:54px 16px 110px}
+.status{position:absolute;top:0;left:0;right:0;height:50px;display:flex;justify-content:space-between;align-items:center;padding:14px 30px 0;font-size:15px;font-weight:600;z-index:3}
+.glow{position:absolute;inset:-120px -60px auto;height:380px;pointer-events:none;filter:blur(40px);opacity:.35}
+.top{display:flex;align-items:center;justify-content:space-between;margin:6px 2px 14px;position:relative}
+.h1{font-size:22px;font-weight:800;letter-spacing:.02em;text-transform:uppercase}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-size:13px;font-weight:600}
+.sec{font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin:18px 4px 8px}
+.card{background:linear-gradient(160deg,#1d1d21,#151518);border:1px solid #26262b;border-radius:22px;padding:16px;position:relative}
+.card+.card{margin-top:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.t{font-size:16px;font-weight:700}
+.s{font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}
+.bar{height:6px;border-radius:9px;background:#2c2c31;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;border-radius:9px}
+.big{font-size:28px;font-weight:800}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.btn{border-radius:14px;padding:13px 16px;font-weight:700;font-size:14px;text-align:center}
+.btn.w{background:#fff;color:#000}
+.btn.d{background:#26262b;color:var(--text)}
+.chev{color:var(--muted);font-size:18px;font-weight:600}
+.tabbar{position:absolute;left:14px;right:14px;bottom:26px;height:66px;border-radius:24px;background:rgb(30 30 34/.85);backdrop-filter:blur(20px);border:1px solid #2e2e34;display:flex;justify-content:space-around;align-items:center;z-index:3}
+.tab{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;letter-spacing:.06em;color:#77777f;text-transform:uppercase}
+.tab.on{color:#fff}
+.tab svg{width:22px;height:22px}
+.quest{display:flex;align-items:center;gap:12px;padding:11px 0;border-top:1px solid #26262b}
+.quest:first-of-type{border-top:0}
+.chk{width:24px;height:24px;border-radius:8px;border:2px solid #3a3a41;flex:none;display:grid;place-items:center;font-size:13px;font-weight:800}
+.chk.on{background:var(--food);border-color:var(--food);color:#000}
+.xp{margin-left:auto;font-size:12px;font-weight:700;color:var(--muted)}
+.icon{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-size:17px;flex:none}
+.heat{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:12px}
+.heat i{aspect-ratio:1;border-radius:3px;background:#2c2c31}
+.days{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;gap:4px;margin-top:10px}
+.days b{font-size:12px;color:var(--muted);font-weight:600}
+.days span{display:grid;place-items:center;width:38px;height:38px;margin:6px auto 0;border-radius:50%;background:#232327;font-size:14px;font-weight:700;position:relative}
+.days span.on{background:#fff;color:#000;border-radius:12px}
+.days span.dot::after{content:'';position:absolute;bottom:-8px;width:5px;height:5px;border-radius:50%;background:var(--sport)}
+table{width:100%;border-collapse:collapse;text-align:center}
+th{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.08em;padding:8px 0}
+td{font-size:18px;font-weight:700;padding:10px 0}
+tr.cur td{background:#2a2a2f}
+tr.cur td:first-child{border-radius:12px 0 0 12px} tr.cur td:last-child{border-radius:0 12px 12px 0}
+tr.next td{color:#5c5c63}
+.step{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.step .pm{width:44px;height:44px;border-radius:50%;background:#26262b;display:grid;place-items:center;font-size:22px;font-weight:600}
+.step .v{font-size:24px;font-weight:800}
+.ring{position:relative;width:96px;height:96px;margin:8px auto 0}
+.ring svg{transform:rotate(-90deg)}
+.ring div{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.cap{position:absolute;top:-34px;left:0;font-size:15px;color:#9a9aa3;font-weight:600}
+.legend{display:flex;gap:6px;align-items:center;font-size:12px;margin-top:4px}
+.legend i{width:8px;height:8px;border-radius:50%}
+.tag{font-size:10px;font-weight:800;padding:3px 7px;border-radius:6px;letter-spacing:.06em}
+</style>
+</head>
+<body>
+
+<!-- 1 HEUTE -->
+<div class="phone"><div class="cap">1 · Heute</div>
+<div class="status"><span>9:41</span><span>●●● ▮</span></div>
+<div class="glow" style="background:radial-gradient(circle at 50% 70%,var(--xp),transparent 60%)"></div>
+<div class="scr">
+  <div class="top"><div><div class="s" style="margin:0 0 2px">Montag, 16. November</div><div class="h1">Heute</div></div><span class="pill">🔥 12</span></div>
+
+  <div class="card">
+    <div class="row">
+      <div class="row" style="gap:12px">
+        <div style="width:54px;height:54px;border-radius:16px;background:linear-gradient(145deg,#3b82f6,#1e3a8a);display:grid;place-items:center;font-size:26px;font-weight:800;font-style:italic">D</div>
+        <div><div class="t">Rang D · III</div><div class="s">1.240 Gesamt-XP</div></div>
+      </div><span class="chev">›</span>
+    </div>
+    <div class="bar"><i style="width:62%;background:var(--xp)"></i></div>
+    <div class="row s" style="margin-top:6px"><span>Stufe III</span><span>186 / 300 XP</span></div>
+    <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px;text-align:center">
+      <div><div class="t" style="color:var(--sport)">14</div><div class="s">STR</div></div>
+      <div><div class="t" style="color:var(--uni)">11</div><div class="s">INT</div></div>
+      <div><div class="t" style="color:var(--food)">9</div><div class="s">VIT</div></div>
+      <div><div class="t" style="color:var(--skin)">7</div><div class="s">CHA</div></div>
+      <div><div class="t" style="color:var(--will)">10</div><div class="s">WIL</div></div>
+    </div>
+  </div>
+
+  <div class="sec">Tägliche Quests · 2 / 4</div>
+  <div class="card" style="padding:6px 16px">
+    <div class="quest"><div class="chk on">✓</div><div><div style="font-weight:600;font-size:14px">Check-in ausfüllen</div></div><span class="xp">+10 XP</span></div>
+    <div class="quest"><div class="chk on">✓</div><div style="font-weight:600;font-size:14px">2.500 ml Wasser</div><span class="xp">+15 XP</span></div>
+    <div class="quest"><div class="chk"></div><div style="font-weight:600;font-size:14px">Training: Push</div><span class="xp">+40 XP</span></div>
+    <div class="quest"><div class="chk"></div><div style="font-weight:600;font-size:14px">25 Min. lernen</div><span class="xp">+20 XP</span></div>
+  </div>
+
+  <div class="sec">Überblick</div>
+  <div class="grid">
+    <div class="card"><div class="t">Kalorien</div><div class="s">Heute</div>
+      <div class="ring"><svg width="96" height="96"><circle cx="48" cy="48" r="40" stroke="#2c2c31" stroke-width="9" fill="none"/><circle cx="48" cy="48" r="40" stroke="var(--food)" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="110"/></svg><div><b style="font-size:18px">1.405</b><span class="s" style="margin:0">/ 2.500</span></div></div>
+    </div>
+    <div class="card"><div class="t">Training</div><div class="s">Letzte 30 Tage</div>
+      <div class="heat" style="grid-template-columns:repeat(6,1fr)">
+        <i style="background:var(--sport)"></i><i></i><i style="background:var(--sport)"></i><i></i><i style="background:var(--sport)"></i><i></i>
+        <i style="background:var(--sport)"></i><i></i><i></i><i style="background:var(--sport)"></i><i></i><i style="background:var(--sport)"></i>
+        <i></i><i style="background:var(--sport)"></i><i></i><i style="background:var(--sport)"></i><i></i><i></i>
+      </div>
+      <div style="margin-top:10px;font-size:14px;font-weight:700">3/4 <span class="s" style="display:inline">diese Woche</span></div>
+    </div>
+  </div>
+</div>
+<div class="tabbar">
+  <div class="tab on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10v11h6v-6h6v6h6V10z"/></svg>Heute</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Sport</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3v8a2 2 0 0 0 4 0V3M9 11v10M17 3c-2 0-3 3-3 6s1 4 3 4v8"/></svg>Essen</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"/></svg>Uni</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Mehr</div>
+</div>
+</div>
+
+<!-- 2 SPORT -->
+<div class="phone"><div class="cap">2 · Sport</div>
+<div class="status"><span>9:41</span><span>●●● ▮</span></div>
+<div class="glow" style="background:radial-gradient(circle at 50% 70%,var(--sport),transparent 60%)"></div>
+<div class="scr">
+  <div class="top"><div class="h1">Sport</div><span class="pill" style="color:var(--sport)">● Plan: PPL</span></div>
+  <div class="card">
+    <div class="row"><span style="font-weight:700;font-size:14px">November 2026</span><span class="chev">›</span></div>
+    <div class="days">
+      <div><b>Mo</b><span class="on">16</span></div><div><b>Di</b><span>17</span></div><div><b>Mi</b><span class="dot">18</span></div><div><b>Do</b><span>19</span></div><div><b>Fr</b><span class="dot">20</span></div><div><b>Sa</b><span>21</span></div><div><b>So</b><span>22</span></div>
+    </div>
+  </div>
+
+  <div class="sec">Heutiges Training</div>
+  <div class="card" style="background:linear-gradient(150deg,#3a2414,#18181b 70%)">
+    <div class="row"><div class="row" style="gap:12px"><div class="icon" style="background:rgb(255 138 61/.18);color:var(--sport)">🏋</div><div><div class="t">Push</div><div class="s">Brust · Schulter · Trizeps</div></div></div><span class="tag" style="background:rgb(255 138 61/.18);color:var(--sport)">HEUTE</span></div>
+    <div class="row s" style="margin-top:14px;justify-content:flex-start;gap:18px;font-size:13px"><span style="white-space:nowrap">⏱ 60 Min.</span><span style="white-space:nowrap">☰ 6 Übungen</span><span style="white-space:nowrap">↗ 2 mehr kg</span></div>
+    <div class="btn w" style="margin-top:14px">Training starten</div>
+  </div>
+
+  <div class="sec">Statistiken</div>
+  <div class="grid">
+    <div class="card"><div class="t">Bankdrücken</div><div class="s">Letzte 7 Trainings</div>
+      <svg viewBox="0 0 140 50" style="margin-top:12px;width:100%"><polyline fill="none" stroke="var(--sport)" stroke-width="2.5" points="5,40 25,34 45,36 65,26 85,28 105,18 130,10"/><circle cx="130" cy="10" r="4" fill="var(--sport)"/></svg>
+      <div style="margin-top:6px;font-weight:800">82,5 <span class="s" style="display:inline">kg</span></div></div>
+    <div class="card"><div class="t">Volumen</div><div class="s">Diese Woche</div>
+      <div class="big" style="margin-top:16px">12.175</div><div class="s">kg bewegt · ▲ 8 %</div></div>
+  </div>
+  <div class="card" style="margin-top:10px"><div class="row"><div><div class="t">Pläne</div><div class="s">3 aktiv</div></div><span class="chev">›</span></div></div>
+</div>
+<div class="tabbar">
+  <div class="tab"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10v11h6v-6h6v6h6V10z"/></svg>Heute</div>
+  <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Sport</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3v8a2 2 0 0 0 4 0V3M9 11v10M17 3c-2 0-3 3-3 6s1 4 3 4v8"/></svg>Essen</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"/></svg>Uni</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Mehr</div>
+</div>
+</div>
+
+<!-- 3 TRAINING LÄUFT -->
+<div class="phone"><div class="cap">3 · Training läuft</div>
+<div class="status"><span>9:41</span><span>●●● ▮</span></div>
+<div class="glow" style="background:radial-gradient(circle at 50% 70%,var(--sport),transparent 60%)"></div>
+<div class="scr">
+  <div class="top"><span class="chev" style="font-size:24px">‹</span><div class="h1" style="font-size:18px">Push</div><span class="pill">⏱ 32:10</span></div>
+  <div class="card">
+    <div class="s" style="margin:0">Brust · Übung 2 / 6</div>
+    <div class="t" style="font-size:20px;margin-top:2px">Bankdrücken</div>
+    <div class="s" style="font-size:13px;margin-top:6px"><span style="color:var(--will)">▮</span> 4 Sätze &nbsp; <span style="color:var(--will)">⟷</span> 80 kg</div>
+    <table style="margin-top:14px">
+      <tr><th>SATZ</th><th>WDH</th><th>KG</th><th></th></tr>
+      <tr><td>1</td><td>8</td><td>80</td><td style="color:var(--food);font-size:14px">●</td></tr>
+      <tr><td>2</td><td>8</td><td>80</td><td style="color:var(--food);font-size:14px">●</td></tr>
+      <tr class="cur"><td>3</td><td>8</td><td>80</td><td></td></tr>
+      <tr class="next"><td>4</td><td>8</td><td>80</td><td></td></tr>
+    </table>
+    <div style="height:1px;background:#2a2a2f;margin:14px 0"></div>
+    <div class="grid" style="gap:16px">
+      <div style="text-align:center"><div class="s">Wdh</div><div class="step"><span class="pm">−</span><span class="v">8</span><span class="pm">+</span></div></div>
+      <div style="text-align:center"><div class="s">Kg</div><div class="step"><span class="pm">−</span><span class="v">80</span><span class="pm">+</span></div></div>
+    </div>
+    <div class="btn w" style="margin-top:16px">Satz abhaken ✓</div>
+  </div>
+  <div class="card" style="margin-top:10px">
+    <div class="row"><div><div class="s" style="margin:0">Pause</div><div class="big" style="color:var(--sport)">1:24</div></div>
+    <div class="row" style="gap:8px"><span class="btn d" style="padding:10px 14px">−15 s</span><span class="btn d" style="padding:10px 14px">+15 s</span></div></div>
+    <div class="bar"><i style="width:55%;background:var(--sport)"></i></div>
+  </div>
+  <div class="card" style="margin-top:10px;padding:14px 16px"><div class="row"><div><div class="s" style="margin:0">Als Nächstes</div><div style="font-weight:700">Schrägbank Kurzhantel</div></div><span class="s">3 × 10 · 28 kg</span></div></div>
+</div>
+</div>
+
+<!-- 4 ERNÄHRUNG -->
+<div class="phone"><div class="cap">4 · Ernährung</div>
+<div class="status"><span>9:41</span><span>●●● ▮</span></div>
+<div class="glow" style="background:radial-gradient(circle at 50% 70%,var(--food),transparent 60%)"></div>
+<div class="scr">
+  <div class="top"><div class="h1">Ernährung</div><div class="row" style="gap:8px"><span class="pill">▦ Scan</span></div></div>
+  <div class="card">
+    <div class="row">
+      <div class="ring" style="margin:0;width:110px;height:110px"><svg width="110" height="110"><circle cx="55" cy="55" r="46" stroke="#2c2c31" stroke-width="10" fill="none"/><circle cx="55" cy="55" r="46" stroke="var(--food)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="127"/></svg><div><b style="font-size:20px">1.405</b><span class="s" style="margin:0">/ 2.500 kcal</span></div></div>
+      <div style="flex:1;margin-left:14px">
+        <div class="row s" style="margin:0"><span style="color:var(--text);font-weight:600">Eiweiß</span><span>98 / 160 g</span></div><div class="bar" style="margin-top:5px"><i style="width:61%;background:var(--protein)"></i></div>
+        <div class="row s" style="margin-top:9px"><span style="color:var(--text);font-weight:600">Kohlenh.</span><span>150 / 300 g</span></div><div class="bar" style="margin-top:5px"><i style="width:50%;background:var(--carbs)"></i></div>
+        <div class="row s" style="margin-top:9px"><span style="color:var(--text);font-weight:600">Fett</span><span>42 / 80 g</span></div><div class="bar" style="margin-top:5px"><i style="width:52%;background:var(--fat)"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="card"><div class="row"><div class="row" style="gap:12px"><div class="icon" style="background:rgb(56 189 248/.15);color:var(--fat)">💧</div><div><div class="t">Wasser</div><div class="s">1.750 / 2.500 ml</div></div></div><div class="row" style="gap:6px"><span class="btn d" style="padding:9px 12px">+250</span><span class="btn d" style="padding:9px 12px">+500</span></div></div><div class="bar"><i style="width:70%;background:var(--fat)"></i></div></div>
+
+  <div class="sec">Mahlzeiten</div>
+  <div class="card" style="padding:6px 16px">
+    <div class="quest"><div><div style="font-weight:700;font-size:15px">Frühstück</div><div class="s">Haferflocken, Skyr, Banane</div></div><span class="xp" style="color:var(--text)">520 kcal</span><span class="pm" style="width:34px;height:34px;border-radius:50%;background:#26262b;display:grid;place-items:center">+</span></div>
+    <div class="quest"><div><div style="font-weight:700;font-size:15px">Mittagessen</div><div class="s">Hähnchen, Reis, Brokkoli</div></div><span class="xp" style="color:var(--text)">885 kcal</span><span style="width:34px;height:34px;border-radius:50%;background:#26262b;display:grid;place-items:center">+</span></div>
+    <div class="quest"><div><div style="font-weight:700;font-size:15px">Abendessen</div><div class="s">Noch nichts</div></div><span class="xp">0 kcal</span><span style="width:34px;height:34px;border-radius:50%;background:#26262b;display:grid;place-items:center">+</span></div>
+    <div class="quest"><div><div style="font-weight:700;font-size:15px">Snacks</div><div class="s">Noch nichts</div></div><span class="xp">0 kcal</span><span style="width:34px;height:34px;border-radius:50%;background:#26262b;display:grid;place-items:center">+</span></div>
+  </div>
+</div>
+<div class="tabbar">
+  <div class="tab"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 3 10v11h6v-6h6v6h6V10z"/></svg>Heute</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>Sport</div>
+  <div class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3v8a2 2 0 0 0 4 0V3M9 11v10M17 3c-2 0-3 3-3 6s1 4 3 4v8"/></svg>Essen</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 9l10-5 10 5-10 5z M6 11v5c3 2 9 2 12 0v-5"/></svg>Uni</div>
+  <div class="tab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>Mehr</div>
+</div>
+</div>
+
+</body>
+</html>

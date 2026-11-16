@@ -40,7 +40,7 @@ export function StudyTimerFloat() {
     <button
       type="button"
       onClick={() => navigate('/uni')}
-      className="mx-auto mb-2 flex w-[calc(100%-2rem)] max-w-xl items-center justify-between rounded-lg border border-sys-glow bg-sys-panel/95 px-3 py-2 text-sm shadow-glow"
+      className="mx-auto mb-2 flex w-[calc(100%-2rem)] max-w-xl items-center justify-between rounded-2xl border border-sys-line bg-sys-panel/95 px-4 py-2.5 text-sm font-semibold shadow-card backdrop-blur-xl"
     >
       <span className="text-sys-glow">{timer.phase === 'focus' ? `Lernen · ${name ?? ''}` : 'Pause'}</span>
       <span className="font-mono tabular-nums">{clock(left)}</span>

@@ -27,7 +27,7 @@ export function AchievementsPage() {
                     type="button"
                     disabled={!t.unlocked}
                     onClick={() => setSetting('activeTitle', active === t.id ? '' : t.id)}
-                    className={`flex min-h-12 w-full items-center gap-3 rounded-md border px-3 py-2 text-left ${
+                    className={`flex min-h-12 w-full items-center gap-3 rounded-xl border px-3 py-2 text-left ${
                       active === t.id
                         ? 'border-sys-glow bg-sys-glow/15 shadow-glow'
                         : t.unlocked

@@ -13,7 +13,7 @@ export function HabitChecklist() {
           <button
             type="button"
             onClick={() => toggleHabit(h.id)}
-            className={`flex min-h-12 w-full items-center gap-3 rounded-md border px-3 text-left transition-colors ${
+            className={`flex min-h-12 w-full items-center gap-3 rounded-xl border px-3 text-left transition-colors ${
               h.done ? 'border-sys-glow bg-sys-glow/15 shadow-glow' : 'border-sys-line active:bg-sys-line/30'
             }`}
           >

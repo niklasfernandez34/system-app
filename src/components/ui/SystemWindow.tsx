@@ -8,15 +8,11 @@ type Props = {
 
 export function SystemWindow({ title, children, className = '' }: Props) {
   return (
-    <section
-      className={`rounded-lg border border-sys-glow/60 bg-sys-panel/80 p-4 shadow-glow backdrop-blur ${className}`}
-    >
+    <section className={className}>
       {title && (
-        <header className="mb-3 border-b border-sys-line pb-2 text-center text-sm font-semibold uppercase tracking-[0.25em] text-sys-glow">
-          {title}
-        </header>
+        <h2 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.12em] text-sys-muted">{title}</h2>
       )}
-      {children}
+      <div className="card p-4">{children}</div>
     </section>
   )
 }

@@ -66,9 +66,9 @@ function ScannerView({ onClose, onDetected }: Omit<Props, 'open'>) {
       {error ? (
         <p className="text-center text-sys-danger">{error}</p>
       ) : (
-        <div className="relative overflow-hidden rounded-md border border-sys-line bg-black">
+        <div className="relative overflow-hidden rounded-xl border border-sys-line bg-black">
           <video ref={video} className="aspect-[4/3] w-full object-cover" playsInline muted />
-          <div className="pointer-events-none absolute inset-[15%] rounded-md border-2 border-sys-glow shadow-glow" />
+          <div className="pointer-events-none absolute inset-[15%] rounded-xl border-2 border-sys-glow shadow-glow" />
         </div>
       )}
       <p className="text-center text-xs text-sys-muted">Barcode in den Rahmen halten – egal wie herum.</p>

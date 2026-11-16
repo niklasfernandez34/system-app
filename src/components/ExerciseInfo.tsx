@@ -19,7 +19,7 @@ export function ExerciseInfo({ exerciseId, onClose }: Props) {
               src={info.image}
               alt={info.name}
               loading="lazy"
-              className="mx-auto max-h-56 rounded-md bg-white object-contain"
+              className="mx-auto max-h-56 rounded-xl bg-white object-contain"
             />
           )}
           <p>

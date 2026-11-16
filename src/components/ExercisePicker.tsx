@@ -45,7 +45,7 @@ export function ExercisePicker({ open, onClose, onPick }: Props) {
     <button
       type="button"
       onClick={() => setTab(tab === t ? null : t)}
-      className={`min-h-10 flex-1 rounded-md border px-2 text-sm ${
+      className={`min-h-10 flex-1 rounded-xl border px-2 text-sm ${
         value !== ALL || tab === t ? 'border-sys-glow text-sys-text' : 'border-sys-line text-sys-muted'
       }`}
     >

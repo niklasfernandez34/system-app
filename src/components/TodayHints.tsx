@@ -58,7 +58,7 @@ function BackupHint() {
       <Button className="w-full" onClick={save}>
         Jetzt sichern
       </Button>
-      {message && <p className="mt-2 text-xs text-red-400">{message}</p>}
+      {message && <p className="mt-2 text-xs text-sys-danger">{message}</p>}
     </SystemWindow>
   )
 }

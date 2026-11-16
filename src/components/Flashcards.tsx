@@ -136,7 +136,7 @@ export function Flashcards({ subjectId }: { subjectId: number }) {
         <button
           type="button"
           onClick={() => setSession({ ...session, flipped: !session.flipped })}
-          className="mt-4 flex min-h-56 w-full flex-col items-center justify-center rounded-lg border border-sys-glow/60 bg-sys-glow/5 p-4 text-center shadow-glow"
+          className="mt-4 flex min-h-56 w-full flex-col items-center justify-center card p-4 text-center "
         >
           {card.topic && <span className="mb-2 text-xs uppercase tracking-widest text-sys-muted">{card.topic}</span>}
           {(session.flipped ? card.back : card.front) && (

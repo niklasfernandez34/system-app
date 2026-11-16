@@ -81,7 +81,7 @@ export function SystemWatcher() {
     <Dialog open={!!notice} onClose={close} title="Benachrichtigung">
       {notice && (
         <div key={queue.length} className="space-y-4 text-center">
-          <p className="animate-level-up text-3xl font-bold tracking-[0.2em] text-sys-glow [text-shadow:0_0_16px_var(--color-sys-glow)]">
+          <p className="animate-level-up text-3xl font-bold tracking-[0.2em] text-sys-glow">
             {HEADINGS[notice.kind]}
           </p>
           {notice.kind === 'rank' && (

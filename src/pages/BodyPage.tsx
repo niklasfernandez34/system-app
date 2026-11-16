@@ -142,7 +142,7 @@ function BodyChart({ entries, today }: { entries: BodyRecord[]; today: string })
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border border-sys-line p-2">
+    <div className="rounded-xl border border-sys-line p-2">
       <div className="text-xs text-sys-muted">{label}</div>
       <div className="text-sm">{value}</div>
     </div>

@@ -1,15 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-  --color-sys-bg: #05070d;
-  --color-sys-panel: #0a1424;
-  --color-sys-line: #1e4a7a;
-  --color-sys-glow: #38bdf8;
-  --color-sys-text: #dbeafe;
-  --color-sys-muted: #7a8fb0;
+  --font-sans: 'Montserrat Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --color-sys-bg: #09090b;
+  --color-sys-panel: #18181b;
+  --color-sys-raised: #26262b;
+  --color-sys-line: #2a2a2f;
+  --color-sys-glow: var(--accent);
+  --color-sys-text: #f4f4f5;
+  --color-sys-muted: #8b8b93;
   --color-sys-danger: #f43f5e;
-  --shadow-glow: 0 0 12px rgb(56 189 248 / 0.35), inset 0 0 18px rgb(56 189 248 / 0.08);
+  --color-sys-ok: #4ade80;
+  --color-sys-xp: #60a5fa;
+  --color-sys-sport: #ff8a3d;
+  --color-sys-food: #4ade80;
+  --color-sys-uni: #a78bfa;
+  --color-sys-skin: #f472b6;
+  --color-sys-will: #facc15;
+  --color-sys-protein: #fb923c;
+  --color-sys-carbs: #c084fc;
+  --color-sys-fat: #38bdf8;
+  --shadow-glow: none;
+  --shadow-card: 0 8px 24px rgb(0 0 0 / 0.35);
 }
+
+:root { --accent: #60a5fa; }
+:root[data-area='sport'] { --accent: #ff8a3d; }
+:root[data-area='food'] { --accent: #4ade80; }
+:root[data-area='uni'] { --accent: #a78bfa; }
+:root[data-area='skin'] { --accent: #f472b6; }
+:root[data-area='will'] { --accent: #facc15; }
 
 html,
 body,
@@ -20,7 +40,7 @@ body,
 body {
   background: var(--color-sys-bg);
   color: var(--color-sys-text);
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
@@ -38,3 +58,21 @@ body {
   100% { opacity: 1; transform: scale(1); }
 }
 .animate-level-up { animation: level-up 0.9s ease-out both; }
+
+.area-glow {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 320px;
+  pointer-events: none;
+  background: radial-gradient(ellipse 80% 70% at 50% 0%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 70%);
+  transition: background 0.4s;
+  z-index: 0;
+}
+
+@layer components {
+  .card {
+    background: linear-gradient(160deg, #1d1d21, #151518);
+    border: 1px solid #26262b;
+    border-radius: 1.375rem;
+  }
+}

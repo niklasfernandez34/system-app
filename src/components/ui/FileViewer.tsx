@@ -15,7 +15,7 @@ export function FileViewer({ file, onClose, onShare }: Props) {
   }, [file])
 
   const type = file?.type || file?.blob.type || ''
-  const btn = 'min-h-9 rounded-md border border-sys-line px-3 text-sm text-sys-muted active:bg-sys-line/30'
+  const btn = 'min-h-9 rounded-xl border border-sys-line px-3 text-sm text-sys-muted active:bg-sys-line/30'
 
   return (
     <dialog

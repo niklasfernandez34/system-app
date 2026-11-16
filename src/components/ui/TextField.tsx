@@ -11,7 +11,7 @@ type Props = {
 }
 
 const base =
-  'w-full rounded-md border border-sys-line bg-sys-bg px-3 py-2 text-base text-sys-text outline-none placeholder:text-sys-muted/60 focus:border-sys-glow'
+  'w-full rounded-2xl border border-sys-line bg-sys-bg/60 px-3 py-2 text-base text-sys-text outline-none placeholder:text-sys-muted/60 focus:border-sys-glow'
 
 export function TextField({ value, onChange, label, placeholder, multiline, rows = 4, textareaRef }: Props) {
   return (

@@ -5,15 +5,15 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 const styles = {
-  primary: 'border-sys-glow bg-sys-glow/15 text-sys-text shadow-glow active:bg-sys-glow/30',
-  ghost: 'border-sys-line bg-transparent text-sys-muted active:bg-sys-line/30',
-  danger: 'border-sys-danger bg-sys-danger/15 text-sys-danger active:bg-sys-danger/30',
+  primary: 'bg-white text-black active:bg-white/80',
+  ghost: 'bg-sys-raised text-sys-text active:bg-sys-line',
+  danger: 'bg-sys-danger/15 text-sys-danger active:bg-sys-danger/30',
 }
 
 export function Button({ variant = 'primary', className = '', ...rest }: Props) {
   return (
     <button
-      className={`min-h-11 rounded-md border px-4 py-2 font-semibold tracking-wide transition-colors disabled:opacity-40 ${styles[variant]} ${className}`}
+      className={`min-h-11 rounded-2xl px-4 py-2 text-sm font-bold transition-colors disabled:opacity-40 ${styles[variant]} ${className}`}
       {...rest}
     />
   )

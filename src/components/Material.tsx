@@ -109,7 +109,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
                 key={f}
                 type="button"
                 onClick={() => open(f)}
-                className="flex min-h-20 flex-col justify-between rounded-lg border border-sys-glow/60 bg-sys-glow/5 p-3 text-left shadow-glow active:bg-sys-glow/20"
+                className="flex min-h-20 flex-col justify-between card p-3 text-left active:bg-sys-raised"
               >
                 <span className="font-semibold leading-tight">▸ {f}</span>
                 <span className="text-xs text-sys-muted">{items.filter((i) => i.folder === f).length} Einträge</span>
@@ -118,7 +118,7 @@ export function Material({ subjectId, folders }: { subjectId: number; folders: s
             <button
               type="button"
               onClick={() => setFolderName({ name: '' })}
-              className="flex min-h-20 items-center justify-center rounded-lg border border-dashed border-sys-line text-sys-muted active:bg-sys-line/30"
+              className="flex min-h-20 items-center justify-center rounded-2xl border border-dashed border-sys-line text-sys-muted active:bg-sys-line/30"
             >
               + Ordner
             </button>

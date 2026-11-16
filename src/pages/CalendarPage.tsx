@@ -58,7 +58,7 @@ export function CalendarPage() {
         <div className="space-y-4">
           <MultiChips options={CAL_PARTS} value={prefs.parts} onChange={(parts) => set({ parts })} label="Was soll in den Kalender?" />
           {has('Training') && (
-            <div className="space-y-3 rounded-md border border-sys-line p-3">
+            <div className="space-y-3 rounded-xl border border-sys-line p-3">
               <MultiChips options={WEEKDAYS} value={prefs.trainingDays} onChange={(trainingDays) => set({ trainingDays })} label="Trainingstage" />
               <TimeInput label="Uhrzeit" value={prefs.trainingTime} onChange={(trainingTime) => set({ trainingTime })} />
               <Chips
@@ -70,7 +70,7 @@ export function CalendarPage() {
             </div>
           )}
           {has('Pflegeroutine') && (
-            <div className="grid grid-cols-2 gap-3 rounded-md border border-sys-line p-3">
+            <div className="grid grid-cols-2 gap-3 rounded-xl border border-sys-line p-3">
               <TimeInput label="Morgens" value={prefs.morningTime} onChange={(morningTime) => set({ morningTime })} />
               <TimeInput label="Abends" value={prefs.eveningTime} onChange={(eveningTime) => set({ eveningTime })} />
               {loaded.data.routines.length === 0 && (
@@ -95,7 +95,7 @@ export function CalendarPage() {
         <Button className="mt-3 w-full" disabled={events.length === 0} onClick={exportFile}>
           Kalenderdatei erstellen
         </Button>
-        {message && <p className="mt-2 text-xs text-red-400">{message}</p>}
+        {message && <p className="mt-2 text-xs text-sys-danger">{message}</p>}
       </SystemWindow>
 
       <SystemWindow title="So kommt es in den Kalender">

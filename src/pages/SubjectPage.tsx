@@ -58,7 +58,7 @@ export function SubjectPage() {
             key={s.id}
             type="button"
             onClick={() => setParams(s.id === 'uebersicht' ? {} : { bereich: s.id }, { replace: true })}
-            className={`flex flex-col items-center gap-1 rounded-lg border px-1 py-2 text-[10px] leading-tight ${
+            className={`flex flex-col items-center gap-1 rounded-2xl border px-1 py-2 text-[10px] leading-tight ${
               section === s.id ? 'border-sys-glow bg-sys-glow/15 text-sys-text shadow-glow' : 'border-sys-line text-sys-muted'
             }`}
           >

@@ -38,7 +38,7 @@ export function UniPage() {
               key={s.id}
               type="button"
               onClick={() => navigate(`/uni/fach/${s.id}`)}
-              className="flex min-h-24 flex-col justify-between rounded-lg border border-sys-glow/60 bg-sys-glow/5 p-3 text-left shadow-glow active:bg-sys-glow/20"
+              className="flex min-h-24 flex-col justify-between card p-3 text-left active:bg-sys-raised"
             >
               <span className="font-semibold leading-tight">{s.name}</span>
               <span className="mt-2 space-y-0.5 text-xs text-sys-muted">
@@ -55,7 +55,7 @@ export function UniPage() {
           <button
             type="button"
             onClick={() => setAdding(true)}
-            className="flex min-h-24 items-center justify-center rounded-lg border border-dashed border-sys-line text-sys-muted active:bg-sys-line/30"
+            className="flex min-h-24 items-center justify-center rounded-2xl border border-dashed border-sys-line text-sys-muted active:bg-sys-line/30"
           >
             + Fach
           </button>

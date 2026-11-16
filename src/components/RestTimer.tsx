@@ -24,10 +24,10 @@ export function RestTimer({ workoutId, endsAt, total }: Props) {
   const ss = String(left % 60).padStart(2, '0')
 
   return (
-    <div className="rounded-lg border border-sys-glow bg-sys-panel/95 p-3 shadow-glow backdrop-blur">
+    <div className="rounded-[1.375rem] border border-sys-line bg-sys-panel/90 p-4 shadow-card backdrop-blur-xl">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-xs uppercase tracking-[0.25em] text-sys-glow">Pause</span>
-        <span className="font-mono text-2xl tabular-nums">
+        <span className="text-xs font-semibold text-sys-muted">Pause</span>
+        <span className="text-3xl font-extrabold tabular-nums text-sys-glow">
           {mm}:{ss}
         </span>
       </div>

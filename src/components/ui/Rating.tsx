@@ -15,10 +15,10 @@ export function Rating({ value, onChange, label, max = 5 }: Props) {
             key={n}
             type="button"
             onClick={() => onChange(n)}
-            className={`min-h-11 rounded-md border text-lg font-semibold transition-colors ${
+            className={`min-h-11 rounded-2xl text-lg font-bold transition-colors ${
               n === value
-                ? 'border-sys-glow bg-sys-glow/20 text-sys-text shadow-glow'
-                : 'border-sys-line text-sys-muted active:bg-sys-line/30'
+                ? 'bg-white text-black'
+                : 'bg-sys-raised text-sys-muted active:bg-sys-line'
             }`}
           >
             {n}

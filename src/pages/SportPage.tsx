@@ -1,7 +1,7 @@
 import { format } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { useNavigate } from 'react-router'
-import { Button, NumberInput, SystemWindow } from '../components/ui'
+import { Button, NumberInput, SystemWindow, WeekStrip } from '../components/ui'
 import { setSetting, useSetting } from '../db/settings'
 import {
   fmt,
@@ -42,6 +42,10 @@ export function SportPage() {
         </SystemWindow>
       )}
 
+      <SystemWindow>
+        <WeekStrip marked={recent?.map((w) => w.finishedAt)} />
+      </SystemWindow>
+
       <div className="grid grid-cols-2 gap-2">
         <Button variant="ghost" onClick={() => navigate('/sport/koerper')}>
           Körperdaten
@@ -51,14 +55,20 @@ export function SportPage() {
         </Button>
       </div>
 
-      <SystemWindow title="Trainingspläne">
-        {plans && !plans.length && <p className="mb-3 text-center text-sys-muted">Noch keine Pläne angelegt.</p>}
-        <ul className="mb-3 divide-y divide-sys-line">
+      <section>
+        <h2 className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.12em] text-sys-muted">Trainingspläne</h2>
+        {plans && !plans.length && <p className="card mb-2 p-4 text-center text-sys-muted">Noch keine Pläne angelegt.</p>}
+        <ul className="mb-2 space-y-2">
           {plans?.map((p) => (
-            <li key={p.id} className="flex items-center gap-2 py-2">
-              <div className="flex-1">
-                <div>{p.name}</div>
-                <div className="text-xs text-sys-muted">{p.items.length} Übungen</div>
+            <li key={p.id} className="card flex items-center gap-3 bg-linear-to-br from-sys-glow/20 via-sys-panel via-60% to-sys-panel p-4">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sys-glow/20 text-sys-glow">
+                <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
+                  <path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12" />
+                </svg>
+              </span>
+              <div className="min-w-0 flex-1">
+                <div className="truncate font-bold">{p.name}</div>
+                <div className="text-xs font-medium text-sys-muted">{p.items.length} Übungen</div>
               </div>
               <Button variant="ghost" className="px-3" onClick={() => navigate(`/sport/plan/${p.id}`)}>
                 ✎
@@ -72,7 +82,7 @@ export function SportPage() {
         <Button variant="ghost" className="w-full" onClick={() => navigate('/sport/plan/neu')}>
           + Neuer Plan
         </Button>
-      </SystemWindow>
+      </section>
 
       <SystemWindow title="Letzte Trainings">
         {recent && !recent.length && <p className="text-center text-sys-muted">Noch kein Training abgeschlossen.</p>}
@@ -101,7 +111,7 @@ export function SportPage() {
             [...bests].map(([id, b]) => (
               <li key={id} className="flex justify-between py-2 text-sm">
                 <span>{names?.get(id) ?? '?'}</span>
-                <span className="text-sys-glow">
+                <span className="font-semibold text-sys-glow">
                   {fmt(b.weight)} kg <span className="text-sys-muted">· 1RM ~{fmt(b.e1rm)} kg</span>
                 </span>
               </li>

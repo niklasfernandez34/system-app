@@ -1,5 +1,4 @@
 import { useEffect, useRef, type ReactNode } from 'react'
-import { SystemWindow } from './SystemWindow'
 
 type Props = {
   open: boolean
@@ -23,9 +22,12 @@ export function Dialog({ open, onClose, title, children }: Props) {
       ref={ref}
       onClose={(e) => e.target === e.currentTarget && onClose()}
       onClick={(e) => e.target === ref.current && onClose()}
-      className="m-auto w-[min(92vw,28rem)] bg-transparent p-0 text-sys-text backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+      className="m-auto w-[min(92vw,28rem)] bg-transparent p-0 text-sys-text backdrop:bg-black/70 backdrop:backdrop-blur-md"
     >
-      <SystemWindow title={title}>{children}</SystemWindow>
+      <div className="card p-5 shadow-card">
+        {title && <h2 className="mb-4 text-lg font-extrabold uppercase tracking-wide">{title}</h2>}
+        {children}
+      </div>
     </dialog>
   )
 }

@@ -16,8 +16,8 @@ export function StatusPage() {
 
   return (
     <div className="space-y-4">
-      <SystemWindow title="Status">
-        <p className="text-center text-5xl font-bold text-sys-glow [text-shadow:0_0_16px_var(--color-sys-glow)]">
+      <SystemWindow>
+        <p className="text-center text-5xl font-extrabold italic text-sys-glow">
           {s.rank} · {roman(s.stage)}
         </p>
         <p className="mb-3 mt-1 text-center text-sm text-sys-muted">Gesamt {fmt(s.xp)} XP</p>

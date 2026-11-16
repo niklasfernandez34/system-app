@@ -152,7 +152,7 @@ function CalculatorForm({ today, plan, lastWeight }: { today: string; plan: Nutr
                 </>
               )}
             </dl>
-            <div className="rounded-md border border-sys-glow/40 p-3 text-center">
+            <div className="rounded-xl border border-sys-glow/40 p-3 text-center">
               <div className="text-3xl font-bold text-sys-glow">{fmtNum(goals.kcal)} kcal</div>
               <div className="mt-1 text-sm text-sys-muted">
                 Eiweiß {goals.protein} g · Kohlenh. {goals.carbs} g · Fett {goals.fat} g

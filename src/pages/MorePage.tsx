@@ -10,6 +10,16 @@ import { SyncSettings } from '../components/SyncSettings'
 
 type Pending = { file: File } | null
 
+const AREAS = [
+  ['/status', 'Status', 'var(--color-sys-xp)'],
+  ['/auswertung', 'Auswertung', 'var(--color-sys-xp)'],
+  ['/kalender', 'Kalender', 'var(--color-sys-xp)'],
+  ['/tagebuch', 'Tagebuch', 'var(--color-sys-will)'],
+  ['/habits', 'Habits', 'var(--color-sys-will)'],
+  ['/notizen', 'Notizen', 'var(--color-sys-will)'],
+  ['/haut', 'Hautbild', 'var(--color-sys-skin)'],
+] as const
+
 export function MorePage() {
   const navigate = useNavigate()
   const dayStartHour = useSetting('dayStartHour')
@@ -41,16 +51,22 @@ export function MorePage() {
 
   return (
     <div className="space-y-4">
-      <SystemWindow title="Bereiche">
-        <div className="grid grid-cols-3 gap-2">
-          <Button onClick={() => navigate('/status')}>Status</Button>
-          <Button onClick={() => navigate('/auswertung')}>Auswertung</Button>
-          <Button onClick={() => navigate('/kalender')}>Kalender</Button>
-          <Button onClick={() => navigate('/tagebuch')}>Tagebuch</Button>
-          <Button onClick={() => navigate('/habits')}>Habits</Button>
-          <Button onClick={() => navigate('/notizen')}>Notizen</Button>
-          <Button onClick={() => navigate('/haut')}>Hautbild</Button>
-        </div>
+      <SystemWindow title="Bereiche" className="[&>.card]:p-0">
+        <ul className="divide-y divide-sys-line">
+          {AREAS.map(([to, label, color]) => (
+            <li key={to}>
+              <button
+                type="button"
+                onClick={() => navigate(to)}
+                className="flex min-h-13 w-full items-center gap-3 px-4 text-left font-semibold active:bg-sys-raised"
+              >
+                <span className="h-2.5 w-2.5 rounded-full" style={{ background: color }} />
+                <span className="flex-1">{label}</span>
+                <span className="text-lg text-sys-muted">›</span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </SystemWindow>
 
       <SystemWindow title="Einstellungen">

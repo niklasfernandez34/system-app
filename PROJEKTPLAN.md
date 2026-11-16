@@ -116,11 +116,12 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Status-Seite** (`/status`, Tipp auf das Rang-Fenster oder über „Mehr“): Rang, Stufe, Gesamt-XP, Attribute, Prüfung mit Fortschritt.
 - **Meldungen:** „Stufe auf!“ und „Rangaufstieg!“ (Einstellung `seenStage`).
 
-### Entscheidung: Optik-Varianten (geplant für Phase 8)
+### Entscheidung: Neue Optik (Phase 8, ersetzt die geplanten Optik-Varianten)
 
-- Später gibt es 3 Optiken, umschaltbar in den Einstellungen: **1 Solo Leveling** (jetzt), **2 Apple** (clean), **3 Anime** (bunt).
-- Bis dahin: Farben nur über die Variablen in `src/index.css` (`sys-*`), keine festen Farben in Seiten. Aussehen nur in den Bausteinen in `src/components/ui/`.
-- Umsetzung: Pro Optik eigene Werte für die Variablen, Bausteine passen sich an. Die Wahl wird lokal gespeichert.
+- Statt 3 umschaltbarer Optiken gibt es **eine neue Optik** nach den Referenzen des Nutzers (dunkle Fitness-App): fast schwarzer Hintergrund, dunkelgraue Karten mit großen Rundungen, Schrift **Montserrat** (offline über `@fontsource-variable/montserrat`), große Seitentitel in Großbuchstaben, kleine graue Abschnitts-Überschriften, weiße Haupt-Buttons, schwebende Tab-Leiste mit Symbolen.
+- **Bereichsfarben:** `sys-glow` ist die Akzentfarbe des aktuellen Bereichs (`data-area` auf `<html>`, gesetzt in `App.tsx` über `areaFor` in `src/components/AppFrame.tsx`): Heute/Status blau, Sport orange, Ernährung grün, Uni lila, Haut pink, Habits/Tagebuch/Notizen gelb. Feste Farben `sys-xp`, `sys-sport`, `sys-food`, `sys-uni`, `sys-skin`, `sys-will`, `sys-ok`, Makros `sys-protein/carbs/fat`.
+- Seitentitel zentral in `PageHeader` (`AppFrame.tsx`). Neue Bausteine `Ring` und `WeekStrip`. `SystemWindow` zeigt den Titel über der Karte.
+- **Alte Optik** (Solo Leveling) ist als Git-Tag `optik-solo-leveling` gesichert. Prototyp-Bild: `design/prototyp.png`.
 
 ### Entscheidungen aus Phase 4c
 
@@ -329,7 +330,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 7. **Erinnerungen und Auswertung**
    - ~~**7a:** Statistiken, Wochenrückblick, Backup-Erinnerung~~ – erledigt.
    - ~~**7b:** Zusammenhänge, Kalenderexport (Training, Lernplan, Klausuren/Fristen, Pflegeroutine)~~ – erledigt.
-8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)
+8. ~~**Neue Optik** nach Referenzen (statt Optik-Varianten)~~ – erledigt.
 
 (Die frühere Phase 8 „Veröffentlichen“ ist in Phase 1 aufgegangen.)
 

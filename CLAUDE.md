@@ -23,7 +23,7 @@ Vite + React + TypeScript + Tailwind, React Router, Dexie.js + dexie-react-hooks
 - XP-Werte nur in `src/config/xp.ts`.
 - Tageswechsel um 4:00 Uhr (einstellbar). Auswertung verpasster Quests/Streaks beim App-Start.
 - UI nur aus den gemeinsamen Bausteinen in `src/components/ui/` (System-Fenster, Button, Balken, Zahleneingabe, Dialog, Fotoaufnahme).
-- Dunkles „System-Fenster“-Design mit blauem Glow; mobil zuerst (iPhone), Safe Areas beachten.
+- Dunkles Fitness-App-Design (Karten, Montserrat, Bereichsfarben, siehe PROJEKTPLAN Phase 8); mobil zuerst (iPhone), Safe Areas beachten.
 - Fotos beim Speichern auf ~1080 px JPEG verkleinern.
 - Backup: eine ZIP-Datei mit allem (`data.json` + `blobs/`).
 - Dexie-Schema pro Phase per neuer Version erweitern, nie alte Versionen ändern.

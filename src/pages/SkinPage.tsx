@@ -95,7 +95,7 @@ function SkinPhotos() {
               key={p.id}
               type="button"
               onClick={() => toggle(p.id)}
-              className={`relative overflow-hidden rounded-md border ${selected.includes(p.id) ? 'border-sys-glow shadow-glow' : 'border-sys-line'}`}
+              className={`relative overflow-hidden rounded-xl border ${selected.includes(p.id) ? 'border-sys-glow shadow-glow' : 'border-sys-line'}`}
             >
               <Thumb photo={p} />
               {selected.includes(p.id) && (
@@ -134,7 +134,7 @@ function Overlay({ before, after, split }: { before: PhotoRecord; after: PhotoRe
   const a = useObjectUrl(before.blob)
   const b = useObjectUrl(after.blob)
   return (
-    <div className="relative overflow-hidden rounded-md border border-sys-line">
+    <div className="relative overflow-hidden rounded-xl border border-sys-line">
       {b && <img src={b} alt="" className="block w-full" />}
       {a && (
         <img src={a} alt="" className="absolute inset-0 h-full w-full object-cover" style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }} />
@@ -160,7 +160,7 @@ function Photo({ photo }: { photo: PhotoRecord }) {
   const url = useObjectUrl(photo.blob)
   return (
     <figure>
-      {url && <img src={url} alt="" className="w-full rounded-md border border-sys-line" />}
+      {url && <img src={url} alt="" className="w-full rounded-xl border border-sys-line" />}
       <figcaption className="mt-1 text-center text-xs text-sys-muted">{format(photo.createdAt, 'd.M.yyyy')}</figcaption>
     </figure>
   )

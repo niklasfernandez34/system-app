@@ -73,7 +73,7 @@ function Photos() {
               key={p.id}
               type="button"
               onClick={() => toggle(p.id)}
-              className={`relative overflow-hidden rounded-md border ${
+              className={`relative overflow-hidden rounded-xl border ${
                 selected.includes(p.id) ? 'border-sys-glow shadow-glow' : 'border-sys-line'
               }`}
             >
@@ -126,7 +126,7 @@ function Photo({ photo }: { photo: PhotoRecord }) {
   const url = useObjectUrl(photo.blob)
   return (
     <figure>
-      {url && <img src={url} alt="" className="w-full rounded-md border border-sys-line" />}
+      {url && <img src={url} alt="" className="w-full rounded-xl border border-sys-line" />}
       <figcaption className="mt-1 text-center text-xs text-sys-muted">
         {format(photo.createdAt, 'd.M.yyyy')} · {photo.pose}
       </figcaption>
