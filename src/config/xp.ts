@@ -22,6 +22,7 @@ export const XP = {
   kcal_goal: 10,
   study_session: 20,
   todo_done: 5,
+  cards_round: 10,
 } as const
 
 export type EventType = keyof typeof XP
@@ -66,6 +67,7 @@ export const ATTRIBUTE_OF: Partial<Record<EventType, Attribute>> = {
   kcal_goal: 'vit',
   study_session: 'int',
   todo_done: 'int',
+  cards_round: 'int',
 }
 
 export const ATTRIBUTE_BASE = 10
@@ -73,3 +75,5 @@ export const ATTRIBUTE_XP_PER_POINT = 50
 
 export const MAX_PENALTY_DAYS = 3
 export const MEAL_XP_MAX_PER_DAY = 5
+export const CARD_ROUND_MIN = 10
+export const CARD_ROUND_XP_MAX_PER_DAY = 3

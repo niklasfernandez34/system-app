@@ -111,6 +111,7 @@ export function useSubjectOverview() {
     const todos = await db.todos.filter((t) => !t.done).toArray()
     const exams = await db.bosses.filter((b) => b.kind === 'exam' && b.status === 'active').toArray()
     const files = await db.files.toArray()
+    const cards = await db.cards.where('due').belowOrEqual(today).toArray()
     return subjects.map((s) => {
       const open = todos.filter((t) => t.subjectId === s.id)
       const nextDue = open.map((t) => t.due).filter(Boolean).sort()[0]
@@ -119,6 +120,7 @@ export function useSubjectOverview() {
         ...s,
         open: open.length,
         files: files.filter((f) => f.subjectId === s.id).length,
+        cardsDue: cards.filter((c) => c.subjectId === s.id).length,
         dueIn: nextDue ? daysBetween(today, nextDue) : undefined,
         examIn: exam ? daysBetween(today, exam.deadline) : undefined,
       }

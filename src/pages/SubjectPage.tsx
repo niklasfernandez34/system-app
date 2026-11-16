@@ -6,6 +6,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { Button, Chips, DateInput, Dialog, SystemWindow, TextField } from '../components/ui'
 import { BossList } from '../components/BossList'
 import { StudyTimer } from '../components/StudyTimer'
+import { Flashcards } from '../components/Flashcards'
 import { XP } from '../config/xp'
 import { db, type FileCategory, type FileRecord, type TodoRecord } from '../db/db'
 import {
@@ -73,7 +74,8 @@ export function SubjectPage() {
 
       {section === 'uebersicht' && <Overview subjectId={id} />}
       {section === 'dateien' && <Files subjectId={id} />}
-      {(section === 'karten' || section === 'zettel' || section === 'plan') && (
+      {section === 'karten' && <Flashcards subjectId={id} />}
+      {(section === 'zettel' || section === 'plan') && (
         <SystemWindow title={SECTIONS.find((s) => s.id === section)!.label}>
           <p className="text-center text-sys-muted">Kommt im nächsten Schritt.</p>
         </SystemWindow>

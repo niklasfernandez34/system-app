@@ -180,6 +180,13 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - **Dateien** (Tabelle `files`, Dexie-Version 10): PDFs, Bilder und andere Dateien unverändert als Blob, Art Skript/Übung/Notiz. Öffnen über Blob-URL, dazu „Teilen / In anderer App öffnen“. Backup in der Foto-ZIP unter `dateien/` (alte ZIPs ohne Dateien lassen vorhandene Dateien unangetastet).
 - Mini-Timer wird auch in der Übersicht des laufenden Fachs ausgeblendet.
 
+### Entscheidungen aus Phase 6a+ (Teil 2: Karteikarten)
+
+- Tabelle `cards` (Dexie-Version 11): Vorderseite, Rückseite, optionales Thema, Fach `box` 0–5 und Fälligkeitstag `due`. Logik in `src/lib/cardBox.ts`: gewusst → nächstes Fach (0, 1, 2, 4, 8, 16 Tage), nicht gewusst → Fach 0 und in derselben Runde nochmal.
+- **Lernrunde** nur mit fälligen Karten (nach Thema filterbar). **Freies Üben** mit allen Karten ändert keine Fächer und gibt keine XP.
+- XP `cards_round` 10 (Intelligenz), wenn mindestens 10 verschiedene Karten in der Runde dran waren, höchstens 3 Runden pro Tag (`CARD_ROUND_MIN`, `CARD_ROUND_XP_MAX_PER_DAY`). Zählt auch für die Lern-Quest („Lernen (Timer oder Karteikarten)“).
+- Fach-Kachel zeigt fällige Karten.
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -260,7 +267,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**5b:** Barcode-Scan, **Ernährungs-Bosse**~~ – erledigt.
 6. **Uni und Hautbild**
    - ~~**6a Uni:** Fächer, To-dos mit Fristen, Lern-Timer, **Klausur-Bosse**~~ – erledigt.
-   - **6a+ Fach-Ordner:** ~~Teil 1: Kacheln, Ordner, Dateien~~ – erledigt. Teil 2: Karteikarten (Karteikasten 1/2/4/8/16 Tage, XP pro Runde ab 10 Karten). Teil 3: Lernzettel (einfache Formatierung + Fotos), Lernplan (Themen bis zur Klausur verteilt, Tagesaufgabe auf „Heute“).
+   - **6a+ Fach-Ordner:** ~~Teil 1: Kacheln, Ordner, Dateien~~ – erledigt. ~~Teil 2: Karteikarten~~ – erledigt. Teil 3: Lernzettel (einfache Formatierung + Fotos), Lernplan (Themen bis zur Klausur verteilt, Tagesaufgabe auf „Heute“).
    - **6b Hautbild:** Pflegeroutine morgens/abends, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)

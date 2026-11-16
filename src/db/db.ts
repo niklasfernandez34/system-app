@@ -158,6 +158,18 @@ export type TodoRecord = {
   createdAt: number
 }
 
+export type CardRecord = {
+  id: number
+  subjectId: number
+  front: string
+  back: string
+  topic?: string
+  box: number
+  due: string
+  createdAt: number
+  reviewedAt?: number
+}
+
 export type FileCategory = 'script' | 'exercise' | 'note'
 
 export type FileRecord = {
@@ -237,6 +249,7 @@ export const db = new Dexie('system-app') as Dexie & {
   subjects: EntityTable<SubjectRecord, 'id'>
   todos: EntityTable<TodoRecord, 'id'>
   files: EntityTable<FileRecord, 'id'>
+  cards: EntityTable<CardRecord, 'id'>
 }
 
 db.version(1).stores({
@@ -288,4 +301,8 @@ db.version(9).stores({
 
 db.version(10).stores({
   files: '++id, subjectId, createdAt',
+})
+
+db.version(11).stores({
+  cards: '++id, subjectId, due',
 })

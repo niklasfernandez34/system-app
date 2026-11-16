@@ -4,7 +4,7 @@ import { db, type FileRecord, type PhotoRecord } from '../db/db'
 import { setSetting } from '../db/settings'
 
 const BACKUP_VERSION = 8
-const DATA_TABLES = ['events', 'settings', 'habits', 'journal', 'notes', 'exercises', 'plans', 'workouts', 'body', 'quests', 'ranks', 'bosses', 'foods', 'meals', 'water', 'recipes', 'subjects', 'todos'] as const
+const DATA_TABLES = ['events', 'settings', 'habits', 'journal', 'notes', 'exercises', 'plans', 'workouts', 'body', 'quests', 'ranks', 'bosses', 'foods', 'meals', 'water', 'recipes', 'subjects', 'todos', 'cards'] as const
 
 async function saveFile(blob: Blob, name: string) {
   const file = new File([blob], name, { type: blob.type })

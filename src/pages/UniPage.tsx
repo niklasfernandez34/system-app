@@ -47,6 +47,7 @@ export function UniPage() {
                   {s.open} {s.open === 1 ? 'To-do' : 'To-dos'}
                   {s.dueIn !== undefined && ` · nächste ${inDays(s.dueIn)}`}
                 </span>
+                {s.cardsDue > 0 && <span className="block">{s.cardsDue} {s.cardsDue === 1 ? 'Karte' : 'Karten'} fällig</span>}
                 {s.files > 0 && <span className="block">{s.files} {s.files === 1 ? 'Datei' : 'Dateien'}</span>}
               </span>
             </button>
