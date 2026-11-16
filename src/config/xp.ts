@@ -24,6 +24,10 @@ export const XP = {
   todo_done: 5,
   cards_round: 10,
   plan_task_done: 5,
+  skin_step_done: 0,
+  skin_routine_done: 10,
+  skin_photo: 5,
+  skin_rated: 0,
 } as const
 
 export type EventType = keyof typeof XP
@@ -70,6 +74,8 @@ export const ATTRIBUTE_OF: Partial<Record<EventType, Attribute>> = {
   todo_done: 'int',
   cards_round: 'int',
   plan_task_done: 'int',
+  skin_routine_done: 'cha',
+  skin_photo: 'cha',
 }
 
 export const ATTRIBUTE_BASE = 10

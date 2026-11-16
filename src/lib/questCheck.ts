@@ -5,16 +5,25 @@ type DayEvent = { type: string; data?: Record<string, unknown> }
 
 export type QuestStatus = { id: QuestId; title: string; done: boolean }
 
-export function questStatus(dayEvents: DayEvent[], habitIds: number[], withFood = false, withStudy = false): QuestStatus[] {
+export function questStatus(
+  dayEvents: DayEvent[],
+  habitIds: number[],
+  withFood = false,
+  withStudy = false,
+  skinRoutines: string[] = [],
+): QuestStatus[] {
   const types = new Set(dayEvents.map((e) => e.type))
   const doneHabits = new Set(dayEvents.filter((e) => e.type === 'habit_done').map((e) => e.data?.habitId))
-  return QUESTS.filter((q) => (q.id !== 'habits' || habitIds.length > 0) && (q.id !== 'food' || withFood) && (q.id !== 'study' || withStudy)).map((q) => ({
+  const doneRoutines = new Set(dayEvents.filter((e) => e.type === 'skin_routine_done').map((e) => e.data?.routine))
+  return QUESTS.filter((q) => (q.id !== 'habits' || habitIds.length > 0) && (q.id !== 'food' || withFood) && (q.id !== 'study' || withStudy) && (q.id !== 'skin' || skinRoutines.length > 0)).map((q) => ({
     id: q.id,
     title: q.title,
     done:
       q.id === 'habits'
         ? habitIds.every((id) => doneHabits.has(id))
-        : (q.anyOf as readonly string[]).some((t) => types.has(t)),
+        : q.id === 'skin'
+          ? skinRoutines.every((r) => doneRoutines.has(r))
+          : (q.anyOf as readonly string[]).some((t) => types.has(t)),
   }))
 }
 

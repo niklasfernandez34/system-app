@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useRef } from 'react'
+import { useObjectUrl } from '../../lib/photos'
 
 type Props = { file: { blob: Blob; name: string; type?: string } | null; onClose: () => void; onShare?: () => void }
 
 export function FileViewer({ file, onClose, onShare }: Props) {
   const ref = useRef<HTMLDialogElement>(null)
-  const url = useMemo(() => (file ? URL.createObjectURL(file.blob) : undefined), [file])
-  useEffect(() => () => { if (url) URL.revokeObjectURL(url) }, [url])
+  const url = useObjectUrl(file?.blob)
 
   useEffect(() => {
     const d = ref.current

@@ -41,3 +41,18 @@ export function examOutcome(boss: Pick<BossRecord, 'target' | 'result'>) {
 
 export const GRADES = [1, 1.3, 1.7, 2, 2.3, 2.7, 3, 3.3, 3.7, 4] as const
 export const gradeLabel = (g: number) => g.toFixed(1).replace('.', ',')
+
+export function daysBossStatus(metDays: Iterable<string>, need: number, start: string, deadline: string, today: string) {
+  const met = new Set([...metDays].filter((d) => d >= start && d <= deadline))
+  const done = met.size
+  const remaining = Math.max(0, differenceInCalendarDays(parseISO(deadline), parseISO(today)) + 1)
+  const left = remaining - (met.has(today) ? 1 : 0)
+  return { done, need, won: done >= need, impossible: done + left < need }
+}
+
+export function routineDays(events: { type: string; day: string; data?: Record<string, unknown> }[], b: { habitId?: number; routine?: string }) {
+  if (b.habitId) return events.filter((e) => e.type === 'habit_done' && e.data?.habitId === b.habitId).map((e) => e.day)
+  const days = new Map<string, Set<unknown>>()
+  for (const e of events) if (e.type === 'skin_routine_done') days.set(e.day, (days.get(e.day) ?? new Set()).add(e.data?.routine))
+  return [...days].filter(([, r]) => (b.routine === 'both' ? r.has('morning') && r.has('evening') : r.has(b.routine))).map(([d]) => d)
+}

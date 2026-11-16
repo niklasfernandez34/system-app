@@ -9,6 +9,7 @@ import { BossList } from '../components/BossList'
 import { QuestList } from '../components/QuestList'
 import { Deadlines } from '../components/Deadlines'
 import { TodayPlan } from '../components/TodayPlan'
+import { SkinRoutines } from '../components/SkinRoutines'
 import { currentDay } from '../lib/events'
 import { useTodayCheckin } from '../lib/journal'
 import { useRunningWorkout, useTrainedToday } from '../lib/sport'
@@ -64,6 +65,7 @@ export function TodayPage() {
         )}
       </SystemWindow>
       <TodayNutrition />
+      <SkinRoutines compact />
       <SystemWindow title="Habits">
         <HabitChecklist />
         <Button variant="ghost" className="mt-3 w-full" onClick={() => navigate('/habits')}>

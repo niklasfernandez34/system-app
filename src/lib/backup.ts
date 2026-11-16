@@ -4,7 +4,7 @@ import { db, type FileRecord, type PhotoRecord } from '../db/db'
 import { setSetting } from '../db/settings'
 
 const BACKUP_VERSION = 9
-export const DATA_TABLES = ['events', 'settings', 'habits', 'journal', 'notes', 'exercises', 'plans', 'workouts', 'body', 'quests', 'ranks', 'bosses', 'foods', 'meals', 'water', 'recipes', 'subjects', 'todos', 'cards', 'sheets', 'studyPlans', 'links', 'drawings'] as const
+export const DATA_TABLES = ['events', 'settings', 'habits', 'journal', 'notes', 'exercises', 'plans', 'workouts', 'body', 'quests', 'ranks', 'bosses', 'foods', 'meals', 'water', 'recipes', 'subjects', 'todos', 'cards', 'sheets', 'studyPlans', 'links', 'drawings', 'skinSteps'] as const
 
 export type PhotoMeta = Omit<PhotoRecord, 'blob'>
 export type FileMeta = Omit<FileRecord, 'blob'>

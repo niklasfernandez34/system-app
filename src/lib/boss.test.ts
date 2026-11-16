@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { bossBest, nutritionBossStatus, nutritionDayMet, examOutcome } from './boss'
+import { bossBest, nutritionBossStatus, nutritionDayMet, examOutcome, daysBossStatus, routineDays } from './boss'
 
 const w = (sets: [number, number, boolean][], exerciseId = 1) => ({
   entries: [{ exerciseId, targetReps: 5, sets: sets.map(([weight, reps, done]) => ({ weight, reps, done })) }],
@@ -68,5 +68,32 @@ describe('examOutcome', () => {
   it('verliert bei schlechterer Note oder nicht bestanden', () => {
     expect(examOutcome({ target: 2, result: { passed: true, grade: 2.3 } })).toBe('lost')
     expect(examOutcome({ target: 0, result: { passed: false } })).toBe('lost')
+  })
+})
+
+describe('daysBossStatus', () => {
+  it('zählt nur Tage im Zeitraum und gewinnt bei genug Tagen', () => {
+    const st = daysBossStatus(['2026-11-01', '2026-11-10', '2026-11-11', '2026-12-01'], 2, '2026-11-05', '2026-11-20', '2026-11-12')
+    expect(st).toMatchObject({ done: 2, won: true, impossible: false })
+  })
+  it('wird unmöglich, wenn die restlichen Tage nicht reichen', () => {
+    expect(daysBossStatus([], 5, '2026-11-01', '2026-11-20', '2026-11-17').impossible).toBe(true)
+    expect(daysBossStatus([], 4, '2026-11-01', '2026-11-20', '2026-11-17').impossible).toBe(false)
+  })
+})
+
+describe('routineDays', () => {
+  const events = [
+    { type: 'skin_routine_done', day: 'a', data: { routine: 'morning' } },
+    { type: 'skin_routine_done', day: 'a', data: { routine: 'evening' } },
+    { type: 'skin_routine_done', day: 'b', data: { routine: 'evening' } },
+    { type: 'habit_done', day: 'c', data: { habitId: 3 } },
+  ]
+  it('erkennt Routine-Tage', () => {
+    expect(routineDays(events, { routine: 'evening' })).toEqual(['a', 'b'])
+    expect(routineDays(events, { routine: 'both' })).toEqual(['a'])
+  })
+  it('erkennt Habit-Tage', () => {
+    expect(routineDays(events, { habitId: 3 })).toEqual(['c'])
   })
 })

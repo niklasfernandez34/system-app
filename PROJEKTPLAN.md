@@ -219,6 +219,16 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Eigene Dropbox-App „System-Sync-k7q4m“ (App-Ordner, files.content.read/write, öffentliche Clients an). App key `0q077c3th21sx99` steht als `DEFAULT_APP_KEY` in `src/lib/dropbox.ts` (öffentlich, kein Geheimnis) und ist im Feld vorausgefüllt.
 - Dateien können „nur auf diesem Gerät“ bleiben (`noSync`), dann sind sie nicht im Sync und nicht im Backup.
 
+### Entscheidungen aus Phase 6b (Hautbild)
+
+- Seite `/haut` (Mehr → Hautbild). Pflegeschritte in Tabelle `skinSteps` (Dexie-Version 15) mit Routine `morning`/`evening`, sortier- und archivierbar.
+- Abhaken: Ereignis `skin_step_done` (0 XP). Sind alle aktiven Schritte einer Routine erledigt, legt `syncRoutineDone` `skin_routine_done` an (+10 XP, Charisma) bzw. entfernt es wieder.
+- Quest „Pflegeroutine“: alle Routinen, die an dem Tag Schritte haben. „Heute“ zeigt die Routinen mit Schritten.
+- Hautzustand 1–5 als Ereignis `skin_rated` (0 XP, einer pro Tag) für spätere Zusammenhänge.
+- Hautfotos (`photos`, `kind: 'skin'`) hinter der PIN, +5 XP (Charisma) einmal pro Tag. Vergleich nebeneinander oder per Schieberegler (UI-Baustein `Slider`).
+- Routine-/Habit-Bosse (`kind: 'routine'`, Felder `routine` = morning/evening/both oder `habitId`): „X Tage bis zum Termin“. Logik `daysBossStatus`/`routineDays` in `src/lib/boss.ts`. Sieg Charisma (Routine) bzw. Willenskraft (Habit), Niederlage, sobald es nicht mehr zu schaffen ist.
+- `useObjectUrl` erzeugt den Blob-Link jetzt im Effect (vorher brach er im StrictMode).
+
 ## 3. Funktionen
 
 ### Start: „Heute“-Seite
@@ -300,7 +310,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
 6. **Uni und Hautbild**
    - ~~**6a Uni:** Fächer, To-dos mit Fristen, Lern-Timer, **Klausur-Bosse**~~ – erledigt.
    - **6a+ Fach-Ordner:** ~~Teil 1: Kacheln, Ordner, Dateien~~ – erledigt. ~~Teil 2: Karteikarten~~ – erledigt. ~~Teil 3: Lernzettel, Lernplan~~ – erledigt.
-   - **6b Hautbild:** Pflegeroutine morgens/abends, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**
+   - ~~**6b Hautbild:** Pflegeroutine morgens/abends, Hautzustand, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**~~ – erledigt.
 7. **Erinnerungen und Auswertung:** Kalenderexport, Zusammenhänge, Wochenrückblick, Statistiken
 8. **Optik-Varianten:** Umschalter in den Einstellungen, Variante 2 (Apple-Style), Variante 3 (Anime-Style)
 

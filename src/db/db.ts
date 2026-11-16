@@ -121,13 +121,16 @@ export type RankRecord = {
 }
 
 export type BossMetric = 'kcal' | 'protein' | 'water'
+export type SkinRoutine = 'morning' | 'evening'
 
 export type BossRecord = {
   id: number
-  kind: 'lift' | 'nutrition' | 'exam'
+  kind: 'lift' | 'nutrition' | 'exam' | 'routine'
   exerciseId: number
   subjectId?: number
   result?: ExamResult
+  habitId?: number
+  routine?: SkinRoutine | 'both'
   metric?: BossMetric
   direction?: 'min' | 'max'
   days?: number
@@ -137,6 +140,15 @@ export type BossRecord = {
   deadline: string
   createdAt: number
   status: 'active' | 'won' | 'lost'
+}
+
+export type SkinStepRecord = {
+  id: number
+  routine: SkinRoutine
+  name: string
+  order: number
+  createdAt: number
+  archived?: boolean
 }
 
 export type ExamResult = { passed: boolean; grade?: number }
@@ -309,6 +321,7 @@ export const db = new Dexie('system-app') as Dexie & {
   studyPlans: EntityTable<StudyPlanRecord, 'id'>
   links: EntityTable<LinkRecord, 'id'>
   drawings: EntityTable<DrawingRecord, 'id'>
+  skinSteps: EntityTable<SkinStepRecord, 'id'>
 }
 
 db.version(1).stores({
@@ -377,4 +390,8 @@ db.version(13).stores({
 
 db.version(14).stores({
   drawings: '++id, subjectId, updatedAt',
+})
+
+db.version(15).stores({
+  skinSteps: '++id, routine, order',
 })

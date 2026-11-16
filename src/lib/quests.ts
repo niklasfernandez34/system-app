@@ -18,7 +18,9 @@ async function statusFor(day: string) {
   const withStudy = (await db.subjects.filter((s) => !s.archived).toArray()).some(
     (s) => logicalDay(new Date(s.createdAt), dayStartHour) <= day,
   )
-  return { events, quests: questStatus(events, habitIds, !!since && day >= since, withStudy) }
+  const steps = await db.skinSteps.filter((s) => !s.archived && logicalDay(new Date(s.createdAt), dayStartHour) <= day).toArray()
+  const skinRoutines = [...new Set(steps.map((s) => s.routine))]
+  return { events, quests: questStatus(events, habitIds, !!since && day >= since, withStudy, skinRoutines) }
 }
 
 onNewDay(async (missed, today) => {

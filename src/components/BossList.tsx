@@ -6,16 +6,22 @@ import { ExercisePicker } from './ExercisePicker'
 import { XP } from '../config/xp'
 import type { BossMetric, BossRecord } from '../db/db'
 import { GRADES, gradeLabel } from '../lib/boss'
-import { addBoss, addExamBoss, addNutritionBoss, bossTitle, deleteBoss, setExamResult, useBosses } from '../lib/bosses'
+import { addBoss, addExamBoss, addNutritionBoss, addRoutineBoss, bossTitle, deleteBoss, setExamResult, useBosses } from '../lib/bosses'
+import { useHabits } from '../lib/habits'
 import { useSubjects } from '../lib/uni'
 import { useGoals, type Goals } from '../lib/nutrition'
 import { fmt, useExerciseNames } from '../lib/sport'
 
-const KINDS = ['Sport', 'Ernährung', 'Uni'] as const
-const KIND_OF = { lift: 'Sport', nutrition: 'Ernährung', exam: 'Uni' } as const
+const KINDS = ['Sport', 'Ernährung', 'Uni', 'Gewohnheit'] as const
+const KIND_OF = { lift: 'Sport', nutrition: 'Ernährung', exam: 'Uni', routine: 'Gewohnheit' } as const
+const ROUTINE_OPTIONS = [
+  { id: 'evening', label: 'Abendroutine' },
+  { id: 'morning', label: 'Morgenroutine' },
+  { id: 'both', label: 'Beide Routinen' },
+] as const
 const GRADE_OPTIONS = ['egal', ...GRADES.map(gradeLabel)]
 const RESULT_OPTIONS = ['keine', ...GRADES.map(gradeLabel)]
-const ATTR_LABEL = { Sport: 'Stärke', Ernährung: 'Vitalität', Uni: 'Intelligenz' } as const
+const ATTR_LABEL = { Sport: 'Stärke', Ernährung: 'Vitalität', Uni: 'Intelligenz', Gewohnheit: 'Charisma' } as const
 const METRICS: { metric: BossMetric; label: string; unit: string; step: number }[] = [
   { metric: 'kcal', label: 'Kalorien', unit: 'kcal', step: 50 },
   { metric: 'protein', label: 'Eiweiß', unit: 'g', step: 5 },
@@ -33,6 +39,7 @@ type Draft = {
   direction: 'min' | 'max'
   days: number
   subjectId?: number
+  what: string
 }
 
 const inDays = (n: number) => format(addDays(new Date(), n), 'yyyy-MM-dd')
@@ -59,6 +66,7 @@ export function BossList({ compact = false, only, subjectId }: ListProps) {
   const bosses = all?.filter((b) => (!only || b.kind === only) && (!subjectId || b.subjectId === subjectId))
   const subjects = useSubjects()?.filter((s) => !s.archived)
   const [result, setResult] = useState<Result | null>(null)
+  const habits = useHabits()?.filter((h) => !h.archived)
   const names = useExerciseNames()
   const goals = useGoals()
   const [draft, setDraft] = useState<Draft | null>(null)
@@ -93,14 +101,17 @@ export function BossList({ compact = false, only, subjectId }: ListProps) {
     target: kind === 'Sport' ? 50 : kind === 'Uni' ? 0 : goalFor(goals, 'kcal'),
     reps: 1,
     deadline: inDays(kind === 'Ernährung' ? 12 : 30),
+    what: 'evening',
     subjectId: subjectId ?? subjects?.[0]?.id,
     metric: 'kcal',
     direction: goals?.mode === 'lose' ? 'max' : 'min',
-    days: 10,
+    days: kind === 'Gewohnheit' ? 20 : 10,
   })
 
   const retry = (b: Listed): Draft =>
-    b.kind === 'exam'
+    b.kind === 'routine'
+      ? { ...fresh('Gewohnheit'), what: b.habitId ? `h${b.habitId}` : (b.routine ?? 'evening'), days: b.days ?? 20 }
+      : b.kind === 'exam'
       ? { ...fresh('Uni'), subjectId: b.subjectId, target: b.target }
       : b.kind === 'nutrition'
       ? {
@@ -116,9 +127,13 @@ export function BossList({ compact = false, only, subjectId }: ListProps) {
   const span = draft ? differenceInCalendarDays(parseISO(draft.deadline), parseISO(inDays(0))) + 1 : 0
   const nutrition = draft?.kind === 'Ernährung'
   const exam = draft?.kind === 'Uni'
+  const routine = draft?.kind === 'Gewohnheit'
+  const whatOptions = [...ROUTINE_OPTIONS.map((o) => ({ id: o.id as string, label: o.label })), ...(habits ?? []).map((h) => ({ id: `h${h.id}`, label: h.name }))]
   const valid =
     draft &&
-    (exam
+    (routine
+      ? draft.days >= 1 && draft.days <= span
+      : exam
       ? !!draft.subjectId
       : nutrition
         ? draft.target > 0 && draft.days >= 1 && draft.days <= span
@@ -127,7 +142,10 @@ export function BossList({ compact = false, only, subjectId }: ListProps) {
 
   const save = async () => {
     if (!draft || !valid) return
-    if (exam) {
+    if (routine) {
+      const habitId = draft.what.startsWith('h') ? Number(draft.what.slice(1)) : undefined
+      await addRoutineBoss({ habitId, routine: habitId ? undefined : (draft.what as 'morning' | 'evening' | 'both'), days: draft.days, deadline: draft.deadline })
+    } else if (exam) {
       await addExamBoss({ subjectId: draft.subjectId!, target: draft.target, deadline: draft.deadline })
     } else if (nutrition) {
       await addNutritionBoss({
@@ -166,7 +184,7 @@ export function BossList({ compact = false, only, subjectId }: ListProps) {
               <ProgressBar
                 value={b.best}
                 max={b.goal}
-                label={b.kind === 'nutrition' ? 'Geschaffte Tage' : 'Bestes Gewicht seit Start (kg)'}
+                label={b.kind === 'lift' ? 'Bestes Gewicht seit Start (kg)' : 'Geschaffte Tage'}
               />
             )}
             <button type="button" className="text-xs text-sys-muted underline" onClick={() => deleteBoss(b.id)}>
@@ -204,7 +222,17 @@ export function BossList({ compact = false, only, subjectId }: ListProps) {
         {draft && (
           <div className="space-y-3">
             {!only && <Chips options={KINDS} value={draft.kind} onChange={(kind) => setDraft(fresh(kind))} />}
-            {exam ? (
+            {routine ? (
+              <>
+                <Chips
+                  label="Was"
+                  options={whatOptions.map((o) => o.label)}
+                  value={whatOptions.find((o) => o.id === draft.what)?.label ?? ''}
+                  onChange={(l) => setDraft({ ...draft, what: whatOptions.find((o) => o.label === l)!.id })}
+                />
+                <NumberInput label="Anzahl Tage" min={1} max={365} value={draft.days} onChange={(days) => setDraft({ ...draft, days: Math.round(days) })} />
+              </>
+            ) : exam ? (
               <>
                 {subjectId ? null : subjects?.length ? (
                   <Chips
@@ -285,6 +313,13 @@ export function BossList({ compact = false, only, subjectId }: ListProps) {
               value={draft.deadline}
               onChange={(deadline) => setDraft({ ...draft, deadline })}
             />
+            {routine && (
+              <p className={`text-center text-sm ${draft.days > span ? 'text-sys-danger' : 'text-sys-glow'}`}>
+                {draft.days > span
+                  ? `Bis zum Termin sind es nur ${span} Tage.`
+                  : `${draft.days} × ${whatOptions.find((o) => o.id === draft.what)?.label} in ${span} Tagen`}
+              </p>
+            )}
             {nutrition && (
               <p className={`text-center text-sm ${draft.days > span ? 'text-sys-danger' : 'text-sys-glow'}`}>
                 {draft.days > span
@@ -299,7 +334,7 @@ export function BossList({ compact = false, only, subjectId }: ListProps) {
               {exam
                 ? `Sieg, wenn du nach dem ${format(parseISO(draft.deadline), 'd. MMMM yyyy', { locale: de })} „bestanden“${draft.target ? ' mit Wunschnote' : ''} einträgst: +${XP.boss_defeated} XP`
                 : `Sieg bis ${format(parseISO(draft.deadline), 'd. MMMM yyyy', { locale: de })}: +${XP.boss_defeated} XP`}
-              {` (${ATTR_LABEL[draft.kind]})`}
+              {` (${routine && draft.what.startsWith('h') ? 'Willenskraft' : ATTR_LABEL[draft.kind]})`}
             </p>
             <Button className="w-full" disabled={!valid} onClick={save}>
               Herausfordern

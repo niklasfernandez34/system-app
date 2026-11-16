@@ -1,7 +1,7 @@
 import { differenceInCalendarDays, parseISO } from 'date-fns'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, type BossRecord, type ExamResult } from '../db/db'
-import { bossBest, examOutcome, gradeLabel, nutritionBossStatus, type DayValues } from './boss'
+import { bossBest, daysBossStatus, examOutcome, gradeLabel, nutritionBossStatus, routineDays, type DayValues } from './boss'
 import { mealTotals } from './nutrition'
 import { currentDay, logEvent } from './events'
 import { onNewDay } from './startup'
@@ -30,7 +30,27 @@ export function setExamResult(id: number, result: ExamResult) {
   return db.bosses.update(id, { result })
 }
 
-const ATTR = { lift: ['str', 'Stärke'], nutrition: ['vit', 'Vitalität'], exam: ['int', 'Intelligenz'] } as const
+export async function addRoutineBoss(boss: Pick<BossRecord, 'habitId' | 'routine' | 'days' | 'deadline'>) {
+  return db.bosses.add({
+    ...boss,
+    kind: 'routine',
+    exerciseId: 0,
+    reps: 0,
+    target: 0,
+    startDay: await currentDay(),
+    createdAt: Date.now(),
+    status: 'active',
+  } as BossRecord)
+}
+
+async function routineStatus(boss: BossRecord, today: string) {
+  const types = boss.habitId ? ['habit_done'] : ['skin_routine_done']
+  const events = await db.events.where('type').anyOf(types).filter((e) => e.day >= (boss.startDay ?? today) && e.day <= boss.deadline).toArray()
+  return daysBossStatus(routineDays(events, boss), boss.days ?? 1, boss.startDay ?? today, boss.deadline, today)
+}
+
+const ATTR = { lift: ['str', 'Stärke'], nutrition: ['vit', 'Vitalität'], exam: ['int', 'Intelligenz'], routine: ['cha', 'Charisma'] } as const
+const attrOf = (b: BossRecord) => (b.kind === 'routine' && b.habitId ? (['wil', 'Willenskraft'] as const) : ATTR[b.kind])
 
 async function dayValues(from: string, to: string) {
   const out = new Map<string, DayValues>()
@@ -74,6 +94,8 @@ export async function checkBosses() {
           await logEvent('boss_failed', { bossId: boss.id })
         }
         if (outcome !== 'won') continue
+      } else if (boss.kind === 'routine') {
+        if (!(await routineStatus(boss, today)).won) continue
       } else if (boss.kind === 'nutrition') {
         if (!(await nutritionStatus(boss, today)).won) continue
       } else {
@@ -81,7 +103,7 @@ export async function checkBosses() {
         if ((await bestFor(boss)) < boss.target) continue
       }
       await db.bosses.update(boss.id, { status: 'won' })
-      const [attr, attrName] = ATTR[boss.kind]
+      const [attr, attrName] = attrOf(boss)
       await logEvent('boss_defeated', boss.kind === 'lift' ? { bossId: boss.id } : { bossId: boss.id, attr })
       won.push({ id: boss.id, attr: attrName })
     }
@@ -95,7 +117,12 @@ onNewDay(async (_missed, today) => {
   await checkBosses()
   for (const boss of await db.bosses.where('status').equals('active').toArray()) {
     if (boss.kind === 'exam') continue
-    const over = boss.kind === 'nutrition' ? (await nutritionStatus(boss, today)).impossible : boss.deadline < today
+    const over =
+      boss.kind === 'nutrition'
+        ? (await nutritionStatus(boss, today)).impossible
+        : boss.kind === 'routine'
+          ? (await routineStatus(boss, today)).impossible
+          : boss.deadline < today
     if (!over) continue
     await db.bosses.update(boss.id, { status: 'lost' })
     await logEvent('boss_failed', { bossId: boss.id })
@@ -107,6 +134,7 @@ export function useBosses() {
     const today = await currentDay()
     const names = new Map((await db.exercises.toArray()).map((e) => [e.id, e.name]))
     const subjects = new Map((await db.subjects.toArray()).map((s) => [s.id, s.name]))
+    const habits = new Map((await db.habits.toArray()).map((h) => [h.id, h.name]))
     const bosses = await db.bosses.toArray()
     const list = await Promise.all(
       bosses.map(async (b) => {
@@ -114,6 +142,11 @@ export function useBosses() {
         if (b.kind === 'exam') {
           const name = `Klausur ${subjects.get(b.subjectId ?? 0) ?? 'Fach'}${b.target ? ` · Ziel ${gradeLabel(b.target)}` : ''}`
           return { ...b, name, best: 0, goal: 1, daysLeft }
+        }
+        if (b.kind === 'routine') {
+          const st = b.status === 'active' ? await routineStatus(b, today) : null
+          const what = b.habitId ? `Habit „${habits.get(b.habitId) ?? '?'}“` : b.routine === 'both' ? 'Morgen- + Abendroutine' : b.routine === 'morning' ? 'Morgenroutine' : 'Abendroutine'
+          return { ...b, name: `${b.days} × ${what}`, best: st?.done ?? 0, goal: b.days ?? 1, daysLeft }
         }
         if (b.kind === 'nutrition') {
           const st = b.status === 'active' ? await nutritionStatus(b, today) : null

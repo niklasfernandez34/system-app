@@ -21,6 +21,7 @@ import { StatusPage } from './pages/StatusPage'
 import { AchievementsPage } from './pages/AchievementsPage'
 import { UniPage } from './pages/UniPage'
 import { SubjectPage } from './pages/SubjectPage'
+import { SkinPage } from './pages/SkinPage'
 import { StudyTimerFloat } from './components/StudyTimer'
 import { SyncWatcher } from './components/SyncWatcher'
 import { SystemWindow } from './components/ui'
@@ -82,6 +83,7 @@ export default function App() {
             <Route path="/tagebuch" element={<JournalPage />} />
             <Route path="/habits" element={<HabitsPage />} />
             <Route path="/notizen" element={<NotesPage />} />
+            <Route path="/haut" element={<SkinPage />} />
             <Route path="*" element={<PlaceholderPage title="Nicht gefunden" />} />
           </Routes>
         </div>

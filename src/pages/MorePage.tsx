@@ -47,6 +47,7 @@ export function MorePage() {
           <Button onClick={() => navigate('/tagebuch')}>Tagebuch</Button>
           <Button onClick={() => navigate('/habits')}>Habits</Button>
           <Button onClick={() => navigate('/notizen')}>Notizen</Button>
+          <Button onClick={() => navigate('/haut')}>Hautbild</Button>
         </div>
       </SystemWindow>
 
