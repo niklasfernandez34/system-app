@@ -5,10 +5,6 @@ import { WEEKDAYS, type CalPart, type CalendarPrefs, type Weekday } from '../con
 const BYDAY: Record<Weekday, string> = { Mo: 'MO', Di: 'TU', Mi: 'WE', Do: 'TH', Fr: 'FR', Sa: 'SA', So: 'SU' }
 
 export type CalendarData = {
-  subjects: { id: number; name: string }[]
-  plans: { id: number; subjectId: number; tasks: { id: string; day: string; title: string; done?: boolean }[] }[]
-  exams: { id: number; subjectId?: number; deadline: string }[]
-  todos: { id: number; subjectId: number; text: string; due?: string; done: boolean }[]
   routines: ('morning' | 'evening')[]
 }
 
@@ -21,7 +17,6 @@ const at = (day: string, time: string): DateArray => {
   const [h, m] = time.split(':').map(Number)
   return [...allDay(day), h, m] as DateArray
 }
-const dayBefore = { before: true, hours: 15 }
 const weekdayOf = (day: string): Weekday => WEEKDAYS[(parseISO(day).getDay() + 6) % 7]
 
 function firstMatching(today: string, days: Weekday[]) {
@@ -36,18 +31,7 @@ const local = { startInputType: 'local', startOutputType: 'local', endInputType:
 
 export function buildEvents(prefs: CalendarPrefs, data: CalendarData, today: string): EventAttributes[] {
   const has = (p: CalPart) => prefs.parts.includes(p)
-  const subject = (id?: number) => data.subjects.find((s) => s.id === id)?.name ?? 'Uni'
   const out: EventAttributes[] = []
-  const whole = (uid: string, title: string, day: string, alarm: boolean) =>
-    out.push({
-      ...local,
-      uid: uid + UID,
-      title,
-      start: allDay(day),
-      end: allDay(format(addDays(parseISO(day), 1), 'yyyy-MM-dd')),
-      ...(alarm ? { alarms: [{ action: 'display', description: title, trigger: dayBefore }] } : {}),
-    })
-
   if (has('Training') && prefs.trainingDays.length) {
     const order = WEEKDAYS.filter((d) => prefs.trainingDays.includes(d))
     out.push({
@@ -73,15 +57,6 @@ export function buildEvents(prefs: CalendarPrefs, data: CalendarData, today: str
         alarms: [{ action: 'display', description: title, trigger: { before: true, minutes: 0 } }],
       })
     }
-  if (has('Lernplan'))
-    for (const p of data.plans)
-      for (const t of p.tasks)
-        if (!t.done && t.day >= today) whole(`task-${p.id}-${t.id}`, `Lernen ${subject(p.subjectId)}: ${t.title}`, t.day, false)
-  if (has('Klausuren'))
-    for (const e of data.exams) if (e.deadline >= today) whole(`exam-${e.id}`, `Klausur ${subject(e.subjectId)}`, e.deadline, true)
-  if (has('Fristen'))
-    for (const t of data.todos)
-      if (!t.done && t.due && t.due >= today) whole(`todo-${t.id}`, `Frist ${subject(t.subjectId)}: ${t.text}`, t.due, true)
   return out
 }
 

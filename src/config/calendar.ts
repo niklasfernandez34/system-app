@@ -1,4 +1,4 @@
-export const CAL_PARTS = ['Training', 'Lernplan', 'Klausuren', 'Fristen', 'Pflegeroutine'] as const
+export const CAL_PARTS = ['Training', 'Pflegeroutine'] as const
 export type CalPart = (typeof CAL_PARTS)[number]
 export const WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'] as const
 export type Weekday = (typeof WEEKDAYS)[number]
@@ -13,7 +13,7 @@ export type CalendarPrefs = {
 }
 
 export const DEFAULT_CALENDAR: CalendarPrefs = {
-  parts: ['Training', 'Lernplan', 'Klausuren', 'Fristen'],
+  parts: ['Training', 'Pflegeroutine'],
   trainingDays: ['Mo', 'Mi', 'Fr'],
   trainingTime: '18:00',
   trainingMinutes: 60,

@@ -56,6 +56,7 @@ export const ATTRIBUTES = {
 } as const
 
 export type Attribute = keyof typeof ATTRIBUTES
+export const VISIBLE_ATTRIBUTES: Attribute[] = ['str', 'vit', 'cha', 'wil']
 
 export const ATTRIBUTE_OF: Partial<Record<EventType, Attribute>> = {
   workout_done: 'str',

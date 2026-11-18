@@ -9,13 +9,12 @@ export function questStatus(
   dayEvents: DayEvent[],
   habitIds: number[],
   withFood = false,
-  withStudy = false,
   skinRoutines: string[] = [],
 ): QuestStatus[] {
   const types = new Set(dayEvents.map((e) => e.type))
   const doneHabits = new Set(dayEvents.filter((e) => e.type === 'habit_done').map((e) => e.data?.habitId))
   const doneRoutines = new Set(dayEvents.filter((e) => e.type === 'skin_routine_done').map((e) => e.data?.routine))
-  return QUESTS.filter((q) => (q.id !== 'habits' || habitIds.length > 0) && (q.id !== 'food' || withFood) && (q.id !== 'study' || withStudy) && (q.id !== 'skin' || skinRoutines.length > 0)).map((q) => ({
+  return QUESTS.filter((q) => (q.id !== 'habits' || habitIds.length > 0) && (q.id !== 'food' || withFood) && (q.id !== 'skin' || skinRoutines.length > 0)).map((q) => ({
     id: q.id,
     title: q.title,
     done:

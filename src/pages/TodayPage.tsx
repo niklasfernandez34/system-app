@@ -4,8 +4,6 @@ import { HabitChecklist } from '../components/HabitChecklist'
 import { LevelPanel } from '../components/LevelPanel'
 import { BossList } from '../components/BossList'
 import { QuestList } from '../components/QuestList'
-import { Deadlines } from '../components/Deadlines'
-import { TodayPlan } from '../components/TodayPlan'
 import { SkinRoutines } from '../components/SkinRoutines'
 import { TodayHints } from '../components/TodayHints'
 import { useTodayCheckin } from '../lib/journal'
@@ -29,8 +27,6 @@ export function TodayPage() {
         <QuestList />
       </SystemWindow>
       <BossList compact />
-      <Deadlines compact />
-      <TodayPlan />
       <SystemWindow title="Check-in">
         {checkin !== undefined && (
           <div className="flex items-center justify-between gap-3">

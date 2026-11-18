@@ -5,8 +5,6 @@ const input = {
   events: [
     { type: 'workout_done', day: '2026-11-10', data: { volume: 1000 } },
     { type: 'pr_set', day: '2026-11-10' },
-    { type: 'study_session', day: '2026-11-11', data: { minutes: 25 } },
-    { type: 'study_session', day: '2026-11-11', data: { minutes: 50 } },
     { type: 'habit_done', day: '2026-11-11' },
     { type: 'skin_rated', day: '2026-11-12', data: { value: 4 } },
   ],
@@ -21,9 +19,9 @@ const input = {
 
 describe('dailyValues', () => {
   const daily = dailyValues(input)
-  it('rechnet XP, Training und Lernzeit aus dem Log', () => {
+  it('rechnet XP, Training und Habits aus dem Log', () => {
     expect(daily.get('2026-11-10')).toMatchObject({ xp: 45, workouts: 1, volume: 1000, prs: 1, kcal: 200, protein: 20, water: 2000, weight: 80 })
-    expect(daily.get('2026-11-11')).toMatchObject({ studyMin: 75, habits: 1, kcal: 400, sleepHours: 7.5, mood: 4 })
+    expect(daily.get('2026-11-11')).toMatchObject({ habits: 1, kcal: 400, sleepHours: 7.5, mood: 4 })
     expect(daily.get('2026-11-11')?.weight).toBeUndefined()
     expect(daily.get('2026-11-12')?.skinRating).toBe(4)
   })

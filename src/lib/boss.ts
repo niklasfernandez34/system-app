@@ -32,15 +32,6 @@ export function nutritionBossStatus(boss: NutritionBoss, values: Map<string, Day
   return { done, need, won: done >= need, impossible: done + left < need }
 }
 
-export function examOutcome(boss: Pick<BossRecord, 'target' | 'result'>) {
-  if (!boss.result) return null
-  if (!boss.result.passed) return 'lost'
-  if (!boss.target) return 'won'
-  return boss.result.grade !== undefined && boss.result.grade <= boss.target ? 'won' : 'lost'
-}
-
-export const GRADES = [1, 1.3, 1.7, 2, 2.3, 2.7, 3, 3.3, 3.7, 4] as const
-export const gradeLabel = (g: number) => g.toFixed(1).replace('.', ',')
 
 export function daysBossStatus(metDays: Iterable<string>, need: number, start: string, deadline: string, today: string) {
   const met = new Set([...metDays].filter((d) => d >= start && d <= deadline))

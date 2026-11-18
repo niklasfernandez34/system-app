@@ -40,16 +40,6 @@ export const RULES: Rule[] = [
   { id: 'sleep-mood', when: 'Mit 7+ h Schlaf', other: 'weniger Schlaf', what: 'Stimmung', unit: '/ 5', digits: 1, split: sleep7, value: (d) => d.mood },
   { id: 'sleep-energy', when: 'Mit 7+ h Schlaf', other: 'weniger Schlaf', what: 'Energie', unit: '/ 5', digits: 1, split: sleep7, value: (d) => d.energy },
   {
-    id: 'sleep-study',
-    when: 'Mit 7+ h Schlaf',
-    other: 'weniger Schlaf',
-    what: 'Lernzeit',
-    unit: 'Min.',
-    digits: 0,
-    split: sleep7,
-    value: (d) => d.studyMin ?? 0,
-  },
-  {
     id: 'training-mood',
     when: 'An Trainingstagen',
     other: 'Tage ohne Training',
@@ -69,7 +59,6 @@ export const RULES: Rule[] = [
     split: (_d, day, daily) => !!daily.get(format(addDays(parseISO(day), -1), 'yyyy-MM-dd'))?.workouts,
     value: (d) => d.sleepHours,
   },
-  { id: 'study-mood', when: 'An Lerntagen', other: 'Tage ohne Lernen', what: 'Stimmung', unit: '/ 5', digits: 1, split: (d) => !!d.studyMin, value: (d) => d.mood },
   {
     id: 'skin-rating',
     when: 'Mit Pflege an 5+ von 7 Tagen',

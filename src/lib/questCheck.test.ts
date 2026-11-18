@@ -27,11 +27,7 @@ describe('penaltyTitle', () => {
   it('verlangt alle Routinen mit Schritten für die Pflege-Quest', () => {
     expect(questStatus([], []).some((q) => q.id === 'skin')).toBe(false)
     const one = [{ type: 'skin_routine_done', data: { routine: 'evening' } }]
-    expect(questStatus(one, [], false, false, ['evening']).find((q) => q.id === 'skin')?.done).toBe(true)
-    expect(questStatus(one, [], false, false, ['morning', 'evening']).find((q) => q.id === 'skin')?.done).toBe(false)
-  })
-  it('zeigt die Lern-Quest nur mit Fächern', () => {
-    expect(questStatus([], [], false, true).map((q) => q.id)).toContain('study')
-    expect(questStatus([{ type: 'study_session' }], [], false, true).find((q) => q.id === 'study')?.done).toBe(true)
+    expect(questStatus(one, [], false, ['evening']).find((q) => q.id === 'skin')?.done).toBe(true)
+    expect(questStatus(one, [], false, ['morning', 'evening']).find((q) => q.id === 'skin')?.done).toBe(false)
   })
 })

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router'
 import { BossList } from '../components/BossList'
 import { Button, ProgressBar, SystemWindow } from '../components/ui'
 import { useTitles } from '../lib/titleHooks'
-import { ATTRIBUTES, RANKS, type Attribute } from '../config/xp'
+import { ATTRIBUTES, RANKS, VISIBLE_ATTRIBUTES } from '../config/xp'
 import { roman } from '../lib/level'
 import { useRankState } from '../lib/ranks'
 import { fmt } from '../lib/sport'
@@ -26,7 +26,7 @@ export function StatusPage() {
 
       <SystemWindow title="Attribute">
         <ul className="space-y-1">
-          {(Object.keys(ATTRIBUTES) as Attribute[]).map((a) => (
+          {VISIBLE_ATTRIBUTES.map((a) => (
             <li key={a} className="flex justify-between">
               <span className="text-sys-muted">{ATTRIBUTES[a]}</span>
               <span className="font-semibold">{s.attributes[a]}</span>

@@ -4,12 +4,11 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useLocation } from 'react-router'
 import { currentDay } from '../lib/events'
 
-export type Area = 'xp' | 'sport' | 'food' | 'uni' | 'skin' | 'will'
+export type Area = 'xp' | 'sport' | 'food' | 'skin' | 'will'
 
 export function areaFor(path: string): Area {
   if (path.startsWith('/sport')) return 'sport'
   if (path.startsWith('/ernaehrung')) return 'food'
-  if (path.startsWith('/uni')) return 'uni'
   if (path.startsWith('/haut')) return 'skin'
   if (['/habits', '/tagebuch', '/notizen'].some((p) => path.startsWith(p))) return 'will'
   return 'xp'
@@ -23,7 +22,6 @@ const TITLES: Record<string, string> = {
   '/ernaehrung': 'Ernährung',
   '/ernaehrung/rezepte': 'Rezepte',
   '/ernaehrung/rechner': 'Rechner',
-  '/uni': 'Uni',
   '/mehr': 'Mehr',
   '/status': 'Status',
   '/auswertung': 'Auswertung',

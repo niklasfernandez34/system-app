@@ -166,6 +166,14 @@ All-in-One-App für die Selbstoptimierung, im Stil von Solo Leveling. Sie deckt 
 - Boss-Prüfung läuft auch bei Änderungen an Essen/Wasser von heute (`useNutritionStamp`).
 - Scanner liest im gründlichen Modus (`TRY_HARDER`, auch 90° gedreht), nur EAN/UPC. `Dialog` reagiert nur auf sein eigenes Schließen (sonst schloss der Scanner das Auswahl-Fenster mit). Kamera-Erlaubnis fragt iOS bei Home-Bildschirm-Apps pro Sitzung neu, das lässt sich in der App nicht ändern.
 
+### Entscheidung: Uni-Bereich entfernt (18.11.2026)
+
+- Fokus der App: Sport, Ernährung, Haut (plus Habits, Tagebuch, Notizen). Der Uni-Bereich soll später eventuell eine eigene App werden.
+- Kompletter Code in der Git-Markierung `uni-archiv`, Beschreibung in `archiv/UNI.md`. Die Abschnitte zu Phase 6a/6a+ unten gelten nur für diesen Archiv-Stand.
+- Uni-Daten (Tabellen `subjects`, `todos`, `cards`, `sheets`, `studyPlans`, `files`, `links`, Uni-`drawings`, Klausur-Bosse) bleiben in Dexie, Backup und Sync, sind aber unsichtbar. Alte Uni-XP zählen weiter zum Level.
+- Attribut Intelligenz wird ausgeblendet (`VISIBLE_ATTRIBUTES` in `xp.ts`). Tab-Leiste: Heute, Sport, Essen, Mehr. Hautbild bleibt unter Mehr.
+- Entfernt: Uni-Seiten, Quest „Lernen“, Klausur-Bosse, Uni-Statistiken und -Zusammenhänge, Lernplan/Klausuren/Fristen im Kalenderexport, `react-markdown`, `remark-breaks`, `FileViewer`.
+
 ### Entscheidungen aus Phase 6a
 
 - **Uni-Seite** (`/uni`): Fächer (Tabelle `subjects`) mit To-dos (Tabelle `todos`, Dexie-Version 9). Deadlines sind To-dos mit optionaler Frist, keine eigene Tabelle. Fristen der nächsten 14 Tage oben auf der Uni-Seite, die der nächsten 3 Tage auf „Heute“.
@@ -323,7 +331,7 @@ Immer eine Phase nach der anderen. Nach jeder Phase auf dem iPhone testen (über
    - ~~**5a:** Tracker, Suche (Open Food Facts), Wasser, Ziele, Favoriten, Rezepte~~ – erledigt.
    - ~~**5a+:** Kalorienrechner, Ziel-Art (Abnehmen/Halten/Zunehmen), 2-Wochen-Prüfung mit Gewichtstrend~~ – erledigt.
    - ~~**5b:** Barcode-Scan, **Ernährungs-Bosse**~~ – erledigt.
-6. **Uni und Hautbild**
+6. **Uni und Hautbild** (Uni am 18.11.2026 entfernt und archiviert, siehe oben)
    - ~~**6a Uni:** Fächer, To-dos mit Fristen, Lern-Timer, **Klausur-Bosse**~~ – erledigt.
    - **6a+ Fach-Ordner:** ~~Teil 1: Kacheln, Ordner, Dateien~~ – erledigt. ~~Teil 2: Karteikarten~~ – erledigt. ~~Teil 3: Lernzettel, Lernplan~~ – erledigt.
    - ~~**6b Hautbild:** Pflegeroutine morgens/abends, Hautzustand, Hautfotos mit Vergleich, **Routine-/Habit-Bosse**~~ – erledigt.

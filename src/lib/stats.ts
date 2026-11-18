@@ -10,9 +10,6 @@ export type MetricKey =
   | 'workouts'
   | 'volume'
   | 'prs'
-  | 'studyMin'
-  | 'cards'
-  | 'tasks'
   | 'kcal'
   | 'protein'
   | 'water'
@@ -32,9 +29,6 @@ export const METRICS: Record<MetricKey, Metric> = {
   workouts: { key: 'workouts', label: 'Trainings', unit: '', kind: 'sum' },
   volume: { key: 'volume', label: 'Volumen', unit: 'kg', kind: 'sum' },
   prs: { key: 'prs', label: 'PRs', unit: '', kind: 'sum' },
-  studyMin: { key: 'studyMin', label: 'Lernzeit', unit: 'Min.', kind: 'sum' },
-  cards: { key: 'cards', label: 'Karteikarten-Runden', unit: '', kind: 'sum' },
-  tasks: { key: 'tasks', label: 'Aufgaben erledigt', unit: '', kind: 'sum' },
   kcal: { key: 'kcal', label: 'Kalorien', unit: 'kcal', kind: 'avg' },
   protein: { key: 'protein', label: 'Eiweiß', unit: 'g', kind: 'avg' },
   water: { key: 'water', label: 'Wasser', unit: 'ml', kind: 'avg' },
@@ -50,7 +44,6 @@ export const METRICS: Record<MetricKey, Metric> = {
 export const AREAS = {
   XP: ['xp', 'quests'],
   Sport: ['workouts', 'volume', 'prs'],
-  Uni: ['studyMin', 'cards', 'tasks'],
   Ernährung: ['kcal', 'protein', 'water'],
   Körper: ['weight'],
   Tagebuch: ['sleepHours', 'mood', 'energy'],
@@ -74,9 +67,6 @@ const COUNT: Partial<Record<string, MetricKey>> = {
   quests_completed: 'quests',
   workout_done: 'workouts',
   pr_set: 'prs',
-  cards_round: 'cards',
-  todo_done: 'tasks',
-  plan_task_done: 'tasks',
   skin_routine_done: 'skinRoutines',
   habit_done: 'habits',
 }
@@ -94,7 +84,6 @@ export function dailyValues(input: StatsInput) {
     const count = COUNT[e.type]
     if (count) add(e.day, count, 1)
     if (e.type === 'workout_done') add(e.day, 'volume', Number(e.data?.volume ?? 0))
-    if (e.type === 'study_session') add(e.day, 'studyMin', Number(e.data?.minutes ?? 0))
     if (e.type === 'skin_rated') at(e.day).skinRating = Number(e.data?.value ?? 0)
   }
   const mealsByDay = new Map<string, StatsInput['meals']>()
@@ -166,9 +155,6 @@ export const REVIEW_METRICS: MetricKey[] = [
   'workouts',
   'volume',
   'prs',
-  'studyMin',
-  'tasks',
-  'cards',
   'habits',
   'skinRoutines',
   'kcal',

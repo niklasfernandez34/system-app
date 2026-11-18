@@ -15,7 +15,7 @@ Offline-PWA zur Selbstoptimierung (Solo-Leveling-Stil). Vollständiger Plan: `PR
 - Nach jedem fertigen Schritt committen.
 
 ## Stack
-Vite + React + TypeScript + Tailwind, React Router, Dexie.js + dexie-react-hooks, date-fns, Recharts, vite-plugin-pwa, @zxing/browser (Barcode), JSZip (Foto-Backup), MiniSearch (Lebensmittelsuche), Vitest (nur Rechenlogik). Hosting: GitHub Pages via GitHub Actions.
+Vite + React + TypeScript + Tailwind, React Router, Dexie.js + dexie-react-hooks, date-fns, Recharts, vite-plugin-pwa, @zxing/browser (Barcode), JSZip (Backup), MiniSearch (Lebensmittelsuche), perfect-freehand (Handschrift), Vitest (nur Rechenlogik). Hosting: GitHub Pages via GitHub Actions.
 
 ## Feste Entscheidungen
 - 100 % offline nutzbar; Daten lokal in IndexedDB. Optionaler Sync iPhone/iPad über das eigene Dropbox-Konto (`src/lib/sync.ts`).
@@ -28,4 +28,5 @@ Vite + React + TypeScript + Tailwind, React Router, Dexie.js + dexie-react-hooks
 - Backup: eine ZIP-Datei mit allem (`data.json` + `blobs/`).
 - Dexie-Schema pro Phase per neuer Version erweitern, nie alte Versionen ändern.
 - PIN-Sperre ist nur Sichtschutz.
+- Kein Uni-Bereich: entfernt und in Git-Markierung `uni-archiv` + `archiv/UNI.md` gesichert. Uni-Tabellen in Dexie nicht löschen.
 - Texte in der App auf Deutsch.

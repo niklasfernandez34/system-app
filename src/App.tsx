@@ -22,10 +22,7 @@ import { BodyPage } from './pages/BodyPage'
 import { PhotosPage } from './pages/PhotosPage'
 import { StatusPage } from './pages/StatusPage'
 import { AchievementsPage } from './pages/AchievementsPage'
-import { UniPage } from './pages/UniPage'
-import { SubjectPage } from './pages/SubjectPage'
 import { SkinPage } from './pages/SkinPage'
-import { StudyTimerFloat } from './components/StudyTimer'
 import { SyncWatcher } from './components/SyncWatcher'
 import { SystemWindow } from './components/ui'
 import { isConnected, syncOnOpen } from './lib/sync'
@@ -34,7 +31,6 @@ const tabs = [
   { to: '/', label: 'Heute', icon: 'home' },
   { to: '/sport', label: 'Sport', icon: 'sport' },
   { to: '/ernaehrung', label: 'Essen', icon: 'food' },
-  { to: '/uni', label: 'Uni', icon: 'uni' },
   { to: '/mehr', label: 'Mehr', icon: 'more' },
 ] as const
 
@@ -85,8 +81,6 @@ export default function App() {
             <Route path="/ernaehrung/rezepte" element={<RecipesPage />} />
             <Route path="/ernaehrung/rechner" element={<CalculatorPage />} />
             <Route path="/ernaehrung/rezept/:id" element={<RecipeEditPage />} />
-            <Route path="/uni" element={<UniPage />} />
-            <Route path="/uni/fach/:id" element={<SubjectPage />} />
             <Route path="/mehr" element={<MorePage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route path="/auswertung" element={<StatsPage />} />
@@ -102,7 +96,6 @@ export default function App() {
       </main>
       <div className="pb-safe px-safe pointer-events-none fixed inset-x-0 bottom-0 z-20">
         <div className="pointer-events-auto">
-          <StudyTimerFloat />
         </div>
         <nav className="pointer-events-auto mx-auto mb-3 w-[calc(100%-1.75rem)] max-w-xl rounded-3xl border border-white/8 bg-[#1e1e22]/85 shadow-card backdrop-blur-xl">
           <ul className="flex">

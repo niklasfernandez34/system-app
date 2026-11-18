@@ -4,7 +4,7 @@ import { Button, Dialog } from './ui'
 import { XP } from '../config/xp'
 import { db } from '../db/db'
 import { getSetting, setSetting } from '../db/settings'
-import { checkBosses, useExamStamp, useNutritionStamp } from '../lib/bosses'
+import { checkBosses, useNutritionStamp } from '../lib/bosses'
 import { roman } from '../lib/level'
 import { ensureTodayQuests, syncQuestBonus, useQuests } from '../lib/quests'
 import { ensureRankRecord, tryRankUp, useRankState } from '../lib/ranks'
@@ -40,7 +40,6 @@ export function SystemWatcher() {
   const seen = useLiveQuery(() => getSetting('seenStage'))
   const eventCount = useLiveQuery(() => db.events.count())
   const nutritionStamp = useNutritionStamp()
-  const examStamp = useExamStamp()
   const [queue, setQueue] = useState<Notice[]>([])
   const push = (n: Notice) => setQueue((q) => [...q, n])
   const notice = queue[0]
@@ -63,7 +62,7 @@ export function SystemWatcher() {
     if (eventCount === undefined) return
     checkBosses().then((won) => won.forEach((b) => push({ kind: 'boss', attr: b.attr })))
     newTitles().then((names) => names.length && push({ kind: 'title', names }))
-  }, [eventCount, nutritionStamp, examStamp])
+  }, [eventCount, nutritionStamp])
 
   useEffect(() => {
     if (!s || seen === undefined) return

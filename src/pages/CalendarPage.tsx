@@ -12,20 +12,9 @@ const DURATIONS = ['45', '60', '90', '120'] as const
 
 function useCalendarData() {
   return useLiveQuery(async () => {
-    const [today, subjects, plans, bosses, todos, steps] = await Promise.all([
-      currentDay(),
-      db.subjects.toArray(),
-      db.studyPlans.toArray(),
-      db.bosses.where('status').equals('active').toArray(),
-      db.todos.toArray(),
-      db.skinSteps.toArray(),
-    ])
+    const [today, steps] = await Promise.all([currentDay(), db.skinSteps.toArray()])
     const active = steps.filter((s) => !s.archived)
     const data: CalendarData = {
-      subjects,
-      plans,
-      exams: bosses.filter((b) => b.kind === 'exam'),
-      todos,
       routines: (['morning', 'evening'] as const).filter((r) => active.some((s) => s.routine === r)),
     }
     return { today, data }
@@ -56,7 +45,7 @@ export function CalendarPage() {
     <div className="space-y-4">
       <SystemWindow title="Kalenderexport">
         <div className="space-y-4">
-          <MultiChips options={CAL_PARTS} value={prefs.parts} onChange={(parts) => set({ parts })} label="Was soll in den Kalender?" />
+          <MultiChips options={CAL_PARTS} value={prefs.parts.filter((p) => CAL_PARTS.includes(p))} onChange={(parts) => set({ parts })} label="Was soll in den Kalender?" />
           {has('Training') && (
             <div className="space-y-3 rounded-xl border border-sys-line p-3">
               <MultiChips options={WEEKDAYS} value={prefs.trainingDays} onChange={(trainingDays) => set({ trainingDays })} label="Trainingstage" />
@@ -85,12 +74,9 @@ export function CalendarPage() {
         <ul className="space-y-1 text-sm">
           {has('Training') && <Row label="Training" value={prefs.trainingDays.length ? `${prefs.trainingDays.join(', ')} um ${prefs.trainingTime}` : 'keine Tage gewählt'} />}
           {has('Pflegeroutine') && <Row label="Pflegeroutine" value={count('skin-') ? 'täglich' : 'keine Schritte'} />}
-          {has('Lernplan') && <Row label="Lernplan" value={`${count('task-')} Aufgaben`} />}
-          {has('Klausuren') && <Row label="Klausuren" value={`${count('exam-')}`} />}
-          {has('Fristen') && <Row label="Fristen" value={`${count('todo-')}`} />}
         </ul>
         <p className="mt-3 text-xs text-sys-muted">
-          Training und Pflege wiederholen sich, Erinnerung 30 Min. vorher bzw. zur Uhrzeit. Klausuren und Fristen erinnern am Vortag um 9 Uhr.
+          Training und Pflege wiederholen sich, Erinnerung 30 Min. vorher bzw. zur Uhrzeit.
         </p>
         <Button className="mt-3 w-full" disabled={events.length === 0} onClick={exportFile}>
           Kalenderdatei erstellen

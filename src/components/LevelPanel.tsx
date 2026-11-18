@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router'
 import { ProgressBar } from './ui'
 import { TITLES } from '../config/titles'
-import { ATTRIBUTES, type Attribute } from '../config/xp'
+import { ATTRIBUTES, VISIBLE_ATTRIBUTES, type Attribute } from '../config/xp'
 import { useSetting } from '../db/settings'
 import { roman } from '../lib/level'
 import { useRankState } from '../lib/ranks'
@@ -45,8 +45,8 @@ export function LevelPanel() {
           Aufstiegsprüfung offen · Details ansehen
         </p>
       )}
-      <ul className="grid grid-cols-5 gap-1 pt-1 text-center">
-        {(Object.keys(ATTRIBUTES) as Attribute[]).map((a) => (
+      <ul className="grid grid-cols-4 gap-1 pt-1 text-center">
+        {VISIBLE_ATTRIBUTES.map((a) => (
           <li key={a}>
             <p className={`text-base font-bold ${COLORS[a]}`}>{s.attributes[a]}</p>
             <p className="text-[10px] font-semibold uppercase text-sys-muted">{ATTRIBUTES[a].slice(0, 3)}</p>

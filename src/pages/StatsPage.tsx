@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { format, parseISO } from 'date-fns'
 import { de } from 'date-fns/locale'
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import { Chips, ProgressBar, SystemWindow } from '../components/ui'
+import { Chips, SystemWindow } from '../components/ui'
 import { Insights } from '../components/Insights'
 import { setSetting, useSetting } from '../db/settings'
 import { useStatsData } from '../lib/statsData'
@@ -50,7 +50,6 @@ export function StatsPage() {
           <StatsChart today={data.today} range={range} daily={data.daily} />
         </div>
       </SystemWindow>
-      <StudyBySubject today={data.today} range={range} events={data.events} subjects={data.subjects} />
     </div>
   )
 }
@@ -152,37 +151,6 @@ function StatsChart({ today, range, daily }: { today: string; range: Range; dail
         </div>
       )}
     </>
-  )
-}
-
-type StudyEvent = { type: string; day: string; data?: Record<string, unknown> }
-
-function StudyBySubject({ today, range, events, subjects }: { today: string; range: Range; events: StudyEvent[]; subjects: { id: number; name: string }[] }) {
-  const start = buckets(today, range)[0].days[0]
-  const minutes = new Map<number, number>()
-  for (const e of events)
-    if (e.type === 'study_session' && e.day >= start) {
-      const id = Number(e.data?.subjectId)
-      minutes.set(id, (minutes.get(id) ?? 0) + Number(e.data?.minutes ?? 0))
-    }
-  if (!minutes.size) return null
-  const max = Math.max(...minutes.values())
-  const rows = [...minutes].sort((a, b) => b[1] - a[1])
-  const name = (id: number) => subjects.find((s) => s.id === id)?.name ?? 'Gelöschtes Fach'
-  return (
-    <SystemWindow title="Lernzeit pro Fach">
-      <div className="space-y-2">
-        {rows.map(([id, min]) => (
-          <div key={id}>
-            <div className="mb-1 flex justify-between text-sm">
-              <span>{name(id)}</span>
-              <span className="text-sys-muted">{fmtMetric(min, METRICS.studyMin)}</span>
-            </div>
-            <ProgressBar value={min} max={max} />
-          </div>
-        ))}
-      </div>
-    </SystemWindow>
   )
 }
 
